@@ -28,14 +28,19 @@ teď:    [bedna] → Storage optimizer → [bedna]
 
 ## Tiery
 
-Každý pás ve hře dává jeden tier. Rychlejší pás = rychlejší optimizer s vyšší spotřebou.
+Každý pás ve hře dává jeden tier. Rychlejší pás = rychlejší optimizer.
 
-| Tier (pás) | Interval | Spotřeba |
+Energie se platí **za každou přesunutou dávku: 100 kJ** (u všech tierů). Optimizer, který nic
+nepřesouvá, nespotřebovává nic; rychlejší tier při plné práci odebírá úměrně víc.
+
+| Tier (pás) | Interval | Výkon při plné práci |
 |---|---|---|
 | Žlutý pás | 2 s | 50 kW |
 | Červený pás | 1 s | 100 kW |
 | Modrý pás | 0,67 s | 150 kW |
 | Turbo pás (Space Age) | 0,5 s | 200 kW |
+
+Bez proudu (nebo při jeho nedostatku) optimizer čeká, dokud síť nedobije energii na další dávku.
 
 Mody, které přidávají další pásy, přidají **automaticky** i další tiery. Recept tieru obsahuje jeho pás
 a odemyká ho stejný výzkum jako pás. Vyšší tier jde postavit přímo přes nižší a funguje i upgrade planner.
@@ -55,7 +60,8 @@ Po otevření optimizeru se zobrazí nativní okno inserteru a **vpravo od něj 
   - *Nastavit filtry* – předměty se signálem v síti se stanou filtry. Bez signálu se nepřesouvá nic.
 
 > **Pozor:** posuvník *Override stack size* a řádek se stavem v nativním okně inserteru patří
-> inserteru a optimizer je **ignoruje**. Platný stav a velikost dávky ukazuje panel vpravo.
+> inserteru a optimizer je **ignoruje** (nativní stav ukazuje trvale „Vypnuto skriptem“ – tím mod
+> šetří výkon). Platný stav a velikost dávky ukazuje panel vpravo.
 
 Velikost dávky se přenáší v **blueprintech**, při **kopírování nastavení** (Shift+klik) i při
 **přestavění na jiný tier**.
@@ -75,4 +81,4 @@ Malá ikonka v rohu budovy:
 *Nastavení → Mody → Startup* (vyžaduje restart):
 
 - **Násobič intervalu přesunu** – 2 = poloviční rychlost, 0,5 = dvojnásobná.
-- **Násobič spotřeby energie** – 0 = bez spotřeby.
+- **Násobič spotřeby energie** – násobí 100 kJ za dávku; 0 = bez spotřeby.

@@ -6,24 +6,24 @@ local M = {}
 M.YELLOW_SPEED = 0.03125
 --- Interval přesunu tieru se žlutou rychlostí v tickách (120 t = 2 s). Laditelná hodnota.
 M.BASE_INTERVAL = 120
---- Odběr tieru se žlutou rychlostí v kW. Laditelná hodnota.
-M.BASE_DRAIN_KW = 50
+--- Průměrný výkon pracujícího tieru se žlutou rychlostí v kW. Laditelná hodnota.
+M.BASE_POWER_KW = 50
 
---- Spočítá interval přesunu v tickách.
+--- Spočítá interval přesunu v tickách (nejméně 1).
 --- @param speed number rychlost pásu
 --- @param multiplier number násobič z nastavení (větší = pomalejší)
---- @return integer interval, nejméně 1
+--- @return integer
 function M.interval_ticks(speed, multiplier)
   local raw = M.BASE_INTERVAL * (M.YELLOW_SPEED / speed) * multiplier
   return math.max(1, math.floor(raw + 0.5))
 end
 
---- Spočítá odběr energie tieru v kW.
---- @param speed number rychlost pásu
---- @param multiplier number násobič z nastavení
+--- Spočítá energii za jeden přesun dávky v kJ. Je stejná pro všechny tiery (cena za dávku),
+--- rychlejší tier proto odebírá úměrně vyšší průměrný výkon.
+--- @param multiplier number násobič spotřeby z nastavení
 --- @return number
-function M.drain_kw(speed, multiplier)
-  return M.BASE_DRAIN_KW * (speed / M.YELLOW_SPEED) * multiplier
+function M.energy_per_transfer_kj(multiplier)
+  return M.BASE_POWER_KW * (M.BASE_INTERVAL / 60) * multiplier
 end
 
 --- Vrátí klíče tabulky seřazené abecedně (deterministické pořadí i mimo Factorio).

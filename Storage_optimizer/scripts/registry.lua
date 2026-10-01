@@ -12,6 +12,7 @@ function M.add(entity, batch)
     entity = entity,
     unit_number = entity.unit_number,
     interval = tiers.interval(entity.name),
+    energy = tiers.energy(entity.name),
     batch = batch,
     cursor = 1,
   }

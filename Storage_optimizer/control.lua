@@ -58,6 +58,8 @@ local function on_built(event)
   if tiers.is_mover(entity.name) then
     local batch = persistence.batch_from_tags(event.tags) or persistence.take_replaced(entity)
     local mover = registry.add(entity, batch)
+    -- Engine entitu nepočítá (úspora UPS); podmínky a filtry ze sítě vyhodnocuje dál.
+    entity.disabled_by_script = true
     local behavior = entity.get_or_create_control_behavior()
     -- Engine má výchozí signál signal-S; náš signál nastavíme, dokud hráč funkci nepoužívá (nepřepíše blueprint).
     if not behavior.circuit_set_stack_size then behavior.circuit_stack_control_signal = BATCH_SIGNAL end
@@ -99,6 +101,8 @@ local function on_configuration_changed()
   for unit_number, mover in pairs(storage.movers) do
     if mover.entity.valid then
       mover.interval = tiers.interval(mover.entity.name)
+      mover.energy = tiers.energy(mover.entity.name)
+      mover.entity.disabled_by_script = true
       if not (mover.light and mover.light.valid) then indicator.create(mover) end
       wake(mover)
     else

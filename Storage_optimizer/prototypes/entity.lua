@@ -25,7 +25,7 @@ function M.localised_name(belt)
 end
 
 --- Vytvoří entitu tieru.
---- @param info table položka z tiers.collect doplněná o name, tier, interval, drain_kw
+--- @param info table položka z tiers.collect doplněná o name, tier, interval, energy_kj
 --- @param icons table[] vrstvy ikony
 function M.create(info, icons)
   local e = table.deepcopy(data.raw["inserter"]["fast-inserter"])
@@ -47,10 +47,13 @@ function M.create(info, icons)
   e.insert_position = { 0, 0 }
   e.energy_per_movement = "1J"
   e.energy_per_rotation = "1J"
+  -- Entita je za běhu vypnutá pro engine (disabled_by_script), takže drain by se neodebíral.
+  -- Energii za přesun si skript bere ze zásobníku sám a síť ho dobíjí (ověřeno pokusem).
   e.energy_source = {
     type = "electric",
     usage_priority = "secondary-input",
-    drain = string.format("%.3fkW", info.drain_kw),
+    buffer_capacity = string.format("%.3fkJ", math.max(info.energy_kj, 0.001)),
+    drain = "0W",
   }
   e.hand_base_picture = EMPTY
   e.hand_closed_picture = EMPTY
@@ -61,10 +64,15 @@ function M.create(info, icons)
   if e.platform_picture and e.platform_picture.sheet then
     e.platform_picture.sheet.tint = M.tint(info.tier)
   end
+  ---@diagnostic disable-next-line: missing-fields
   e.custom_tooltip_fields = {
     {
       name = { "storage-optimizer.interval" },
       value = { "storage-optimizer.seconds", string.format("%.2f", info.interval / 60) },
+    },
+    {
+      name = { "storage-optimizer.energy" },
+      value = { "storage-optimizer.kilojoules", string.format("%.0f", info.energy_kj) },
     },
   }
   data:extend({ e })

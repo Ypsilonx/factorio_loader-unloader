@@ -20,9 +20,10 @@ now:     [chest] → Storage Optimizer → [chest]
   enable/disable by condition, batch size from a signal, filters from signals.
 - **Blueprint support** – the batch size survives blueprints, copy-paste and tier upgrades.
 - **Quality, spoilage and item data are preserved.**
-- **UPS-friendly** – each building is processed only once per transfer interval, idle buildings cost nothing
-  in script time. Benchmark (1000 pairs of chests, 60 s, Factorio 2.0.77): Storage Optimizer moved
-  2 500 000 items vs 744 000 items with two vanilla loaders per pair.
+- **UPS-friendly** – the building is never updated by the engine; the script touches it only once per
+  transfer interval. Benchmark (1000 pairs of chests, Factorio 2.0.77): **0.225 ms/tick** and 2 500 000 items
+  moved, vs **0.274 ms/tick** and 744 000 items with two vanilla loaders per pair.
+- **Power per batch** – 100 kJ per transferred batch; an idle building uses no power.
 
 ## How to use
 
@@ -41,8 +42,8 @@ now:     [chest] → Storage Optimizer → [chest]
 ## Known limitations
 
 - Version 0.1 works only with chests and warehouses (no assembling machines, wagons, …).
-- The native inserter window shows its own status line and the *Override stack size* slider – both are
-  ignored. The real status and batch size are in the panel on the right.
+- The native inserter window shows its own status line (always "Disabled by script" – that is how the mod
+  saves UPS) and the *Override stack size* slider – both are ignored. The real status and batch size are in the panel on the right.
 
 ## License
 

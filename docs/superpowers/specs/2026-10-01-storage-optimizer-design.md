@@ -254,3 +254,12 @@ Spike (headless Factorio 2.0.77) ověřil:
 4. **Zánik bedny (4.2):** neřeší se událostí; plánovač při dalším cyklu zjistí neplatný inventář,
    přepočte sousedy a entitu bez zdroje/cíle z plánu vyřadí. Méně handlerů, stejné chování.
 5. **Grafika z Blenderu, thumbnail a nahrání na portál** jsou samostatný navazující plán.
+
+## 10. Dodatek – optimalizace UPS (2026-10-01)
+
+Měření ukázalo, že inserter s ramenem na vlastním políčku engine dál počítá (~0,107 ms/tick na 1000 kusů).
+Entita má proto za běhu `disabled_by_script = true`: engine ji nepočítá, ale dál vyhodnocuje podmínku sítě
+a propisuje filtry ze signálů (ověřeno pokusem). Vypnutá entita neodebírá `drain`, takže se změnil model
+energie (3.1, 3.2): **100 kJ za přesunutou dávku** (= 50 kW × 2 s, stejné pro všechny tiery), odebírá se
+ze zásobníku entity (`buffer_capacity`), který síť dobíjí; nedostatek energie = stav `no_power`.
+Výsledek: 0,225 ms/tick místo 0,350 (loadery 0,274) při 3,4× vyšší propustnosti.

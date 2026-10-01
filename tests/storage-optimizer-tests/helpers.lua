@@ -17,11 +17,12 @@ function H.place(ctx, name, dx, dy, extra)
 end
 
 --- Napájí výřez testu: neomezený zdroj a rozvodna pokrývající okolí počátku (±9 dlaždic od (-3, -3)).
+--- @return LuaEntity rozvodna (jejím zbouráním test odpojí proud)
 function H.power(ctx)
   local source = H.place(ctx, "electric-energy-interface", -6, -6)
   source.power_production = 1e9
   source.electric_buffer_size = 1e10
-  H.place(ctx, "substation", -3, -3)
+  return H.place(ctx, "substation", -3, -3)
 end
 
 --- Postaví bednu a vloží do ní předměty (pole ItemStackDefinition).

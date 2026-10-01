@@ -35,7 +35,7 @@ tools/                        skripty: testy, výkon, junction, balení
 
 | Co | Kde |
 |---|---|
-| Interval žlutého tieru (120 t = 2 s), spotřeba (50 kW) | `Storage_optimizer/prototypes/tiers.lua` – `BASE_INTERVAL`, `BASE_DRAIN_KW` |
+| Interval žlutého tieru (120 t = 2 s), výkon (50 kW → 100 kJ za dávku) | `Storage_optimizer/prototypes/tiers.lua` – `BASE_INTERVAL`, `BASE_POWER_KW` |
 | Suroviny receptů | `Storage_optimizer/prototypes/recipe.lua` – funkce `ingredients` |
 | Barvy tierů (dočasná grafika) | `Storage_optimizer/prototypes/entity.lua` – `TINTS` |
 | Cesta k Factoriu | proměnná `FACTORIO_EXE` (výchozí hodnota v `tools/run-tests.sh` a `tools/run-perf.sh`) |
@@ -59,14 +59,17 @@ nastavení hry. Výsledek je řádek `SO-TEST DONE pass=… fail=… skip=…`.
 
 | Režim | ms/tick | Přesunuto kusů za 50 s |
 |---|---|---|
-| `idle` – jen bedny | 0,131 | 0 |
-| `mover` – Storage optimizer (žlutý tier) | 0,350 | 2 500 000 |
-| `loader` – 2× vanilla loader-1x1 | 0,259 | 744 000 |
-| `mover-nochest` – optimizery bez beden (cena entit bez skriptu) | 0,238 | 0 |
+| `idle` – jen bedny | 0,148 | 0 |
+| `mover` – Storage optimizer (žlutý tier) | 0,225 | 2 500 000 |
+| `loader` – 2× vanilla loader-1x1 | 0,274 | 744 000 |
+| `mover-nochest` – optimizery bez beden (cena entit bez skriptu) | 0,136 | 0 |
 
-Samotná entita (inserter s uspaným ramenem) stojí ~0,107 ms na 1000 kusů; skriptová logika ~0,11 ms.
-Pokus s `disabled_by_script` ukázal, že úplné vypnutí entity enginem cenu entit srazí na ~0
-(0,135 ms) – kandidát na další optimalizaci.
+Entita je pro engine vypnutá (`disabled_by_script`), takže sama nestojí nic; celá cena je skriptová
+logika (~0,08–0,1 ms na 1000 kusů při plné práci). Engine přitom dál vyhodnocuje podmínku sítě a propisuje
+filtry ze signálů. Před touto optimalizací (rameno jen „uspané“) stál optimizer 0,350 ms/tick.
+
+**Energie:** vypnutá entita neodebírá `drain`, proto si skript bere energii za přesun ze zásobníku entity
+(`buffer_capacity` = 100 kJ) a elektrická síť ho dobíjí. Prázdný zásobník = stav „bez proudu“.
 
 ## Ruční hraní a ladění
 

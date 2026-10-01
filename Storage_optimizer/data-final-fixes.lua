@@ -9,6 +9,7 @@ local interval_multiplier = settings.startup["storage-optimizer-interval-multipl
 local power_multiplier = settings.startup["storage-optimizer-power-multiplier"].value
 
 local list = tiers.collect(data.raw)
+local energy_kj = tiers.energy_per_transfer_kj(power_multiplier)
 local runtime = {}
 local previous
 
@@ -16,13 +17,13 @@ for index, info in ipairs(list) do
   info.tier = index
   info.name = "storage-optimizer-" .. info.belt
   info.interval = tiers.interval_ticks(info.speed, interval_multiplier)
-  info.drain_kw = tiers.drain_kw(info.speed, power_multiplier)
+  info.energy_kj = energy_kj
   info.previous = previous
   local layers = icons.tier_icons(info.item, entity.tint(index))
   entity.create(info, layers)
   item.create(info, layers)
   recipe.create(info)
-  runtime[info.name] = { tier = index, interval = info.interval }
+  runtime[info.name] = { tier = index, interval = info.interval, energy = energy_kj * 1000 }
   previous = info.name
 end
 

@@ -27,10 +27,10 @@ return {
     A.eq(tiers.interval_ticks(0.03125, 2), 240, "násobič 2")
     A.eq(tiers.interval_ticks(100, 0.1), 1, "minimum 1 tick")
   end },
-  { "drain škáluje s rychlostí", function()
-    A.eq(tiers.drain_kw(0.03125, 1), 50, "žlutý")
-    A.eq(tiers.drain_kw(0.0625, 1), 100, "červený")
-    A.eq(tiers.drain_kw(0.0625, 0), 0, "násobič 0")
+  { "energie za přesun: 50 kW × 2 s, nezávisle na tieru", function()
+    A.eq(tiers.energy_per_transfer_kj(1), 100, "výchozí")
+    A.eq(tiers.energy_per_transfer_kj(2), 200, "násobič spotřeby 2")
+    A.eq(tiers.energy_per_transfer_kj(0), 0, "násobič spotřeby 0")
   end },
   { "řazení podle rychlosti", function()
     local list = tiers.collect(fake_raw({

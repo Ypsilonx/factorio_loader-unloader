@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 --- Kontrola, že angličtina a čeština mají přesně stejnou sadu klíčů.
 local A = require("assert")
 

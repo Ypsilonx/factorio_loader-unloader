@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 --- Runner jednotkových testů čisté Lua logiky modu (spouští se z kořene repozitáře: lua tests/unit/run.lua).
 package.path = "Storage_optimizer/?.lua;tests/unit/?.lua;" .. package.path
 

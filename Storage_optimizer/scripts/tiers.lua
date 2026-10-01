@@ -4,7 +4,7 @@ local M = {}
 --- Kopie dat načtená jednou při načtení skriptu (stejná u všech hráčů → deterministická).
 local DATA = prototypes.mod_data["storage-optimizer-tiers"].data
 
---- Vrátí tabulku { [jméno entity] = { tier, interval } }.
+--- Vrátí tabulku { [jméno entity] = { tier, interval, energy } }.
 function M.all()
   return DATA
 end
@@ -17,6 +17,11 @@ end
 --- Interval přesunu tieru v tickách.
 function M.interval(name)
   return DATA[name].interval
+end
+
+--- Energie za jeden přesun v joulech.
+function M.energy(name)
+  return DATA[name].energy
 end
 
 --- Seřazená jména všech tierů (pro event filtry a GUI).

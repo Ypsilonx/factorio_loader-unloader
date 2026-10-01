@@ -66,7 +66,8 @@ end
 --- @return string stav: "working" | "waiting" | "no_power" | "disabled"
 function M.process(mover)
   local entity = mover.entity
-  if entity.status == defines.entity_status.no_power then return "no_power" end
+  -- Entita je pro engine vypnutá, status proto proud neukazuje; rozhoduje energie v zásobníku.
+  if entity.energy < mover.energy then return "no_power" end
   local behavior = entity.get_control_behavior()
   if behavior and behavior.disabled then return "disabled" end
   local batch = batch_size(mover, behavior)
@@ -86,6 +87,7 @@ function M.process(mover)
       if entry.count >= need
         and mover.target.get_insertable_count({ name = entry.name, quality = entry.quality }) >= need then
         move(mover.source, mover.target, entry.name, entry.quality, need)
+        entity.energy = entity.energy - mover.energy
         mover.cursor = index % n + 1
         return "working"
       end

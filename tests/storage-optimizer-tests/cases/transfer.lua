@@ -61,6 +61,32 @@ return {
     end } },
   },
   {
+    name = "engine entitu nepočítá (UPS)",
+    setup = function(ctx) layout(ctx, {}) end,
+    steps = { { ticks = 2, run = function(ctx) H.eq(ctx.m.disabled_by_script, true, "disabled_by_script") end } },
+  },
+  {
+    name = "výpadek proudu zastaví přesun",
+    setup = function(ctx)
+      ctx.pole = H.power(ctx)
+      ctx.a = H.chest(ctx, "iron-chest", 0, 0, { { name = "iron-plate", count = 3000 } })
+      ctx.m = H.mover(ctx, BELT, 0, 1)
+      ctx.b = H.chest(ctx, "steel-chest", 0, 2)
+    end,
+    steps = {
+      { ticks = 40, run = function(ctx)
+        H.truthy(H.count(ctx.b, "iron-plate") > 0, "s proudem přesouvá")
+        ctx.pole.destroy()
+      end },
+      -- Zásobník vystačí nejvýše na jednu dávku, pak musí přesun stát.
+      { ticks = 40, run = function(ctx) ctx.after = H.count(ctx.b, "iron-plate") end },
+      { ticks = 60, run = function(ctx)
+        H.eq(H.count(ctx.b, "iron-plate"), ctx.after, "bez proudu nic dalšího")
+        H.eq(state(ctx.m), "no_power", "stav")
+      end },
+    },
+  },
+  {
     name = "probuzení po postavení cílové bedny",
     setup = function(ctx)
       H.power(ctx)
