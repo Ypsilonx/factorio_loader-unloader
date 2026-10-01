@@ -1,5 +1,42 @@
---- Jeden cyklus přesunu: kontroly a přesun nejvýše jedné celé dávky.
+--- Jeden cyklus přesunu: kontroly (proud, síť), výběr předmětu podle filtrů a přesun nejvýše jedné celé dávky.
+local filters = require("scripts.filters")
+
 local M = {}
+
+local RED = defines.wire_connector_id.circuit_red
+local GREEN = defines.wire_connector_id.circuit_green
+
+--- Úrovně kvality { [jméno] = úroveň }, načtené líně při prvním použití.
+local quality_levels
+
+--- Vrátí úrovně kvality.
+local function levels()
+  if not quality_levels then
+    quality_levels = {}
+    for name, quality in pairs(prototypes.quality) do quality_levels[name] = quality.level end
+  end
+  return quality_levels
+end
+
+--- Načte aktivní filtry entity; filtry jsou aktivní při zapnutém use_filters nebo při filtrech ze sítě.
+local function read_filters(entity, behavior)
+  local list = {}
+  if not (entity.use_filters or (behavior and behavior.circuit_set_filters)) then return list end
+  for i = 1, entity.filter_slot_count do
+    local filter = entity.get_filter(i)
+    if filter then list[#list + 1] = filter end
+  end
+  return list
+end
+
+--- Velikost dávky: signál ze sítě (je-li zapnutý a > 0) → ruční nastavení → nil (Auto).
+local function batch_size(mover, behavior)
+  if behavior and behavior.circuit_set_stack_size and behavior.circuit_stack_control_signal then
+    local value = mover.entity.get_signal(behavior.circuit_stack_control_signal, RED, GREEN)
+    if value > 0 then return value end
+  end
+  return mover.batch
+end
 
 --- Přesune přesně `count` kusů po slotech přes pomocný slot storage.buffer
 --- (zachová kvalitu, čerstvost i data předmětů).
@@ -26,22 +63,32 @@ local function move(source, target, name, quality, count)
 end
 
 --- Provede jeden cyklus pro entitu se známým zdrojem a cílem.
---- @return string stav: "working" | "waiting" | "no_power"
+--- @return string stav: "working" | "waiting" | "no_power" | "disabled"
 function M.process(mover)
   local entity = mover.entity
   if entity.status == defines.entity_status.no_power then return "no_power" end
+  local behavior = entity.get_control_behavior()
+  if behavior and behavior.disabled then return "disabled" end
+  local batch = batch_size(mover, behavior)
+  local active = read_filters(entity, behavior)
+  local mode = entity.inserter_filter_mode
+  -- Filtry řízené sítí bez signálu (nebo ještě nepropsané enginem) neznamenají „cokoliv“, ale „nic“.
+  if #active == 0 and mode == "whitelist" and behavior and behavior.circuit_set_filters then return "waiting" end
+  local lv = levels()
   local contents = mover.source.get_contents()
   local n = #contents
   for k = 0, n - 1 do
     -- Rotující ukazatel, aby jeden předmět nevyhladověl ostatní.
     local index = (mover.cursor + k - 1) % n + 1
     local entry = contents[index]
-    local need = mover.batch or prototypes.item[entry.name].stack_size
-    if entry.count >= need
-      and mover.target.get_insertable_count({ name = entry.name, quality = entry.quality }) >= need then
-      move(mover.source, mover.target, entry.name, entry.quality, need)
-      mover.cursor = index % n + 1
-      return "working"
+    if filters.passes(active, mode, entry.name, entry.quality, lv) then
+      local need = batch or prototypes.item[entry.name].stack_size
+      if entry.count >= need
+        and mover.target.get_insertable_count({ name = entry.name, quality = entry.quality }) >= need then
+        move(mover.source, mover.target, entry.name, entry.quality, need)
+        mover.cursor = index % n + 1
+        return "working"
+      end
     end
   end
   return "waiting"

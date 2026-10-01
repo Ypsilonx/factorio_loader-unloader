@@ -7,6 +7,9 @@ local transfer = require("scripts.transfer")
 local indicator = require("scripts.indicator")
 require("scripts.remote")
 
+--- Výchozí signál pro nastavení velikosti dávky ze sítě.
+local BATCH_SIGNAL = { type = "virtual", name = "storage-optimizer-batch" }
+
 --- Založí chybějící tabulky ve storage (nová hra i starší uložená pozice).
 local function init_storage()
   storage.movers = storage.movers or {}
@@ -52,6 +55,9 @@ local function on_built(event)
   local entity = event.entity
   if tiers.is_mover(entity.name) then
     local mover = registry.add(entity, nil)
+    local behavior = entity.get_or_create_control_behavior()
+    -- Engine má výchozí signál signal-S; náš signál nastavíme, dokud hráč funkci nepoužívá (nepřepíše blueprint).
+    if not behavior.circuit_set_stack_size then behavior.circuit_stack_control_signal = BATCH_SIGNAL end
     indicator.create(mover)
     wake(mover)
     return
