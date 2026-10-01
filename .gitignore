@@ -1,0 +1,5 @@
+# Sestavené balíčky modu (FMTK / ruční zip)
+*.zip
+# Lokální stav VSCode / FMTK
+.vscode/factorio/
+.vscode/*.log
