@@ -5,6 +5,7 @@ local neighbours = require("scripts.neighbours")
 local scheduler = require("scripts.scheduler")
 local transfer = require("scripts.transfer")
 local indicator = require("scripts.indicator")
+local persistence = require("scripts.persistence")
 require("scripts.remote")
 
 --- Výchozí signál pro nastavení velikosti dávky ze sítě.
@@ -54,7 +55,8 @@ end
 local function on_built(event)
   local entity = event.entity
   if tiers.is_mover(entity.name) then
-    local mover = registry.add(entity, nil)
+    local batch = persistence.batch_from_tags(event.tags) or persistence.take_replaced(entity)
+    local mover = registry.add(entity, batch)
     local behavior = entity.get_or_create_control_behavior()
     -- Engine má výchozí signál signal-S; náš signál nastavíme, dokud hráč funkci nepoužívá (nepřepíše blueprint).
     if not behavior.circuit_set_stack_size then behavior.circuit_stack_control_signal = BATCH_SIGNAL end
@@ -70,10 +72,15 @@ local function on_built(event)
   end
 end
 
---- Odstranění optimizeru (vytěžení, zničení, skript).
+--- Odstranění optimizeru; při vytěžení si zapamatuje dávku pro rychlou výměnu tieru ve stejném ticku.
 local function on_removed(event)
-  local mover = registry.remove(event.entity.unit_number)
-  if mover then indicator.destroy(mover) end
+  local entity = event.entity
+  local mover = registry.remove(entity.unit_number)
+  if not mover then return end
+  indicator.destroy(mover)
+  if event.name ~= defines.events.on_entity_died and event.name ~= defines.events.script_raised_destroy then
+    persistence.remember_replaced(entity, mover.batch)
+  end
 end
 
 --- Otočení nebo převrácení hráčem: naplánovaná entita změnu zjistí sama, nečinnou je třeba probudit.
@@ -127,5 +134,7 @@ end
 
 script.on_event({ defines.events.on_player_rotated_entity, defines.events.on_player_flipped_entity }, on_rotated)
 script.on_event(defines.events.on_tick, function(event) scheduler.run(event.tick, run) end)
+script.on_event(defines.events.on_player_setup_blueprint, persistence.on_setup_blueprint)
+script.on_event(defines.events.on_entity_settings_pasted, persistence.on_pasted)
 script.on_init(init_storage)
 script.on_configuration_changed(on_configuration_changed)
