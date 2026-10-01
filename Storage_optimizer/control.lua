@@ -1,0 +1,1 @@
+-- Storage Optimizer – napojení událostí (doplňuje Task 5).

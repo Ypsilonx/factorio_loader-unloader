@@ -1,0 +1,1 @@
+-- Testovací prototypy (doplňuje Task 3).

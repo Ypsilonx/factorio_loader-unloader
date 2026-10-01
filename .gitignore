@@ -3,3 +3,6 @@
 # Lokální stav VSCode / FMTK
 .vscode/factorio/
 .vscode/*.log
+# Běhy testů a sestavené balíčky
+.test-run/
+dist/

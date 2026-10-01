@@ -1,0 +1,1 @@
+-- Generování tierů po načtení všech modů (doplňuje Task 3).

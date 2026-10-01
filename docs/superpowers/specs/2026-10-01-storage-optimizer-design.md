@@ -232,3 +232,25 @@ LICENSE                         ← MIT, Ypsilonx
 - `changelog.txt` v přesném formátu Factoria (oddělovač z 99 pomlček, `Version:`, `Date:`, kategorie).
 - `thumbnail.png` 144×144, licence MIT v repozitáři a v nastavení portálu.
 - Lokalizace: angličtina (povinně pro portál) + čeština.
+
+## 9. Dodatek – výsledky spike a úpravy při plánování (2026-10-01)
+
+Spike (headless Factorio 2.0.77) ověřil:
+- Inserter s `pickup_position = insert_position = {0, 0}` nic nepřesouvá (stav `waiting_for_source_items`), odebírá proud.
+- `control_behavior.disabled` i `circuit_set_filters` fungují i na takto „uspaném“ inserteru.
+- `inserter_stack_size_override` engine omezuje na **0–255** → velikost dávky je v `storage.movers[…].batch`
+  a do blueprintů se přenáší tagem `so_batch` (varianta ze 4.1).
+- `LuaInventory.insert` přijímá `spoil_percent`; `get_insertable_count` funguje.
+
+Úpravy oproti specifikaci:
+1. **GUI (4.6):** místo vlastního okna se použije nativní okno inserteru (filtry, režim, obvodová síť)
+   a vedle něj **boční panel** (`player.gui.relative`) s tierem, trasou, stavem a velikostí dávky.
+   Odpovídá pokynu „pro začátek využij inserter pro filtry a další“. Nativní okno ukazuje vlastní stav
+   inserteru a posuvník „override stack size“ – v dokumentaci je uvedeno, že se ignorují.
+2. **Testy (6):** místo modu factorio-test vlastní headless runner (`tools/run-tests.sh`) + jednotkové testy
+   čisté logiky v lokální Lua 5.3. Bez externích závislostí, ověřeno spikem.
+3. **Nastavení (3.4):** `storage-optimizer-speed-multiplier` přejmenováno na
+   `storage-optimizer-interval-multiplier` (větší = pomalejší, název to říká přímo).
+4. **Zánik bedny (4.2):** neřeší se událostí; plánovač při dalším cyklu zjistí neplatný inventář,
+   přepočte sousedy a entitu bez zdroje/cíle z plánu vyřadí. Méně handlerů, stejné chování.
+5. **Grafika z Blenderu, thumbnail a nahrání na portál** jsou samostatný navazující plán.

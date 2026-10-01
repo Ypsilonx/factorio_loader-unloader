@@ -1,0 +1,1 @@
+-- Data stage: prototypy nezávislé na ostatních modech (doplňuje Task 3).

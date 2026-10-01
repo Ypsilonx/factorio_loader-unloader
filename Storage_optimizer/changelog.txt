@@ -1,0 +1,5 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 2026-10-01
+  Features:
+    - First release: one building that moves whole stacks between chests without belts.
