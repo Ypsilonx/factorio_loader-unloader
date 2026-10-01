@@ -103,3 +103,36 @@ Pak ve hře povol mod. Ladění s breakpointy: *Run and Debug → Factorio Mod D
 
 Factorio vyžaduje přesný formát: oddělovač z **99 pomlček**, řádek `Version: x.y.z`, řádek `Date: …`,
 kategorie odsazená 2 mezerami (`  Features:`), položky odsazené 4 mezerami s `- `.
+
+## Grafika (Blender)
+
+Model a všechny sprity vytváří skript `blender/build_sprites.py` – procedurálně, takže jde kdykoli
+přegenerovat. Výsledná scéna se ukládá jako kopie do `blender/storage_optimizer.blend`.
+
+**Přegenerování:** v Blenderu *Scripting → Open* `blender/build_sprites.py` → *Run Script*
+(nebo přes Blender MCP). Trvá pár sekund. Kořen repozitáře se bere z proměnné prostředí `SO_ROOT`,
+výchozí hodnota je na začátku skriptu (`ROOT`).
+
+**Výstupy:**
+
+| Soubor | Obsah |
+|---|---|
+| `Storage_optimizer/graphics/entity/storage-optimizer-base.png` | základ bloku, 4 směry N, E, S, W po 128×128 px |
+| `…/storage-optimizer-mask.png` | jen šipky ve stupních šedi – hra je obarví barvou tieru (`tint`) |
+| `…/storage-optimizer-shadow.png` | stín (`draw_as_shadow`) |
+| `Storage_optimizer/graphics/icons/storage-optimizer-{base,mask}.png` | ikona 64×64 |
+| `Storage_optimizer/thumbnail.png` | náhled pro mod portál 144×144 |
+| `blender/renders/preview.png` | kontrolní náhled všech směrů a tierů na terénu (není v gitu) |
+
+**Kde ladit vzhled:**
+
+| Co | Kde |
+|---|---|
+| Barvy materiálů (ocel, bočnice, nýty, deska) | `blender/build_sprites.py` – `COLORS` |
+| Tvar a rozměry dílů | `blender/build_sprites.py` – funkce `build_model` |
+| Světlo (směr stínu, síla) | `blender/build_sprites.py` – `setup_camera_and_light` |
+| Barvy tierů ve hře | `Storage_optimizer/prototypes/entity.lua` – `TINTS` (pro náhled je zrcadlí `PREVIEW_TINTS` ve skriptu) |
+
+Promítání odpovídá hře: ortografická kamera pod 45° a model roztažený v ose Y o √2, takže dlaždice
+vychází čtvercová; 2 dlaždice = 128 px, ve hře `scale = 0.5`. Rozměry souborů hlídá jednotkový test
+`tests/unit/test_graphics.lua` (headless Factorio sprity nenačítá).

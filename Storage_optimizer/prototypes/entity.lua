@@ -1,3 +1,4 @@
+---@diagnostic disable: missing-fields
 --- Entita tieru: prototyp typu inserter s vyřazeným vlastním pohybem ramene.
 local M = {}
 
@@ -16,6 +17,25 @@ M.TINTS = {
 --- Barva tieru podle jeho pořadí.
 function M.tint(tier)
   return M.TINTS[(tier - 1) % #M.TINTS + 1]
+end
+
+--- Grafika entity ze 3 vrstev renderovaných v Blenderu (blender/build_sprites.py):
+--- základ, šipky obarvené podle tieru a stín. Každý list má 4 snímky N, E, S, W po 128×128 px.
+function M.platform(tier)
+  local path = "__Storage_optimizer__/graphics/entity/storage-optimizer-"
+  --- Jeden list směrů.
+  local function sheet(layer, extra)
+    local s = { filename = path .. layer .. ".png", width = 128, height = 128, scale = 0.5, priority = "high" }
+    for key, value in pairs(extra or {}) do s[key] = value end
+    return s
+  end
+  return {
+    sheets = {
+      sheet("shadow", { draw_as_shadow = true }),
+      sheet("base"),
+      sheet("mask", { tint = M.tint(tier) }),
+    },
+  }
 end
 
 --- Lokalizovaný název tieru: „Storage optimizer (<název pásu>)“.
@@ -55,16 +75,21 @@ function M.create(info, icons)
     buffer_capacity = string.format("%.3fkJ", math.max(info.energy_kj, 0.001)),
     drain = "0W",
   }
+  -- Plný blok 1×1 (jako bedna), ne tenký inserter.
+  e.collision_box = { { -0.35, -0.35 }, { 0.35, 0.35 } }
+  e.selection_box = { { -0.5, -0.5 }, { 0.5, 0.5 } }
   e.hand_base_picture = EMPTY
   e.hand_closed_picture = EMPTY
   e.hand_open_picture = EMPTY
   e.hand_base_shadow = EMPTY
   e.hand_closed_shadow = EMPTY
   e.hand_open_shadow = EMPTY
-  if e.platform_picture and e.platform_picture.sheet then
-    e.platform_picture.sheet.tint = M.tint(info.tier)
-  end
-  ---@diagnostic disable-next-line: missing-fields
+  -- Mrazivé varianty ze Space Age mají tvar inserteru, na bloku by nedávaly smysl.
+  e.platform_frozen = nil
+  e.hand_base_frozen = nil
+  e.hand_closed_frozen = nil
+  e.hand_open_frozen = nil
+  e.platform_picture = M.platform(info.tier)
   e.custom_tooltip_fields = {
     {
       name = { "storage-optimizer.interval" },

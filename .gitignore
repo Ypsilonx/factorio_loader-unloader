@@ -6,3 +6,6 @@
 # Běhy testů a sestavené balíčky
 .test-run/
 dist/
+# Mezivýsledky renderu a zálohy Blenderu
+blender/renders/
+*.blend1

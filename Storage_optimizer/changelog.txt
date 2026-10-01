@@ -9,6 +9,7 @@ Date: 2026-10-01
     - Enable/disable by circuit condition.
     - Batch size is kept in blueprints, copy-paste and when replacing a tier.
     - Quality, spoilage and item data are preserved.
+    - Own graphics in the style of belts and splitters, arrows coloured by tier.
   Optimizations:
     - The building is never updated by the engine and the script touches it only once per transfer interval.
     - Power is paid per transferred batch (100 kJ); idle buildings use no power.
