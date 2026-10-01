@@ -97,7 +97,7 @@ Pak ve hře povol mod. Ladění s breakpointy: *Run and Debug → Factorio Mod D
 1. Zvýšit `version` v `Storage_optimizer/info.json` a přidat sekci do `changelog.txt`.
 2. `bash tools/package.sh` → `dist/Storage_optimizer_<verze>.zip`.
 3. Nahrát zip na <https://mods.factorio.com>, popis z `docs/mod-portal.md`, licence MIT,
-   thumbnail 144×144 (z navazujícího grafického plánu).
+   thumbnail je `Storage_optimizer/thumbnail.png` (144×144).
 
 ### Formát changelog.txt
 
