@@ -2,4 +2,12 @@
 Version: 0.1.0
 Date: 2026-10-01
   Features:
-    - First release: one building that moves whole stacks between chests without belts.
+    - One building that moves whole stacks between chests and warehouses without belts.
+    - Tiers are generated automatically from every belt in the game (vanilla, Space Age and belt mods).
+    - Batch size: Auto (one stack of the item) or any custom amount, also from the circuit network.
+    - 5 item filters with whitelist/blacklist and quality comparison, filters from the circuit network.
+    - Enable/disable by circuit condition.
+    - Batch size is kept in blueprints, copy-paste and when replacing a tier.
+    - Quality, spoilage and item data are preserved.
+  Optimizations:
+    - Each building is processed only once per transfer interval; idle buildings cost nothing.
