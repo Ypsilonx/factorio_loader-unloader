@@ -1,0 +1,30 @@
+--- Runtime přístup k parametrům tierů zapsaným v data stage do mod-data.
+local M = {}
+
+--- Kopie dat načtená jednou při načtení skriptu (stejná u všech hráčů → deterministická).
+local DATA = prototypes.mod_data["storage-optimizer-tiers"].data
+
+--- Vrátí tabulku { [jméno entity] = { tier, interval } }.
+function M.all()
+  return DATA
+end
+
+--- Je entita s tímto jménem Storage optimizer?
+function M.is_mover(name)
+  return DATA[name] ~= nil
+end
+
+--- Interval přesunu tieru v tickách.
+function M.interval(name)
+  return DATA[name].interval
+end
+
+--- Seřazená jména všech tierů (pro event filtry a GUI).
+function M.names()
+  local names = {}
+  for name in pairs(DATA) do names[#names + 1] = name end
+  table.sort(names)
+  return names
+end
+
+return M
