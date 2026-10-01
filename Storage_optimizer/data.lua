@@ -1,1 +1,2 @@
--- Data stage: prototypy nezávislé na ostatních modech (doplňuje Task 3).
+-- Data stage: prototypy nezávislé na ostatních modech.
+require("prototypes.signal")
