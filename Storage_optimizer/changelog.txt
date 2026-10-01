@@ -10,4 +10,4 @@ Date: 2026-10-01
     - Batch size is kept in blueprints, copy-paste and when replacing a tier.
     - Quality, spoilage and item data are preserved.
   Optimizations:
-    - Each building is processed only once per transfer interval; idle buildings cost nothing.
+    - Each building is processed only once per transfer interval; idle buildings do no script work.
