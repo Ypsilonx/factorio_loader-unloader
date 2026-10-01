@@ -107,10 +107,14 @@ kategorie odsazená 2 mezerami (`  Features:`), položky odsazené 4 mezerami s 
 ## Grafika (Blender)
 
 Model a všechny sprity vytváří skript `blender/build_sprites.py` – procedurálně, takže jde kdykoli
-přegenerovat. Výsledná scéna se ukládá jako kopie do `blender/storage_optimizer.blend`.
+přegenerovat. Pomocné moduly: `so_materials.py` (materiály s patinou: rez v koutech a ve šmouhách,
+odřené hrany, škrábance, špína u země, oprýskaná barva, slzičkový plech), `so_model.py` (geometrie:
+podvozek, bočnice se šrouby, deska, převodovka s žebry, ústí s gumovým závěsem) a `so_render.py`
+(kamera, světla, render vrstev, skládání pixelů). Výsledná scéna se ukládá jako kopie do
+`blender/storage_optimizer.blend`. Materiály používají uzly jen pro Cycles (Ambient Occlusion, Bevel).
 
 **Přegenerování:** v Blenderu *Scripting → Open* `blender/build_sprites.py` → *Run Script*
-(nebo přes Blender MCP). Trvá pár sekund. Kořen repozitáře se bere z proměnné prostředí `SO_ROOT`,
+(nebo přes Blender MCP). Trvá asi minutu (Cycles, 2× převzorkování). Kořen repozitáře se bere z proměnné prostředí `SO_ROOT`,
 výchozí hodnota je na začátku skriptu (`ROOT`).
 
 **Výstupy:**
@@ -128,9 +132,11 @@ výchozí hodnota je na začátku skriptu (`ROOT`).
 
 | Co | Kde |
 |---|---|
-| Barvy materiálů (ocel, bočnice, nýty, deska) | `blender/build_sprites.py` – `COLORS` |
-| Tvar a rozměry dílů | `blender/build_sprites.py` – funkce `build_model` |
-| Světlo (směr stínu, síla) | `blender/build_sprites.py` – `setup_camera_and_light` |
+| Barvy dílů (podvozek, bočnice, deska, převodovka, šipky) | `blender/so_model.py` – funkce `materials` |
+| Míra rzi, odření a oprýskání | parametry `rust`, `wear`, `chipping` tamtéž |
+| Barva rzi, holého kovu a špíny | `blender/so_materials.py` – `RUST`, `RUST_DARK`, `BARE_METAL`, `GRIME` |
+| Tvar a rozměry dílů | `blender/so_model.py` – funkce `build` a `mouth` |
+| Světlo (směr stínu, síla), kvalita renderu | `blender/so_render.py` – `setup_camera_and_lights`, `SAMPLES`, `SUPERSAMPLE` |
 | Barvy tierů ve hře | `Storage_optimizer/prototypes/entity.lua` – `TINTS` (pro náhled je zrcadlí `PREVIEW_TINTS` ve skriptu) |
 
 Promítání odpovídá hře: ortografická kamera pod 45° a model roztažený v ose Y o √2, takže dlaždice

@@ -9,3 +9,4 @@ dist/
 # Mezivýsledky renderu a zálohy Blenderu
 blender/renders/
 *.blend1
+__pycache__/
