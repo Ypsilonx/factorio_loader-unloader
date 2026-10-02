@@ -2,15 +2,21 @@
 Version: 0.1.0
 Date: 2026-10-01
   Features:
-    - One building that moves whole stacks between chests and warehouses without belts.
-    - Tiers are generated automatically from every belt in the game (vanilla, Space Age and belt mods).
-    - Batch size: Auto (one stack of the item) or any custom amount, also from the circuit network.
-    - Stacks per transfer: 1–20 stacks at once (configurable limit), 100 kJ per stack, also from the circuit network.
+    - One building that moves whole stacks between chests, warehouses and machines without belts.
+    - Tiers are generated automatically from every belt in the game (vanilla, Space Age and belt mods);
+      yellow tier makes one transfer per second, faster belts are proportionally faster.
+    - Stack size: Auto (the item's stack) or any custom amount, also from the circuit network.
+    - Stacks per transfer: 1–20 stacks at once (configurable limit), also from the circuit network.
     - 5 item filters with whitelist/blacklist and quality comparison, filters from the circuit network.
     - Enable/disable by circuit condition.
-    - Batch size is kept in blueprints, copy-paste and when replacing a tier.
+    - Stacks per transfer from the circuit network with a selectable control signal and its live value (panel option).
+    - Default control signals are the plain letters S (stack size) and N (stacks per transfer), any signal can be chosen.
+    - Assembling machines and furnaces: as a target the input is filled, as a source the products are taken (fuel is not handled).
+    - Stack size, stacks per transfer and its circuit control are kept in blueprints, copy-paste and when replacing a tier.
     - Quality, spoilage and item data are preserved.
-    - Own graphics in the style of belts and splitters, arrows coloured by tier.
+    - Own graphics in the style of belts and splitters, arrows coloured by tier, wire terminal for circuit wires.
+    - Own status in the entity window (Working / Waiting / No power …) and source → target indicators.
   Optimizations:
     - The building is never updated by the engine and the script touches it only once per transfer interval.
-    - Power is paid per transferred stack (100 kJ); idle buildings use no power.
+    - Power is paid per transfer: 20 kJ + 5 kJ for each additional stack (bigger transfers are cheaper per item);
+      the energy buffer holds two of the most expensive transfers; idle buildings use no power.

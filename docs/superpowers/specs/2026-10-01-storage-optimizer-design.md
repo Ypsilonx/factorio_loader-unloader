@@ -275,3 +275,49 @@ Výsledek: 0,225 ms/tick místo 0,350 (loadery 0,274) při 3,4× vyšší propus
   stavba nesrazila síť. Důsledek: po výpadku proudu optimizer dojede z už zaplacené energie v zásobníku.
 - **Ukládání:** `mover.stacks` (nil = 1); tag blueprintu `so_stacks`; kopírování nastavení a výměna tieru
   přenášejí dávku i počet stacků; remote `get_stacks` / `set_stacks`.
+
+## 12. Dodatek – úpravy po prvním testu ve hře (2026-10-02)
+
+- **Rychlost:** žlutý tier 1 s (`BASE_INTERVAL = 60`), ostatní úměrně rychlosti pásu (0,5 / 0,33 / 0,25 s).
+  Energie zůstává **100 kJ za stack** (`ENERGY_PER_STACK_KJ`), takže rychlejší tier při plné práci odebírá víc.
+- **Směr grafiky:** inserter kreslí snímek listu `platform_picture` o 180° posunutý vůči svému směru
+  (vanilla konektory inserteru proto používají varianty 2, 3, 0, 1). Render v Blenderu je proto otočený o 180°;
+  body drátů se indexují přímo podle směru a zůstávají beze změny.
+- **Indikátory zdroje a cíle:** `pickup_position = {0, -1}`, `insert_position = {0, 1.2}` – entita je
+  `disabled_by_script`, takže rameno nikdy nepracuje, ale nativní indikátory ukazují skutečný směr.
+- **Stav:** `LuaEntity.custom_status` nahrazuje enginový „Vypnuto skriptem“ (nastavuje se jen při změně stavu).
+- **Dráty:** vlastní `circuit_connector` (bez vanilla krabičky) s body na izolátorech svorkovnice modelu.
+- **Ikona:** bez malé ikonky pásu (`SHOW_BELT_OVERLAY = false`); tier rozlišuje barva šipek a název.
+- **Terminologie:** *přesun* = velikost stacku × počet stacků; „velikost dávky“ přejmenována na „velikost stacku“.
+
+## 13. Dodatek – počet stacků ze sítě volitelně (2026-10-02)
+
+Signál počtu stacků už se nepoužívá automaticky. V bočním panelu je volba **„Počet stacků ze sítě“**
+(zaškrtávátko + výběr řídicího signálu, výchozí `storage-optimizer-stacks`) – obdoba nativní volby
+„Nastavit velikost štosu“, kterou do okna inserteru přidat nejde. Pole záznamu `stacks_circuit`
+a `stacks_signal`, tagy blueprintu `so_stacks_circuit` / `so_stacks_signal`, remote
+`get_stacks_circuit` / `set_stacks_circuit`; přenáší se i kopírováním nastavení a výměnou tieru.
+- **Úprava po testu ve hře:** volba je v samostatném rámečku „Připojení obvodu – Storage optimizer“ (zobrazí se
+  jen u budovy připojené drátem), u výběru signálu je vidět jeho aktuální hodnota, pole řízená sítí zešednou
+  a otevřené panely se obnovují každých 15 ticků (`gui.REFRESH_TICKS`). Signály modu mají ikonu písmene
+  s odznakem optimizeru, aby se nepletly s vanilla S a N.
+
+## 14. Dodatek – stroje a klasické signály (2026-10-02)
+
+- **Montážní stroje a pece** (`assembling-machine`, `furnace`, i z modů) jako zdroj i cíl. Cíl plní
+  `defines.inventory.crafter_input`, zdroj bere z `crafter_output`; palivo (`fuel`) se záměrně nepoužívá
+  (varianta A). Pravidlo „všechno, nebo nic“ platí beze změny – stroj bez receptu nepřijme nic.
+  Typy a inventáře podle role jsou v `scripts/neighbours.lua` (`INVENTORIES`), event filtry z nich odvozené.
+- **Signály:** vlastní virtuální signály modu odstraněny. Velikost stacku má enginový výchozí `signal-S`,
+  počet stacků výchozí `signal-N` (`registry.STACKS_SIGNAL`); hráč si případnou kolizi v síti hlídá sám.
+
+## 15. Dodatek – cena přesunu a rezerva zásobníku (2026-10-02)
+
+- **Cena přesunu** = `ENERGY_PER_TRANSFER_KJ` (20 kJ, zahrnuje první stack) + `ENERGY_PER_EXTRA_STACK_KJ`
+  (5 kJ) × každý další stack, × násobič spotřeby. Velký přesun je na kus levnější → méně a větších přesunů
+  (méně práce skriptu i méně špiček v síti). Dřív 100 kJ za stack – při 1000 budovách stovky MW.
+- **Zásobník** = `BUFFER_RESERVE` (2) × nejdražší přesun, aby pruh energie v okně neklesal ke dnu.
+- **Dobíjení** (`input_flow_limit`) = nejdražší přesun za interval (dřív celý zásobník za interval),
+  takže špička odběru jedné budovy je nízká a výkyvy pokryje rezerva.
+- Runtime: mod-data `energy` (pevná cena v J) a `extra_stack_energy`; `scripts/tiers.cost(name, stacks)`.
+  Záznam optimizeru cenu neukládá.
