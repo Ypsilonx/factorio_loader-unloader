@@ -15,6 +15,7 @@
 ```
 Storage_optimizer/            samotný mod
   prototypes/tiers.lua        výběr pásů, interval, spotřeba (čistá logika)
+  prototypes/research.lua     suroviny receptu a výzkum tieru s prerekvizitami (čistá logika)
   prototypes/entity|item|recipe|icons|signal.lua   prototypy tierů
   prototypes/wires.lua        body drátů obvodové sítě (projekce svorkovnice z Blenderu, čistá logika)
   scripts/registry.lua        evidence postavených optimizerů (storage.movers)
@@ -39,7 +40,9 @@ tools/                        skripty: testy, výkon, junction, balení
 | Interval žlutého tieru (60 t = 1 s), cena přesunu (20 kJ + 5 kJ za další stack), rezerva zásobníku (2×) | `Storage_optimizer/prototypes/tiers.lua` – `BASE_INTERVAL`, `ENERGY_PER_TRANSFER_KJ`, `ENERGY_PER_EXTRA_STACK_KJ`, `BUFFER_RESERVE` |
 | Malá ikonka pásu v rohu ikony (vypnuto) | `Storage_optimizer/prototypes/icons.lua` – `SHOW_BELT_OVERLAY` |
 | Limit počtu stacků za přesun (výchozí 20) | startup nastavení `storage-optimizer-max-stacks` (`Storage_optimizer/settings.lua`) |
-| Suroviny receptů | `Storage_optimizer/prototypes/recipe.lua` – funkce `ingredients` |
+| Suroviny receptů (úrovně a náhrady za předměty, které mod odstranil), počet pásů v receptu | `Storage_optimizer/prototypes/research.lua` – `LEVELS`, `BELTS_PER_TIER` |
+| Hranice úrovní surovin podle rychlosti pásu (násobky žlutého: do 1×, do 2×, rychlejší) | `Storage_optimizer/prototypes/research.lua` – `LEVEL_SPEEDS` |
+| Cena výzkumu tieru (násobek nejdražší přímé prerekvizity, výchozí 1,5×) | `Storage_optimizer/prototypes/research.lua` – `TECH_COUNT_MULTIPLIER` |
 | Barvy tierů (dočasná grafika) | `Storage_optimizer/prototypes/entity.lua` – `TINTS` |
 | Cesta k Factoriu | proměnná `FACTORIO_EXE` (výchozí hodnota v `tools/run-tests.sh` a `tools/run-perf.sh`) |
 | Cesta ke Git Bash pro VSCode úlohy | `.vscode/tasks.json` – `options.shell.executable` |
@@ -52,6 +55,7 @@ Všechny jsou i jako VSCode úlohy (*Terminal → Run Task*).
 bash tools/run-unit.sh                 # jednotkové testy (tiery, filtry, lokalizace, grafika, dráty, signály, GUI)
 bash tools/run-tests.sh vanilla        # integrační testy v headless Factoriu bez Space Age
 bash tools/run-tests.sh space-age      # totéž se Space Age (kvalita, zkáza, turbo pás)
+bash tools/run-tests.sh mods pymodpack # kompatibilita s jinými mody (jen obecné kontroly z cases/compat.lua)
 bash tools/run-perf.sh                 # výkonové srovnání (PERF_N=počet dvojic, PERF_MODES=režimy)
 ```
 
@@ -62,6 +66,14 @@ Vykreslení a vzhled je nutné ověřit ručně ve hře.
 
 Integrační testy používají oddělenou `write-data` složku v `.test-run/`, takže nepřepisují log ani
 nastavení hry. Výsledek je řádek `SO-TEST DONE pass=… fail=… skip=…`.
+
+**Kompatibilita s jinými mody:** `tools/run-tests.sh mods <mod>…` vezme mody v nejvyšší verzi ze složky
+`MODS_SOURCE` (výchozí `%APPDATA%/Factorio/mods`) i s povinnými závislostmi a spustí jen obecné kontroly
+(`cases/compat.lua`): tiery vznikly, každý recept má výzkum a všechny suroviny tieru jdou vyrobit nejpozději
+po jeho výzkumu. Herní testy se vynechají, protože počítají s vanilla bednami a rozvodnami. Vygenerované
+suroviny a prerekvizity každého tieru jsou v logu (`.test-run/mods/write-data/factorio-current.log`, řádky
+`recipe.lua`). Ověřeno (2026-10-02): `pymodpack` (Pyanodon 3.0, 4 tiery) a `boblogistics bobinserters
+bobplates bobelectronics bobtech bobassembly` (7 tierů).
 
 ### Výsledky výkonového testu (1000 dvojic beden, 3600 ticků, Factorio 2.0.77)
 
@@ -119,8 +131,13 @@ Pak ve hře povol mod. Ladění s breakpointy: *Run and Debug → Factorio Mod D
 
 1. Zvýšit `version` v `Storage_optimizer/info.json` a přidat sekci do `changelog.txt`.
 2. `bash tools/package.sh` → `dist/Storage_optimizer_<verze>.zip`.
-3. Nahrát zip na <https://mods.factorio.com>, popis z `docs/mod-portal.md`, licence MIT,
-   thumbnail je `Storage_optimizer/thumbnail.png` (144×144).
+3. `bash tools/publish.sh` – sestaví zip a nahraje ho přes Mod upload API (`--details` navíc přepíše popis
+   na portálu obsahem `docs/mod-portal.md` a krátký popis z `info.json`). Klíč z <https://factorio.com/profile>
+   (oprávnění *ModPortal: Upload Mods*, pro `--details` i *Edit Mods*) v proměnné `FACTORIO_API_KEY` nebo
+   v souboru `~/.factorio-api-key` – nikdy ne v repozitáři. Skript odmítne verzi, která už na portálu je,
+   nebo chybí v changelogu.
+4. První vydání a změny licence nebo thumbnailu se dělají ručně na <https://mods.factorio.com> (licence MIT,
+   thumbnail `Storage_optimizer/thumbnail.png` 144×144).
 
 ### Formát changelog.txt
 

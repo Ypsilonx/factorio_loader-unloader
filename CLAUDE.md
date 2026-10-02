@@ -15,8 +15,10 @@ Skripty v `tools/` jsou bash – spouštět přes Git Bash (Bash tool), ne Power
 bash tools/run-unit.sh               # jednotkové testy čisté logiky (lua 5.3 v PATH), výstup "UNIT pass=… fail=…"
 bash tools/run-tests.sh vanilla      # integrační testy v headless Factoriu (bez Space Age)
 bash tools/run-tests.sh space-age    # totéž se Space Age (kvalita, zkáza, turbo pás)
+bash tools/run-tests.sh mods pymodpack   # kompatibilita s mody z %APPDATA%/Factorio/mods (i se závislostmi)
 bash tools/run-perf.sh               # výkonové srovnání; PERF_N=počet dvojic, PERF_MODES="idle mover loader"
 bash tools/package.sh                # dist/Storage_optimizer_<verze>.zip pro mod portál (verze z info.json)
+bash tools/publish.sh [--details]   # nahrání verze na mod portál přes API (klíč FACTORIO_API_KEY nebo ~/.factorio-api-key)
 bash tools/link-mod.sh               # junction %APPDATA%/Factorio/mods/Storage_optimizer → repozitář
 ```
 
@@ -35,6 +37,10 @@ generují v `data-final-fixes.lua` ze **všech pásů ve hře** (`prototypes/tie
 na pás, propojené `next_upgrade`. Parametry tierů (interval, energie, max_stacks) se zapisují do prototypu
 `mod-data` `storage-optimizer-tiers`, který runtime čte v `scripts/tiers.lua` (`prototypes.mod_data`). Runtime proto
 nikdy nepočítá parametry z pásů znovu – změna výpočtu patří do `prototypes/tiers.lua`.
+Recept a **vlastní výzkum každého tieru** skládá `prototypes/research.lua` (čistá logika): suroviny podle rychlosti
+pásu s náhradami za chybějící předměty, prerekvizity = výzkum pásu + výzkumy všech surovin (vč. předchozího tieru).
+Kvůli overhaul modům nikdy nepřipojovat recept k cizímu výzkumu natvrdo – kompatibilitu ověřuje
+`tools/run-tests.sh mods <mod>…`.
 
 **Entita je prototyp `inserter`** (kvůli nativnímu GUI, podmínkám obvodové sítě a filtrům), ale po postavení se
 nastaví `disabled_by_script = true` – engine ji nepočítá, veškerý přesun dělá skript. Engine dál vyhodnocuje
@@ -68,4 +74,5 @@ v `so_model.py` (`terminal`) vyžaduje úpravu `TERMINAL` ve `wires.lua`, změna
 - Nové texty pro hráče vždy do obou lokalizací (`locale/en`, `locale/cs`) – kontroluje `test_locale.lua`.
 - `changelog.txt` má striktní formát Factoria: oddělovač 99 pomlček, `Version: x.y.z`, `Date: …`, kategorie
   odsazená 2 mezerami, položky 4 mezerami s `- `.
-- Vydání: zvýšit `version` v `Storage_optimizer/info.json` + sekce v changelogu, pak `tools/package.sh`.
+- Vydání: zvýšit `version` v `Storage_optimizer/info.json` + sekce v changelogu, pak `tools/publish.sh`
+  (balí přes `tools/package.sh`). Mění-li se chování z pohledu savu, přidat `Storage_optimizer/migrations/`.

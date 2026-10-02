@@ -1,4 +1,25 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 2026-10-02
+  Changes:
+    - Every tier has its own technology "Storage optimizer (<belt>)". In vanilla the first tier comes after
+      the bulk inserter technology (it used to come with the fast inserter).
+    - Existing saves: tier recipes stay locked until the new technology is researched.
+  Balancing:
+    - Recipes are more expensive. Up to yellow belt speed: bulk inserter, 5 steel, 10 electronic circuits;
+      red belt speed: 10 advanced circuits, 10 steel; faster belts: 5 processing units, 10 steel.
+      Each tier also needs the previous tier and 2 of its belts.
+    - Technology cost is 1.5× its most expensive prerequisite, with the same science packs.
+  Compatibility:
+    - Technology prerequisites are derived from the belt and from every recipe ingredient, so a tier is never
+      unlocked before you can craft its ingredients – also in reshuffled tech trees of overhaul mods.
+      Tested with Pyanodon's modpack and Bob's mods.
+    - Ingredients a mod removes are replaced by simpler ones (e.g. bulk inserter → fast inserter).
+    - Ingredient level follows the belt speed, not the tier number, so mods with extra slow belts
+      (Bob's basic belt) do not make tiers more expensive.
+  Bugfixes:
+    - With Space Age, recycling recipes no longer made a belt or an ingredient count as available from the start.
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2026-10-01
   Features:
