@@ -55,8 +55,12 @@ nespotřebovává nic.
 Zásobník energie pojme dva nejdražší přesuny, takže pruh energie v okně při práci jen mírně kolísá.
 Bez proudu (nebo při jeho nedostatku) optimizer čeká, dokud síť nedobije energii na další přesun.
 
-Mody, které přidávají další pásy, přidají **automaticky** i další tiery. Recept tieru obsahuje jeho pás
-a odemyká ho stejný výzkum jako pás. Vyšší tier jde postavit přímo přes nižší a funguje i upgrade planner.
+Mody, které přidávají další pásy, přidají **automaticky** i další tiery. Každý tier má vlastní výzkum
+„Storage optimizer (<pás>)“. Vyžaduje výzkum pásu, předchozí tier a výzkumy všech surovin receptu. První
+tier se ve vanille odemkne po výzkumu bulk inserteru. Recept obsahuje předchozí tier, 2 pásy a podle rychlosti
+pásu bulk inserter, ocel a elektronické obvody (do žlutého), pokročilé obvody (červený) nebo procesory (rychlejší).
+S overhaul mody (Pyanodon, Bob's …) se prerekvizity dopočítají z jejich stromu výzkumů a recept zdraží
+jejich dražší meziprodukty. Vyšší tier jde postavit přímo přes nižší a funguje i upgrade planner.
 Tier poznáš podle barvy šipek (žlutá, červená, modrá, zelená, …) a podle názvu budovy.
 
 ## Nastavení

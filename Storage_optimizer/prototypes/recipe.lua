@@ -1,41 +1,42 @@
---- Recept tieru a jeho odemčení výzkumem. Suroviny jsou laditelné zde.
-local tiers = require("prototypes.tiers")
+--- Recept tieru a jeho vlastní výzkum. Suroviny a cena výzkumu se ladí v prototypes/research.lua.
+local research = require("prototypes.research")
+local entity = require("prototypes.entity")
 
 local M = {}
 
---- Suroviny tieru: první tier z rychlých inserterů, další z předchozího tieru.
-local function ingredients(info)
-  local first
-  if info.previous then
-    first = { type = "item", name = info.previous, amount = 1 }
-  else
-    first = { type = "item", name = "fast-inserter", amount = 2 }
-  end
-  return {
-    first,
-    { type = "item", name = info.item, amount = 2 },
-    { type = "item", name = "electronic-circuit", amount = 5 },
-  }
-end
-
---- Vytvoří recept a přidá ho do výzkumu pásu (u pásu dostupného od začátku do výzkumu rychlého inserteru).
-function M.create(info)
-  local tech = info.tech or tiers.find_unlocking_tech(data.raw, "fast-inserter")
+--- Vytvoří recept tieru a výzkum, který ho odemyká (bez výzkumu, pokud je vše potřebné dostupné od začátku).
+--- Předchozí tier musí být už přidaný do data.raw – jeho výzkum se stává prerekvizitou.
+--- @param info table položka z tiers.collect doplněná o name, tier, previous
+--- @param icons table[] vrstvy ikony tieru
+function M.create(info, icons)
+  local ingredients = research.ingredients(data.raw, info.speed, info.item, info.previous)
+  local tech = research.technology(data.raw, info.tech, ingredients, info.item)
   data:extend({
     {
       type = "recipe",
       name = info.name,
       enabled = tech == nil,
       energy_required = 1,
-      ingredients = ingredients(info),
+      ingredients = ingredients,
       results = { { type = "item", name = info.name, amount = 1 } },
     },
   })
-  if tech then
-    local technology = data.raw["technology"][tech]
-    technology.effects = technology.effects or {}
-    table.insert(technology.effects, { type = "unlock-recipe", recipe = info.name })
-  end
+  if not tech then return end
+  data:extend({
+    {
+      type = "technology",
+      name = info.name,
+      icons = icons,
+      localised_name = { "technology-name.storage-optimizer", entity.localised_name(info.belt) },
+      localised_description = { "technology-description.storage-optimizer" },
+      prerequisites = tech.prerequisites,
+      unit = tech.unit,
+      research_trigger = tech.research_trigger,
+      effects = { { type = "unlock-recipe", recipe = info.name } },
+    },
+  })
+  log(string.format("%s: suroviny %s, prerekvizity %s", info.name,
+    serpent.line(ingredients, { comment = false }), table.concat(tech.prerequisites, ", ")))
 end
 
 return M

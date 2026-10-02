@@ -1,6 +1,7 @@
 -- Headless integrační testy modu Storage_optimizer (spouští tools/run-tests.sh).
 local runner = require("runner")
 
+runner.register(require("cases.compat"))
 runner.register(require("cases.smoke"))
 runner.register(require("cases.prototypes"))
 runner.register(require("cases.transfer"))

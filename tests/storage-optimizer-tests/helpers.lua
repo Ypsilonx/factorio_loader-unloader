@@ -76,4 +76,63 @@ function H.truthy(value, what)
   if not value then error(what .. ": čekána pravdivá hodnota", 0) end
 end
 
+--- Množina výzkumu a všech jeho (i nepřímých) prerekvizit.
+local function closure(tech)
+  local seen, stack = { [tech.name] = true }, { tech }
+  while #stack > 0 do
+    for name, prerequisite in pairs(table.remove(stack).prerequisites) do
+      if not seen[name] then
+        seen[name] = true
+        stack[#stack + 1] = prerequisite
+      end
+    end
+  end
+  return seen
+end
+
+--- Ověří pro všechny tiery, že každá surovina receptu jde vyrobit nejpozději po výzkumu tieru
+--- (recept od začátku nebo odemčený výzkumem z jeho prerekvizit). Předmět bez receptu (ruda) se bere jako dostupný.
+--- @return string seznam problémů „tier: surovina“ oddělený čárkami, prázdný = vše v pořádku
+function H.unreachable_tier_ingredients()
+  local unlocked_by = {}
+  for name, tech in pairs(prototypes.technology) do
+    for _, effect in ipairs(tech.effects or {}) do
+      if effect.type == "unlock-recipe" then
+        unlocked_by[effect.recipe] = unlocked_by[effect.recipe] or {}
+        table.insert(unlocked_by[effect.recipe], name)
+      end
+    end
+  end
+  local producers = {}
+  for name, recipe in pairs(prototypes.recipe) do
+    if not recipe.hidden then
+      for _, product in ipairs(recipe.products) do
+        producers[product.name] = producers[product.name] or {}
+        table.insert(producers[product.name], name)
+      end
+    end
+  end
+  local problems = {}
+  -- Tiery podle mod-data, ne podle prefixu: mody přidávají recepty s naším jménem (Pyanodon „…-pyvoid“).
+  for name in pairs(prototypes.mod_data["storage-optimizer-tiers"].data) do
+    local recipe = prototypes.recipe[name]
+    do
+      local tech = prototypes.technology[name]
+      local known = tech and closure(tech) or {}
+      for _, ingredient in ipairs(recipe.ingredients) do
+        local ok = producers[ingredient.name] == nil
+        for _, producer in ipairs(producers[ingredient.name] or {}) do
+          if prototypes.recipe[producer].enabled then ok = true end
+          for _, via in ipairs(unlocked_by[producer] or {}) do
+            if known[via] then ok = true end
+          end
+        end
+        if not ok then problems[#problems + 1] = name .. ": " .. ingredient.name end
+      end
+    end
+  end
+  table.sort(problems)
+  return table.concat(problems, ", ")
+end
+
 return H

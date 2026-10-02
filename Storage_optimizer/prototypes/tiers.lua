@@ -61,23 +61,81 @@ local function find_place_item(raw, entity_name)
   end
 end
 
---- Najde recept, jehož výsledkem je daný předmět.
-local function find_recipe(raw, item_name)
+--- Vrátí neskryté recepty, jejichž výsledkem je daný předmět. Skryté recepty (např. recyklace ze Space Age,
+--- která „vyrábí“ suroviny) hráč běžně nevyrábí, proto se nepočítají.
+local function recipes_for(raw, item_name)
+  local list = {}
   for _, name in ipairs(sorted_keys(raw.recipe)) do
-    for _, result in ipairs(raw.recipe[name].results or {}) do
-      if result.name == item_name then return name end
+    local recipe = raw.recipe[name]
+    if not recipe.hidden then
+      for _, result in ipairs(recipe.results or {}) do
+        if result.name == item_name then
+          list[#list + 1] = name
+          break
+        end
+      end
+    end
+  end
+  return list
+end
+
+--- Vrátí množinu všech (i nepřímých) prerekvizit výzkumu.
+--- @param raw table data.raw
+--- @param tech string jméno výzkumu
+--- @return table<string, true>
+function M.tech_closure(raw, tech)
+  local seen, stack = {}, { tech }
+  while #stack > 0 do
+    local proto = raw.technology[table.remove(stack)]
+    for _, prerequisite in ipairs(proto and proto.prerequisites or {}) do
+      if not seen[prerequisite] then
+        seen[prerequisite] = true
+        stack[#stack + 1] = prerequisite
+      end
+    end
+  end
+  return seen
+end
+
+--- Počet prvků množiny.
+local function count(set)
+  local n = 0
+  for _ in pairs(set) do n = n + 1 end
+  return n
+end
+
+--- Najde výzkum, který odemyká daný recept (skryté a vypnuté výzkumy hráč nevyzkoumá, nepočítají se).
+--- @return string|nil jméno výzkumu
+function M.find_unlocking_tech(raw, recipe_name)
+  for _, name in ipairs(sorted_keys(raw.technology)) do
+    local tech = raw.technology[name]
+    if not tech.hidden and tech.enabled ~= false then
+      for _, effect in ipairs(tech.effects or {}) do
+        if effect.type == "unlock-recipe" and effect.recipe == recipe_name then return name end
+      end
     end
   end
 end
 
---- Najde výzkum, který odemyká daný recept.
---- @return string|nil jméno výzkumu
-function M.find_unlocking_tech(raw, recipe_name)
-  for _, name in ipairs(sorted_keys(raw.technology)) do
-    for _, effect in ipairs(raw.technology[name].effects or {}) do
-      if effect.type == "unlock-recipe" and effect.recipe == recipe_name then return name end
+--- Zjistí, jak hráč k předmětu přijde. Z více receptů (overhaul mody mají alternativní) vybere ten dostupný
+--- nejdřív: od začátku, jinak přes výzkum s nejmenším počtem prerekvizit.
+--- @param raw table data.raw
+--- @param item_name string
+--- @return string|nil recipe recept, nil = předmět nemá vyrobitelný recept
+--- @return string|nil tech výzkum, nil = recept je dostupný od začátku
+function M.item_source(raw, item_name)
+  local best_recipe, best_tech, best_size
+  for _, recipe in ipairs(recipes_for(raw, item_name)) do
+    local tech = M.find_unlocking_tech(raw, recipe)
+    if not tech and raw.recipe[recipe].enabled ~= false then return recipe, nil end
+    if tech then
+      local size = count(M.tech_closure(raw, tech))
+      if not best_size or size < best_size then
+        best_recipe, best_tech, best_size = recipe, tech, size
+      end
     end
   end
+  return best_recipe, best_tech
 end
 
 --- Projde všechny pásy a vrátí použitelné (neskryté, s předmětem a receptem dostupným od začátku
@@ -89,12 +147,10 @@ function M.collect(raw)
   for _, name in ipairs(sorted_keys(raw["transport-belt"])) do
     local belt = raw["transport-belt"][name]
     local item = not belt.hidden and find_place_item(raw, name)
-    local recipe = item and find_recipe(raw, item)
+    local recipe, tech
+    if item then recipe, tech = M.item_source(raw, item) end
     if recipe then
-      local tech = M.find_unlocking_tech(raw, recipe)
-      if tech or raw.recipe[recipe].enabled ~= false then
-        result[#result + 1] = { belt = name, speed = belt.speed, item = item, recipe = recipe, tech = tech }
-      end
+      result[#result + 1] = { belt = name, speed = belt.speed, item = item, recipe = recipe, tech = tech }
     end
   end
   table.sort(result, function(a, b)

@@ -25,7 +25,7 @@ for index, info in ipairs(list) do
   local layers = icons.tier_icons(info.item, entity.tint(index))
   entity.create(info, layers)
   item.create(info, layers)
-  recipe.create(info)
+  recipe.create(info, layers)
   runtime[info.name] = {
     tier = index,
     interval = info.interval,

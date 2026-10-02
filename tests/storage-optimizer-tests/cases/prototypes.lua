@@ -47,9 +47,16 @@ return {
     local first = prototypes.entity["storage-optimizer-transport-belt"]
     H.eq(first.next_upgrade and first.next_upgrade.name, "storage-optimizer-fast-transport-belt", "next_upgrade")
   end),
-  check("recepty odemyká výzkum", function()
-    H.truthy(unlocked_by_some_tech("storage-optimizer-transport-belt"), "žlutý tier")
-    H.truthy(unlocked_by_some_tech("storage-optimizer-fast-transport-belt"), "červený tier")
+  check("recepty odemyká vlastní výzkum tieru", function()
+    for _, belt in ipairs({ "transport-belt", "fast-transport-belt", "express-transport-belt" }) do
+      local name = "storage-optimizer-" .. belt
+      H.truthy(prototypes.technology[name], "výzkum " .. name)
+      H.truthy(unlocked_by_some_tech(name), "recept " .. name)
+    end
+    local t1 = prototypes.technology["storage-optimizer-transport-belt"].prerequisites
+    H.truthy(t1["bulk-inserter"], "tier 1 vyžaduje bulk-inserter")
+    local t2 = prototypes.technology["storage-optimizer-fast-transport-belt"].prerequisites
+    H.truthy(t2["storage-optimizer-transport-belt"], "tier 2 vyžaduje výzkum tieru 1")
   end),
   check("mod nepřidává vlastní signály (výchozí jsou vanilla S a N)", function()
     H.eq(prototypes.virtual_signal["storage-optimizer-batch"], nil, "bez vlastního signálu velikosti")
