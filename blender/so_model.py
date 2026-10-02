@@ -60,6 +60,8 @@ def materials():
         "housing": sm.chipped_paint("SO_housing", (0.16, 0.13, 0.09)),
         "bolt": sm.weathered_metal("SO_bolt", (0.3, 0.29, 0.27), rust=0.8, wear=1.0, metallic=0.7),
         "rubber": sm.rubber("SO_rubber"),
+        "ins_red": sm.chipped_paint("SO_ins_red", (0.5, 0.03, 0.02), chipping=0.7),
+        "ins_green": sm.chipped_paint("SO_ins_green", (0.04, 0.38, 0.04), chipping=0.7),
         "void": sm.void("SO_void"),
         "stripe": sm.chipped_paint("SO_stripe", (0.85, 0.85, 0.85), under=(0.06, 0.06, 0.06), rusty=False,
                                    chipping=0.57),
@@ -78,6 +80,20 @@ def mouth(prefix, end, m, parent, rng):
         swing = rng.uniform(-9.0, 9.0)
         parts.append(box(f"{prefix}_strip_{i}", (0.07, 0.008, 0.115), (x, face + end * 0.02, 0.075),
                          m["rubber"], parent, bevel=0.002, rotation=(swing, 0.0, rng.uniform(-3.0, 3.0))))
+    return parts
+
+
+def terminal(m, parent):
+    """Svorkovnice obvodové sítě na převodovce: krabička a dva izolátory (červený a zelený drát).
+
+    VAZBA NA HRU: vrcholy izolátorů (x 0.175 / 0.245, y 0.32, z 0.385) musí odpovídat TERMINAL
+    v Storage_optimizer/prototypes/wires.lua – tam se z nich počítají body, kam hra kreslí dráty.
+    """
+    parts = [box("SO_TerminalBox", (0.13, 0.11, 0.035), (0.21, 0.32, 0.3275), m["housing"], parent, bevel=0.006)]
+    for color, x in (("red", 0.175), ("green", 0.245)):
+        parts.append(cylinder(f"SO_Post_{color}", 0.012, 0.03, (x, 0.32, 0.36), m["bolt"], parent, vertices=12))
+        parts.append(cylinder(f"SO_Insulator_{color}", 0.019, 0.016, (x, 0.32, 0.377), m["ins_" + color], parent,
+                              vertices=16))
     return parts
 
 
@@ -105,9 +121,10 @@ def build(scene):
     for i, (x, y) in enumerate(((-0.29, -0.36), (0.29, -0.36), (-0.29, 0.18), (0.29, 0.18))):
         base += hex_bolt(f"SO_DeckBolt_{i}", (x, y, 0.194), m["bolt"], root)
     base.append(box("SO_Housing", (0.62, 0.21, 0.13), (0, 0.32, 0.245), m["housing"], root, bevel=0.022))
-    for i in range(6):
-        base.append(box(f"SO_Rib_{i}", (0.022, 0.19, 0.03), (-0.2 + i * 0.08, 0.32, 0.322), m["housing"], root,
+    for i in range(5):
+        base.append(box(f"SO_Rib_{i}", (0.022, 0.19, 0.03), (-0.24 + i * 0.075, 0.32, 0.322), m["housing"], root,
                         bevel=0.006))
+    base += terminal(m, root)
     base.append(cylinder("SO_Cap", 0.045, 0.03, (0.0, 0.215, 0.25), m["bolt"], root, vertices=20,
                          rotation=(90.0, 0.0, 0.0)))
 

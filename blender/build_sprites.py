@@ -42,9 +42,12 @@ FRAME_PX = 128          # 2 dlaždice na snímek, ve hře scale 0.5 → 64 px na
 ICON_PX = 64
 THUMB_PX = 144
 
-# Natočení modelu pro směry entity (N, E, S, W). Model má šipku k cíli ve směru -Y (dolů na obrazovce),
-# což odpovídá směru „sever“ (zdroj na severu, cíl na jihu).
-DIRECTIONS = [("north", 0.0), ("east", -90.0), ("south", 180.0), ("west", 90.0)]
+# Natočení modelu pro snímky listu (pořadí N, E, S, W). Model má převodovku na straně zdroje (+Y) a šipku k cíli
+# (-Y). Inserter ve Factoriu kreslí snímek listu o 180° posunutý vůči svému směru (proto i vanilla konektory
+# inserteru používají varianty 2, 3, 0, 1) – snímek „north“ se ukáže při směru jih (zdroj na jihu, cíl na severu)
+# atd. Proto je každý snímek otočený o 180° oproti směru, jehož jméno nese.
+# Body drátů (Storage_optimizer/prototypes/wires.lua) se indexují přímo podle směru, takže zůstávají beze změny.
+DIRECTIONS = [("north", 180.0), ("east", 90.0), ("south", 0.0), ("west", -90.0)]
 
 # Barvy tierů pro náhled – stejné jako TINTS v Storage_optimizer/prototypes/entity.lua (sRGB 0–1).
 PREVIEW_TINTS = [(1.0, 0.85, 0.25), (1.0, 0.35, 0.3), (0.35, 0.65, 1.0), (0.55, 1.0, 0.45)]
@@ -52,7 +55,17 @@ THUMB_TINT = (1.0, 0.75, 0.2)
 
 
 def reset_scene():
-    """Připraví samostatnou scénu (nezasahuje do ostatních scén otevřeného souboru)."""
+    """Připraví samostatnou scénu (nezasahuje do ostatních scén otevřeného souboru).
+
+    Na pozadí (blender -b) neexistuje okno, do kterého by šlo scénu přepnout; použije se aktivní scéna
+    prázdného startovního souboru, který se stejně neukládá (ukládá se jen kopie do repozitáře).
+    """
+    if bpy.app.background:
+        scene = bpy.context.scene
+        for obj in list(scene.objects):
+            bpy.data.objects.remove(obj, do_unlink=True)
+        scene.name = SCENE_NAME
+        return scene
     scene = bpy.data.scenes.get(SCENE_NAME)
     if scene:
         for obj in list(scene.objects):
@@ -86,7 +99,9 @@ def render_entity(scene, root, parts):
 
 
 def render_preview(sheets):
-    """Kontrolní náhled jako ve hře: řádek na tier, na terénu, s polovičním stínem (není součástí modu)."""
+    """Kontrolní náhled jako ve hře: řádek na tier, sloupce v pořadí směrů N, E, S, W (tak, jak je hra
+    zobrazí – snímek listu posunutý o 2), na terénu, s polovičním stínem (není součástí modu)."""
+    sheets = {mode: np.roll(sheet, -2 * FRAME_PX, axis=1) for mode, sheet in sheets.items()}
     rows = []
     for color in PREVIEW_TINTS:
         ground = np.zeros_like(sheets["base"])
