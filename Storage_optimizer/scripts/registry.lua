@@ -3,17 +3,32 @@ local tiers = require("scripts.tiers")
 
 local M = {}
 
+--- Normalizuje velikost dávky z hranice systému (GUI, remote): < 1 nebo nečíslo = Auto (nil).
+function M.clean_batch(value)
+  value = tonumber(value)
+  return (value and value >= 1) and math.floor(value) or nil
+end
+
+--- Normalizuje počet stacků na rozsah 1..max tieru; 1 nebo neplatná hodnota = výchozí (nil).
+function M.clean_stacks(name, value)
+  value = tonumber(value)
+  if not value or value < 2 then return nil end
+  return math.min(math.floor(value), tiers.max_stacks(name))
+end
+
 --- Založí záznam pro novou entitu.
 --- @param entity LuaEntity
---- @param batch integer|nil ručně nastavená velikost dávky (nil = Auto)
+--- @param settings table|nil { batch = velikost dávky (nil = Auto), stacks = počet stacků (nil = 1) }
 --- @return table mover
-function M.add(entity, batch)
+function M.add(entity, settings)
+  settings = settings or {}
   local mover = {
     entity = entity,
     unit_number = entity.unit_number,
     interval = tiers.interval(entity.name),
     energy = tiers.energy(entity.name),
-    batch = batch,
+    batch = settings.batch,
+    stacks = M.clean_stacks(entity.name, settings.stacks),
     cursor = 1,
   }
   storage.movers[entity.unit_number] = mover

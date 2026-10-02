@@ -32,6 +32,14 @@ return {
     A.eq(tiers.energy_per_transfer_kj(2), 200, "násobič spotřeby 2")
     A.eq(tiers.energy_per_transfer_kj(0), 0, "násobič spotřeby 0")
   end },
+  { "zásobník pojme nejdražší přesun (max. počet stacků)", function()
+    A.eq(tiers.buffer_kj(100, 20), 2000, "100 kJ × 20 stacků")
+    A.eq(tiers.buffer_kj(0, 20), 0.001, "nulová spotřeba → minimální zásobník")
+  end },
+  { "dobíjení zásobníku stihne plné vytížení za jeden interval", function()
+    A.eq(tiers.input_flow_kw(100, 20, 120), 1000, "2000 kJ za 2 s")
+    A.eq(tiers.input_flow_kw(100, 20, 30), 4000, "2000 kJ za 0,5 s")
+  end },
   { "řazení podle rychlosti", function()
     local list = tiers.collect(fake_raw({
       fast = { speed = 0.0625, tech = "t2" },

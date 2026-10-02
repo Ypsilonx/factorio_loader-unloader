@@ -18,4 +18,13 @@ data:extend({
     maximum_value = 10,
     order = "b",
   },
+  {
+    type = "int-setting",
+    name = "storage-optimizer-max-stacks",
+    setting_type = "startup",
+    default_value = 20,
+    minimum_value = 1,
+    maximum_value = 100,
+    order = "c",
+  },
 })

@@ -7,6 +7,7 @@ local recipe = require("prototypes.recipe")
 
 local interval_multiplier = settings.startup["storage-optimizer-interval-multiplier"].value
 local power_multiplier = settings.startup["storage-optimizer-power-multiplier"].value
+local max_stacks = settings.startup["storage-optimizer-max-stacks"].value
 
 local list = tiers.collect(data.raw)
 local energy_kj = tiers.energy_per_transfer_kj(power_multiplier)
@@ -18,12 +19,14 @@ for index, info in ipairs(list) do
   info.name = "storage-optimizer-" .. info.belt
   info.interval = tiers.interval_ticks(info.speed, interval_multiplier)
   info.energy_kj = energy_kj
+  info.buffer_kj = tiers.buffer_kj(energy_kj, max_stacks)
+  info.input_flow_kw = tiers.input_flow_kw(energy_kj, max_stacks, info.interval)
   info.previous = previous
   local layers = icons.tier_icons(info.item, entity.tint(index))
   entity.create(info, layers)
   item.create(info, layers)
   recipe.create(info)
-  runtime[info.name] = { tier = index, interval = info.interval, energy = energy_kj * 1000 }
+  runtime[info.name] = { tier = index, interval = info.interval, energy = energy_kj * 1000, max_stacks = max_stacks }
   previous = info.name
 end
 

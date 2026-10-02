@@ -45,7 +45,7 @@ function M.localised_name(belt)
 end
 
 --- Vytvoří entitu tieru.
---- @param info table položka z tiers.collect doplněná o name, tier, interval, energy_kj
+--- @param info table položka z tiers.collect doplněná o name, tier, interval, energy_kj, buffer_kj, input_flow_kw
 --- @param icons table[] vrstvy ikony
 function M.create(info, icons)
   local e = table.deepcopy(data.raw["inserter"]["fast-inserter"])
@@ -72,7 +72,8 @@ function M.create(info, icons)
   e.energy_source = {
     type = "electric",
     usage_priority = "secondary-input",
-    buffer_capacity = string.format("%.3fkJ", math.max(info.energy_kj, 0.001)),
+    buffer_capacity = string.format("%.3fkJ", info.buffer_kj),
+    input_flow_limit = string.format("%.3fkW", info.input_flow_kw),
     drain = "0W",
   }
   -- Plný blok 1×1 (jako bedna), ne tenký inserter.

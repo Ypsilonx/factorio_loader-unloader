@@ -51,6 +51,10 @@ Po otevření optimizeru se zobrazí nativní okno inserteru a **vpravo od něj 
 
 - **Velikost dávky** (panel vpravo): prázdné pole = **Auto** (jeden stack předmětu, např. 100 železných
   plátů), nebo libovolné číslo (např. 5000). Hodnota **není omezena na 255** jako u inserteru.
+- **Počet stacků za přesun** (panel vpravo): kolik stacků se přesune najednou, 1–20 (limit lze změnit
+  v nastavení modu). Přesun = velikost stacku × počet stacků, např. železo 100 × 5 = 500 kusů.
+  Platí „všechno, nebo nic“ pro celý přesun a **každý stack stojí 100 kJ** (5 stacků = 500 kJ).
+  Signál **„Počet stacků“** z obvodové sítě (hodnota > 0) má přednost před ručním nastavením.
 - **Filtry** (nativní okno): 5 slotů, režim povolit/zakázat, volitelně i podle kvality.
   Bez filtrů se přesouvá cokoliv.
 - **Obvodová síť** (nativní okno, po připojení drátu):
@@ -81,4 +85,6 @@ Malá ikonka v rohu budovy:
 *Nastavení → Mody → Startup* (vyžaduje restart):
 
 - **Násobič intervalu přesunu** – 2 = poloviční rychlost, 0,5 = dvojnásobná.
-- **Násobič spotřeby energie** – násobí 100 kJ za dávku; 0 = bez spotřeby.
+- **Násobič spotřeby energie** – násobí 100 kJ za stack; 0 = bez spotřeby.
+- **Maximální počet stacků za přesun** – výchozí 20. Zásobník energie optimizeru pojme cenu nejdražšího
+  přesunu, takže po výpadku proudu optimizer ještě chvíli dojede z uložené energie.

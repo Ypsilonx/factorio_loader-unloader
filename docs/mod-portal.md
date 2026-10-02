@@ -16,6 +16,8 @@ now:     [chest] → Storage Optimizer → [chest]
 - **Tiers from any belt mod** – every belt in the game (vanilla, Space Age, or any belt mod) automatically
   gets its own tier with a matching speed, recipe and technology.
 - **Custom batch size** – Auto (one stack of the item) or any amount, e.g. 5000. Not limited to 255.
+- **Several stacks at once** – move 1–20 stacks per transfer (limit configurable); each stack costs
+  100 kJ, so bigger transfers are not free. Also settable by the "Stacks per transfer" signal.
 - **Filters and circuit control** – 5 filters with whitelist/blacklist and quality comparison;
   enable/disable by condition, batch size from a signal, filters from signals.
 - **Blueprint support** – the batch size survives blueprints, copy-paste and tier upgrades.
@@ -23,7 +25,7 @@ now:     [chest] → Storage Optimizer → [chest]
 - **UPS-friendly** – the building is never updated by the engine; the script touches it only once per
   transfer interval. Benchmark (1000 pairs of chests, Factorio 2.0.77): **0.225 ms/tick** and 2 500 000 items
   moved, vs **0.274 ms/tick** and 744 000 items with two vanilla loaders per pair.
-- **Power per batch** – 100 kJ per transferred batch; an idle building uses no power.
+- **Power per stack** – 100 kJ per transferred stack; an idle building uses no power.
 
 ## How to use
 

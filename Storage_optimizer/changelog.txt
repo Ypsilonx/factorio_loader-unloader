@@ -5,6 +5,7 @@ Date: 2026-10-01
     - One building that moves whole stacks between chests and warehouses without belts.
     - Tiers are generated automatically from every belt in the game (vanilla, Space Age and belt mods).
     - Batch size: Auto (one stack of the item) or any custom amount, also from the circuit network.
+    - Stacks per transfer: 1–20 stacks at once (configurable limit), 100 kJ per stack, also from the circuit network.
     - 5 item filters with whitelist/blacklist and quality comparison, filters from the circuit network.
     - Enable/disable by circuit condition.
     - Batch size is kept in blueprints, copy-paste and when replacing a tier.
@@ -12,4 +13,4 @@ Date: 2026-10-01
     - Own graphics in the style of belts and splitters, arrows coloured by tier.
   Optimizations:
     - The building is never updated by the engine and the script touches it only once per transfer interval.
-    - Power is paid per transferred batch (100 kJ); idle buildings use no power.
+    - Power is paid per transferred stack (100 kJ); idle buildings use no power.

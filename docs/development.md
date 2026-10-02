@@ -35,7 +35,8 @@ tools/                        skripty: testy, výkon, junction, balení
 
 | Co | Kde |
 |---|---|
-| Interval žlutého tieru (120 t = 2 s), výkon (50 kW → 100 kJ za dávku) | `Storage_optimizer/prototypes/tiers.lua` – `BASE_INTERVAL`, `BASE_POWER_KW` |
+| Interval žlutého tieru (120 t = 2 s), výkon (50 kW → 100 kJ za stack) | `Storage_optimizer/prototypes/tiers.lua` – `BASE_INTERVAL`, `BASE_POWER_KW` |
+| Limit počtu stacků za přesun (výchozí 20) | startup nastavení `storage-optimizer-max-stacks` (`Storage_optimizer/settings.lua`) |
 | Suroviny receptů | `Storage_optimizer/prototypes/recipe.lua` – funkce `ingredients` |
 | Barvy tierů (dočasná grafika) | `Storage_optimizer/prototypes/entity.lua` – `TINTS` |
 | Cesta k Factoriu | proměnná `FACTORIO_EXE` (výchozí hodnota v `tools/run-tests.sh` a `tools/run-perf.sh`) |
@@ -83,11 +84,14 @@ Pak ve hře povol mod. Ladění s breakpointy: *Run and Debug → Factorio Mod D
 
 - [ ] Panel vpravo se ukáže u optimizeru, **ne** u obyčejného inserteru.
 - [ ] Velikost dávky 300 → přesouvá po 300; smazání pole → Auto.
-- [ ] Blueprint s nastavenou dávkou → postavený optimizer má stejnou dávku.
-- [ ] Ctrl+C / Ctrl+V zachová dávku.
-- [ ] Shift+pravý klik / Shift+levý klik zkopíruje dávku mezi optimizery.
-- [ ] Ruční přestavění tieru přes starší tier zachová dávku.
-- [ ] Upgrade planner s roboty zachová dávku.
+- [ ] Počet stacků 5 → přesouvá po 5 stacích; 50 → ořízne se na 20; panel ukazuje nápovědu „1–20“.
+- [ ] Signál „Počet stacků“ z kombinátoru přebije ruční nastavení.
+- [ ] Blueprint s nastavenou dávkou a počtem stacků → postavený optimizer má stejné hodnoty.
+- [ ] Ctrl+C / Ctrl+V zachová dávku i počet stacků.
+- [ ] Shift+pravý klik / Shift+levý klik zkopíruje dávku i počet stacků mezi optimizery.
+- [ ] Ruční přestavění tieru přes starší tier zachová dávku i počet stacků.
+- [ ] Upgrade planner s roboty zachová dávku i počet stacků.
+- [ ] Postavení mnoha optimizerů naráz nezpůsobí výpadek elektrické sítě (omezené dobíjení zásobníku).
 - [ ] Šipka v alt režimu míří k cíli ve všech 4 směrech.
 - [ ] Barvy indikátoru: zelená (pracuje), žlutá (čeká), červená (bez proudu / bez bedny / vypnuto sítí).
 - [ ] Otočení klávesou R a převrácení (F/G) prohodí zdroj a cíl.

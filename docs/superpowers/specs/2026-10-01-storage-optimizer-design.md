@@ -263,3 +263,15 @@ a propisuje filtry ze signálů (ověřeno pokusem). Vypnutá entita neodebírá
 energie (3.1, 3.2): **100 kJ za přesunutou dávku** (= 50 kW × 2 s, stejné pro všechny tiery), odebírá se
 ze zásobníku entity (`buffer_capacity`), který síť dobíjí; nedostatek energie = stav `no_power`.
 Výsledek: 0,225 ms/tick místo 0,350 (loadery 0,274) při 3,4× vyšší propustnosti.
+
+## 11. Dodatek – počet stacků za přesun (2026-10-02)
+
+- **Přesun = velikost stacku × počet stacků.** Velikost stacku zůstává Auto (stack předmětu) nebo ruční
+  dávka; počet stacků 1–20 nastavuje hráč v bočním panelu, případně signál `storage-optimizer-stacks`
+  (> 0 má přednost). Pravidlo „všechno, nebo nic“ platí pro celý přesun.
+- **Energie:** 100 kJ × počet stacků za přesun.
+- **Limit:** startup nastavení `storage-optimizer-max-stacks` (výchozí 20, rozsah 1–100). Zásobník entity
+  má kapacitu `100 kJ × limit` a dobíjení je omezené na plný zásobník za jeden interval tieru, aby hromadná
+  stavba nesrazila síť. Důsledek: po výpadku proudu optimizer dojede z už zaplacené energie v zásobníku.
+- **Ukládání:** `mover.stacks` (nil = 1); tag blueprintu `so_stacks`; kopírování nastavení a výměna tieru
+  přenášejí dávku i počet stacků; remote `get_stacks` / `set_stacks`.

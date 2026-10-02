@@ -6,6 +6,7 @@ runner.register(require("cases.prototypes"))
 runner.register(require("cases.transfer"))
 runner.register(require("cases.settings"))
 runner.register(require("cases.persistence"))
+runner.register(require("cases.stacks"))
 
 script.on_init(runner.on_init)
 script.on_event(defines.events.on_tick, runner.on_tick)

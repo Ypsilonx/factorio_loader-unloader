@@ -29,6 +29,9 @@ function M.ensure(player)
   inner.add({ type = "label", caption = { "storage-optimizer-gui.batch" }, style = "caption_label" })
   inner.add({ type = "textfield", name = "so_batch", numeric = true, allow_decimal = false, allow_negative = false })
   inner.add({ type = "label", caption = { "storage-optimizer-gui.batch-hint" } })
+  inner.add({ type = "label", caption = { "storage-optimizer-gui.stacks" }, style = "caption_label" })
+  inner.add({ type = "textfield", name = "so_stacks", numeric = true, allow_decimal = false, allow_negative = false })
+  inner.add({ type = "label", name = "stacks_hint" })
 end
 
 --- Znovu vytvoří panely všech hráčů (po změně konfigurace se mohou změnit jména tierů).
@@ -52,6 +55,8 @@ function M.update(player, mover)
   inner.route.caption = { "storage-optimizer-gui.route", owner_name(mover.source), owner_name(mover.target) }
   inner.state.caption = { "storage-optimizer-gui.state", { "storage-optimizer-state." .. (mover.state or "no_chest") } }
   inner.so_batch.text = mover.batch and tostring(mover.batch) or ""
+  inner.so_stacks.text = tostring(mover.stacks or 1)
+  inner.stacks_hint.caption = { "storage-optimizer-gui.stacks-hint", tiers.max_stacks(mover.entity.name) }
   storage.gui_target = storage.gui_target or {}
   storage.gui_target[player.index] = mover.unit_number
 end
@@ -64,15 +69,18 @@ function M.on_opened(event)
   if mover then M.update(game.get_player(event.player_index), mover) end
 end
 
---- Změna textu velikosti dávky: prázdné, 0 nebo nečíslo = Auto.
+--- Změna textu v panelu: velikost dávky (prázdné, 0 nebo nečíslo = Auto) nebo počet stacků (omezený limitem).
 function M.on_text_changed(event)
   local element = event.element
-  if element.name ~= "so_batch" or element.get_mod() ~= script.mod_name then return end
+  if element.get_mod() ~= script.mod_name or (element.name ~= "so_batch" and element.name ~= "so_stacks") then return end
   local unit_number = storage.gui_target and storage.gui_target[event.player_index]
   local mover = unit_number and registry.get(unit_number)
   if not mover then return end
-  local value = tonumber(element.text)
-  mover.batch = (value and value >= 1) and math.floor(value) or nil
+  if element.name == "so_batch" then
+    mover.batch = registry.clean_batch(element.text)
+  else
+    mover.stacks = registry.clean_stacks(mover.entity.name, element.text)
+  end
 end
 
 return M

@@ -56,8 +56,8 @@ end
 local function on_built(event)
   local entity = event.entity
   if tiers.is_mover(entity.name) then
-    local batch = persistence.batch_from_tags(event.tags) or persistence.take_replaced(entity)
-    local mover = registry.add(entity, batch)
+    local settings = persistence.settings_from_tags(event.tags) or persistence.take_replaced(entity)
+    local mover = registry.add(entity, settings)
     -- Engine entitu nepočítá (úspora UPS); podmínky a filtry ze sítě vyhodnocuje dál.
     entity.disabled_by_script = true
     local behavior = entity.get_or_create_control_behavior()
@@ -75,14 +75,14 @@ local function on_built(event)
   end
 end
 
---- Odstranění optimizeru; při vytěžení si zapamatuje dávku pro rychlou výměnu tieru ve stejném ticku.
+--- Odstranění optimizeru; při vytěžení si zapamatuje nastavení pro rychlou výměnu tieru ve stejném ticku.
 local function on_removed(event)
   local entity = event.entity
   local mover = registry.remove(entity.unit_number)
   if not mover then return end
   indicator.destroy(mover)
   if event.name ~= defines.events.on_entity_died and event.name ~= defines.events.script_raised_destroy then
-    persistence.remember_replaced(entity, mover.batch)
+    persistence.remember_replaced(entity, mover)
   end
 end
 

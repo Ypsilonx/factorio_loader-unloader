@@ -26,6 +26,21 @@ function M.energy_per_transfer_kj(multiplier)
   return M.BASE_POWER_KW * (M.BASE_INTERVAL / 60) * multiplier
 end
 
+--- Kapacita zásobníku energie v kJ: musí pojmout nejdražší přesun (všechny stacky naráz).
+--- @param energy_kj number energie za přesun jednoho stacku
+--- @param max_stacks integer maximální počet stacků za přesun
+--- @return number
+function M.buffer_kj(energy_kj, max_stacks)
+  return math.max(energy_kj * max_stacks, 0.001)
+end
+
+--- Rychlost dobíjení zásobníku v kW: plný zásobník za jeden interval, víc ne
+--- (hromadná stavba optimizerů tak nesrazí elektrickou síť nárazovým nabíjením).
+--- @return number
+function M.input_flow_kw(energy_kj, max_stacks, interval_ticks)
+  return M.buffer_kj(energy_kj, max_stacks) / (interval_ticks / 60)
+end
+
 --- Vrátí klíče tabulky seřazené abecedně (deterministické pořadí i mimo Factorio).
 local function sorted_keys(t)
   local keys = {}

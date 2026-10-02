@@ -1,5 +1,6 @@
 --- Jeden cyklus přesunu: kontroly (proud, síť), výběr předmětu podle filtrů a přesun nejvýše jedné celé dávky.
 local filters = require("scripts.filters")
+local tiers = require("scripts.tiers")
 
 local M = {}
 
@@ -38,6 +39,17 @@ local function batch_size(mover, behavior)
   return mover.batch
 end
 
+--- Signál „Počet stacků“ z obvodové sítě.
+local STACKS_SIGNAL = { type = "virtual", name = "storage-optimizer-stacks" }
+
+--- Počet stacků za přesun: signál ze sítě (> 0, omezený limitem) → ruční nastavení → 1.
+local function stack_count(mover)
+  local entity = mover.entity
+  local value = entity.get_signal(STACKS_SIGNAL, RED, GREEN)
+  if value > 0 then return math.min(value, tiers.max_stacks(entity.name)) end
+  return mover.stacks or 1
+end
+
 --- Přesune přesně `count` kusů po slotech přes pomocný slot storage.buffer
 --- (zachová kvalitu, čerstvost i data předmětů).
 local function move(source, target, name, quality, count)
@@ -66,8 +78,10 @@ end
 --- @return string stav: "working" | "waiting" | "no_power" | "disabled"
 function M.process(mover)
   local entity = mover.entity
+  local stacks = stack_count(mover)
+  local cost = mover.energy * stacks
   -- Entita je pro engine vypnutá, status proto proud neukazuje; rozhoduje energie v zásobníku.
-  if entity.energy < mover.energy then return "no_power" end
+  if entity.energy < cost then return "no_power" end
   local behavior = entity.get_control_behavior()
   if behavior and behavior.disabled then return "disabled" end
   local batch = batch_size(mover, behavior)
@@ -83,11 +97,11 @@ function M.process(mover)
     local index = (mover.cursor + k - 1) % n + 1
     local entry = contents[index]
     if filters.passes(active, mode, entry.name, entry.quality, lv) then
-      local need = batch or prototypes.item[entry.name].stack_size
+      local need = (batch or prototypes.item[entry.name].stack_size) * stacks
       if entry.count >= need
         and mover.target.get_insertable_count({ name = entry.name, quality = entry.quality }) >= need then
         move(mover.source, mover.target, entry.name, entry.quality, need)
-        entity.energy = entity.energy - mover.energy
+        entity.energy = entity.energy - cost
         mover.cursor = index % n + 1
         return "working"
       end

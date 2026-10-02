@@ -78,8 +78,8 @@ return {
         H.truthy(H.count(ctx.b, "iron-plate") > 0, "s proudem přesouvá")
         ctx.pole.destroy()
       end },
-      -- Zásobník vystačí nejvýše na jednu dávku, pak musí přesun stát.
-      { ticks = 40, run = function(ctx) ctx.after = H.count(ctx.b, "iron-plate") end },
+      -- Zásobník pojme energii na 20 stacků (limit z nastavení); po jejím vyčerpání musí přesun stát.
+      { ticks = 400, run = function(ctx) ctx.after = H.count(ctx.b, "iron-plate") end },
       { ticks = 60, run = function(ctx)
         H.eq(H.count(ctx.b, "iron-plate"), ctx.after, "bez proudu nic dalšího")
         H.eq(state(ctx.m), "no_power", "stav")

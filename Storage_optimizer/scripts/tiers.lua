@@ -24,6 +24,11 @@ function M.energy(name)
   return DATA[name].energy
 end
 
+--- Maximální počet stacků za jeden přesun (startup nastavení).
+function M.max_stacks(name)
+  return DATA[name].max_stacks
+end
+
 --- Seřazená jména všech tierů (pro event filtry a GUI).
 function M.names()
   local names = {}
