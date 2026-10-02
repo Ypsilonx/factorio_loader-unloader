@@ -52,13 +52,13 @@ return {
     end } },
   },
   {
-    name = "zásobník energie na 20 stacků",
+    name = "zásobník energie na dva přesuny po 20 stacích",
     steps = { { ticks = 1, run = function()
-      H.eq(prototypes.entity[MOVER].electric_energy_source_prototype.buffer_capacity, 2000000, "2 MJ")
+      H.eq(prototypes.entity[MOVER].electric_energy_source_prototype.buffer_capacity, 230000, "2 × 115 kJ")
     end } },
   },
   {
-    name = "energie za přesun × počet stacků",
+    name = "energie za přesun: pevná cena + další stacky",
     setup = function(ctx)
       ctx.pole = layout(ctx, {})
       set_stacks(ctx, 3)
@@ -72,19 +72,81 @@ return {
       end },
       { ticks = 40, run = function(ctx)
         H.eq(H.count(ctx.b, "iron-plate"), 300, "jeden přesun 3 stacků")
-        H.eq(math.floor(ctx.before - ctx.m.energy + 0.5), 300000, "spotřeba 3 × 100 kJ")
+        H.eq(math.floor(ctx.before - ctx.m.energy + 0.5), 30000, "spotřeba 20 kJ + 2 × 5 kJ")
       end },
     },
   },
   {
-    name = "počet stacků ze signálu",
+    name = "počet stacků ze signálu (zapnuto v panelu)",
     setup = function(ctx)
-      layout(ctx, { { name = "iron-plate", count = 500 } })
-      local cc = H.combinator(ctx, 2, 1, { { type = "virtual", name = "storage-optimizer-stacks", count = 2 } })
+      layout(ctx, { { name = "iron-plate", count = 300 } })
+      local cc = H.combinator(ctx, 2, 1, { { type = "virtual", name = "signal-N", count = 2 } })
+      H.wire(cc, ctx.m)
+      remote.call("storage-optimizer", "set_stacks_circuit", ctx.m.unit_number, true)
+    end,
+    steps = { { ticks = 100, run = function(ctx)
+      H.eq(H.count(ctx.b, "iron-plate"), 200, "jeden přesun 2 stacků, zbytek 100 nestačí")
+    end } },
+  },
+  {
+    name = "efektivní počet stacků pro zobrazení v panelu",
+    setup = function(ctx)
+      layout(ctx, {})
+      set_stacks(ctx, 3)
+      ctx.cc = H.combinator(ctx, 2, 1, { { type = "virtual", name = "signal-N", count = 5 } })
+      H.wire(ctx.cc, ctx.m)
+    end,
+    steps = {
+      { ticks = 2, run = function(ctx)
+        local count, signal = remote.call("storage-optimizer", "get_effective_stacks", ctx.m.unit_number)
+        H.eq(count, 3, "bez zapnutí platí ruční nastavení")
+        H.eq(signal, nil, "hodnota signálu se nezobrazuje")
+        remote.call("storage-optimizer", "set_stacks_circuit", ctx.m.unit_number, true)
+      end },
+      { ticks = 2, run = function(ctx)
+        local count, signal = remote.call("storage-optimizer", "get_effective_stacks", ctx.m.unit_number)
+        H.eq(count, 5, "ze signálu")
+        H.eq(signal, 5, "hodnota signálu")
+        H.set_signal(ctx.cc, 1, { type = "virtual", name = "signal-N", count = 0 })
+      end },
+      { ticks = 2, run = function(ctx)
+        local count, signal = remote.call("storage-optimizer", "get_effective_stacks", ctx.m.unit_number)
+        H.eq(count, 3, "signál 0 → ruční nastavení")
+        H.eq(signal, 0, "hodnota signálu 0")
+      end },
+    },
+  },
+  {
+    name = "výchozí řídicí signály jsou S a N",
+    setup = function(ctx) layout(ctx, {}) end,
+    steps = { { ticks = 1, run = function(ctx)
+      local behavior = ctx.m.get_or_create_control_behavior()
+      H.eq(behavior.circuit_stack_control_signal.name, "signal-S", "velikost stacku: S")
+      local _, signal = remote.call("storage-optimizer", "get_stacks_circuit", ctx.m.unit_number)
+      H.eq(signal.name, "signal-N", "počet stacků: N")
+    end } },
+  },
+  {
+    name = "signál počtu stacků se bez zapnutí ignoruje",
+    setup = function(ctx)
+      layout(ctx, { { name = "iron-plate", count = 300 } })
+      local cc = H.combinator(ctx, 2, 1, { { type = "virtual", name = "signal-N", count = 2 } })
       H.wire(cc, ctx.m)
     end,
     steps = { { ticks = 100, run = function(ctx)
-      H.eq(H.count(ctx.b, "iron-plate"), 400, "dva přesuny po 2 stacích")
+      H.eq(H.count(ctx.b, "iron-plate"), 300, "po 1 stacku → přesune vše")
+    end } },
+  },
+  {
+    name = "vlastní řídicí signál počtu stacků",
+    setup = function(ctx)
+      layout(ctx, { { name = "iron-plate", count = 700 } })
+      local cc = H.combinator(ctx, 2, 1, { { type = "virtual", name = "signal-A", count = 3 } })
+      H.wire(cc, ctx.m)
+      remote.call("storage-optimizer", "set_stacks_circuit", ctx.m.unit_number, true, { type = "virtual", name = "signal-A" })
+    end,
+    steps = { { ticks = 100, run = function(ctx)
+      H.eq(H.count(ctx.b, "iron-plate"), 600, "dva přesuny po 3 stacích")
     end } },
   },
   {
@@ -98,7 +160,7 @@ return {
         inner_name = MOVER,
         position = { ctx.origin.x + 0.5, ctx.origin.y + 1.5 },
         force = "player",
-        tags = { so_stacks = 4 },
+        tags = { so_stacks = 4, so_stacks_circuit = true, so_stacks_signal = { type = "virtual", name = "signal-B" } },
       })
       local _, entity = ghost.revive({ raise_revive = true })
       ctx.m = entity
@@ -106,6 +168,9 @@ return {
     steps = { { ticks = 60, run = function(ctx)
       H.eq(remote.call("storage-optimizer", "get_stacks", ctx.m.unit_number), 4, "počet stacků z tagu")
       H.eq(H.count(ctx.b, "iron-plate"), 400, "jeden přesun 4 stacků")
+      local circuit, signal = remote.call("storage-optimizer", "get_stacks_circuit", ctx.m.unit_number)
+      H.eq(circuit, true, "počet stacků ze sítě z tagu")
+      H.eq(signal and signal.name, "signal-B", "řídicí signál z tagu")
     end } },
   },
 }

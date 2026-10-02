@@ -1,12 +1,18 @@
---- Přenos ručního nastavení (velikost dávky, počet stacků): blueprinty (tagy), kopírování nastavení,
---- rychlá výměna tieru. Nastavení se předává jako tabulka { batch = …, stacks = … }.
+--- Přenos ručního nastavení (velikost stacku, počet stacků, počet stacků ze sítě a jeho signál):
+--- blueprinty (tagy), kopírování nastavení, rychlá výměna tieru.
+--- Nastavení se předává jako tabulka se stejnými poli jako záznam optimizeru (viz M.TAGS).
 local tiers = require("scripts.tiers")
 local registry = require("scripts.registry")
 
 local M = {}
 
 --- Klíče tagů v blueprintu podle pole nastavení.
-M.TAGS = { batch = "so_batch", stacks = "so_stacks" }
+M.TAGS = {
+  batch = "so_batch",
+  stacks = "so_stacks",
+  stacks_circuit = "so_stacks_circuit",
+  stacks_signal = "so_stacks_signal",
+}
 
 --- Vrátí nastavení z tagů stavěné entity (nebo nil, pokud žádné nemá).
 function M.settings_from_tags(tags)
@@ -23,8 +29,14 @@ end
 
 --- Ruční nastavení optimizeru (nebo nil, pokud má vše výchozí).
 local function settings_of(mover)
-  if not (mover.batch or mover.stacks) then return nil end
-  return { batch = mover.batch, stacks = mover.stacks }
+  local settings, found = {}, false
+  for field in pairs(M.TAGS) do
+    if mover[field] ~= nil then
+      settings[field] = mover[field]
+      found = true
+    end
+  end
+  return found and settings or nil
 end
 
 --- Při vytvoření blueprintu zapíše ruční nastavení každého optimizeru do tagů.
@@ -50,6 +62,8 @@ function M.on_pasted(event)
   if not (from and to) then return end
   to.batch = from.batch
   to.stacks = registry.clean_stacks(destination.name, from.stacks)
+  to.stacks_circuit = from.stacks_circuit
+  to.stacks_signal = from.stacks_signal
 end
 
 --- Klíč pozice pro spárování vytěžené a nově postavené entity.

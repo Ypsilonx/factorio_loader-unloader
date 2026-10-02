@@ -67,7 +67,7 @@ return {
     name = "velikost dávky ze signálu",
     setup = function(ctx)
       layout(ctx, { { name = "iron-plate", count = 100 } })
-      local cc = H.combinator(ctx, 2, 1, { { type = "virtual", name = "storage-optimizer-batch", count = 30 } })
+      local cc = H.combinator(ctx, 2, 1, { { type = "virtual", name = "signal-S", count = 30 } })
       H.wire(cc, ctx.m)
       ctx.m.get_control_behavior().circuit_set_stack_size = true
     end,

@@ -18,27 +18,29 @@ end
 
 return {
   { "interval vanilla pásů", function()
-    A.eq(tiers.interval_ticks(0.03125, 1), 120, "žlutý")
-    A.eq(tiers.interval_ticks(0.0625, 1), 60, "červený")
-    A.eq(tiers.interval_ticks(0.09375, 1), 40, "modrý")
-    A.eq(tiers.interval_ticks(0.125, 1), 30, "turbo")
+    A.eq(tiers.interval_ticks(0.03125, 1), 60, "žlutý")
+    A.eq(tiers.interval_ticks(0.0625, 1), 30, "červený")
+    A.eq(tiers.interval_ticks(0.09375, 1), 20, "modrý")
+    A.eq(tiers.interval_ticks(0.125, 1), 15, "turbo")
   end },
   { "interval s násobičem a spodní mez", function()
-    A.eq(tiers.interval_ticks(0.03125, 2), 240, "násobič 2")
+    A.eq(tiers.interval_ticks(0.03125, 2), 120, "násobič 2")
     A.eq(tiers.interval_ticks(100, 0.1), 1, "minimum 1 tick")
   end },
-  { "energie za přesun: 50 kW × 2 s, nezávisle na tieru", function()
-    A.eq(tiers.energy_per_transfer_kj(1), 100, "výchozí")
-    A.eq(tiers.energy_per_transfer_kj(2), 200, "násobič spotřeby 2")
-    A.eq(tiers.energy_per_transfer_kj(0), 0, "násobič spotřeby 0")
+  { "cena přesunu: 20 kJ + 5 kJ za každý další stack, nezávisle na tieru", function()
+    A.eq(tiers.transfer_cost_kj(1, 1), 20, "1 stack")
+    A.eq(tiers.transfer_cost_kj(5, 1), 40, "5 stacků")
+    A.eq(tiers.transfer_cost_kj(20, 1), 115, "20 stacků")
+    A.eq(tiers.transfer_cost_kj(5, 2), 80, "násobič spotřeby 2")
+    A.eq(tiers.transfer_cost_kj(5, 0), 0, "násobič spotřeby 0")
   end },
-  { "zásobník pojme nejdražší přesun (max. počet stacků)", function()
-    A.eq(tiers.buffer_kj(100, 20), 2000, "100 kJ × 20 stacků")
-    A.eq(tiers.buffer_kj(0, 20), 0.001, "nulová spotřeba → minimální zásobník")
+  { "zásobník pojme dva nejdražší přesuny", function()
+    A.eq(tiers.buffer_kj(20, 1), 230, "2 × 115 kJ")
+    A.eq(tiers.buffer_kj(20, 0), 0.001, "nulová spotřeba → minimální zásobník")
   end },
-  { "dobíjení zásobníku stihne plné vytížení za jeden interval", function()
-    A.eq(tiers.input_flow_kw(100, 20, 120), 1000, "2000 kJ za 2 s")
-    A.eq(tiers.input_flow_kw(100, 20, 30), 4000, "2000 kJ za 0,5 s")
+  { "dobíjení stihne nejdražší přesun každý interval", function()
+    A.eq(tiers.input_flow_kw(20, 1, 60), 115, "115 kJ za 1 s")
+    A.eq(tiers.input_flow_kw(20, 1, 15), 460, "115 kJ za 0,25 s")
   end },
   { "řazení podle rychlosti", function()
     local list = tiers.collect(fake_raw({

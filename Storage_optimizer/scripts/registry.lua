@@ -16,9 +16,19 @@ function M.clean_stacks(name, value)
   return math.min(math.floor(value), tiers.max_stacks(name))
 end
 
+--- Výchozí řídicí signál počtu stacků.
+M.STACKS_SIGNAL = { type = "virtual", name = "signal-N" }
+
+--- Normalizuje řídicí signál z hranice systému (GUI, remote, tagy): neplatný = výchozí (nil).
+function M.clean_signal(signal)
+  if type(signal) ~= "table" or type(signal.name) ~= "string" then return nil end
+  return { type = signal.type or "item", name = signal.name }
+end
+
 --- Založí záznam pro novou entitu.
 --- @param entity LuaEntity
---- @param settings table|nil { batch = velikost dávky (nil = Auto), stacks = počet stacků (nil = 1) }
+--- @param settings table|nil { batch = velikost stacku (nil = Auto), stacks = počet stacků (nil = 1),
+---   stacks_circuit = počet stacků ze sítě (nil = ne), stacks_signal = řídicí signál (nil = výchozí) }
 --- @return table mover
 function M.add(entity, settings)
   settings = settings or {}
@@ -26,9 +36,10 @@ function M.add(entity, settings)
     entity = entity,
     unit_number = entity.unit_number,
     interval = tiers.interval(entity.name),
-    energy = tiers.energy(entity.name),
     batch = settings.batch,
     stacks = M.clean_stacks(entity.name, settings.stacks),
+    stacks_circuit = settings.stacks_circuit == true or nil,
+    stacks_signal = M.clean_signal(settings.stacks_signal),
     cursor = 1,
   }
   storage.movers[entity.unit_number] = mover

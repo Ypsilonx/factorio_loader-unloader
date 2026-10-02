@@ -3,7 +3,7 @@
 package.path = "Storage_optimizer/?.lua;tests/unit/?.lua;" .. package.path
 
 --- Seznam testovacích sad; každá vrací pole { "název", funkce }.
-local SUITES = { "test_tiers", "test_filters", "test_locale", "test_graphics" }
+local SUITES = { "test_tiers", "test_filters", "test_locale", "test_graphics", "test_gui_names", "test_wires", "test_icons", "test_gui" }
 
 local pass, fail = 0, 0
 for _, suite in ipairs(SUITES) do

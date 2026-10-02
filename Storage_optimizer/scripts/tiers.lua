@@ -4,7 +4,7 @@ local M = {}
 --- Kopie dat načtená jednou při načtení skriptu (stejná u všech hráčů → deterministická).
 local DATA = prototypes.mod_data["storage-optimizer-tiers"].data
 
---- Vrátí tabulku { [jméno entity] = { tier, interval, energy } }.
+--- Vrátí tabulku { [jméno entity] = { tier, interval, energy, extra_stack_energy, max_stacks } }.
 function M.all()
   return DATA
 end
@@ -19,9 +19,19 @@ function M.interval(name)
   return DATA[name].interval
 end
 
---- Energie za jeden přesun v joulech.
-function M.energy(name)
-  return DATA[name].energy
+--- Cena přesunu v joulech: pevná cena (včetně prvního stacku) + každý další stack.
+--- @param name string jméno entity tieru
+--- @param stacks integer počet stacků v přesunu
+function M.cost(name, stacks)
+  local tier = DATA[name]
+  return tier.energy + tier.extra_stack_energy * (stacks - 1)
+end
+
+--- Pevná cena přesunu a cena každého dalšího stacku v kJ (pro texty v GUI).
+--- @return number, number
+function M.energy_kj(name)
+  local tier = DATA[name]
+  return tier.energy / 1000, tier.extra_stack_energy / 1000
 end
 
 --- Maximální počet stacků za jeden přesun (startup nastavení).

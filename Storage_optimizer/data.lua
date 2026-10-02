@@ -1,2 +1,1 @@
--- Data stage: prototypy nezávislé na ostatních modech.
-require("prototypes.signal")
+-- Data stage: prototypy nezávislé na ostatních modech (tiery se generují v data-final-fixes.lua).

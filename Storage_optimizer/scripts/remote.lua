@@ -1,5 +1,6 @@
 --- Veřejné rozhraní pro ostatní mody a testy: remote.call("storage-optimizer", <funkce>, …).
 local registry = require("scripts.registry")
+local transfer = require("scripts.transfer")
 
 remote.add_interface("storage-optimizer", {
   --- Ručně nastavená velikost dávky (nil = Auto).
@@ -21,6 +22,25 @@ remote.add_interface("storage-optimizer", {
   set_stacks = function(unit_number, stacks)
     local mover = registry.get(unit_number)
     if mover then mover.stacks = registry.clean_stacks(mover.entity.name, stacks) end
+  end,
+  --- Počet stacků ze sítě: vrátí (zapnuto, řídicí signál).
+  get_stacks_circuit = function(unit_number)
+    local mover = registry.get(unit_number)
+    if not mover then return nil end
+    return mover.stacks_circuit == true, mover.stacks_signal or registry.STACKS_SIGNAL
+  end,
+  --- Zapne/vypne počet stacků ze sítě; signal = SignalID (nil = výchozí „Počet stacků“).
+  set_stacks_circuit = function(unit_number, enabled, signal)
+    local mover = registry.get(unit_number)
+    if not mover then return end
+    mover.stacks_circuit = enabled == true or nil
+    mover.stacks_signal = registry.clean_signal(signal)
+  end,
+  --- Počet stacků, který se použije při příštím přesunu: vrátí (počet, hodnota řídicího signálu nebo nil).
+  get_effective_stacks = function(unit_number)
+    local mover = registry.get(unit_number)
+    if not mover then return nil end
+    return transfer.stack_count(mover)
   end,
   --- Aktuální stav: working | waiting | no_power | disabled | no_chest.
   get_state = function(unit_number)

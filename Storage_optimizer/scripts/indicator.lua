@@ -10,6 +10,20 @@ local SPRITES = {
   no_chest = "utility/status_not_working",
 }
 
+--- Barva diody stavu v okně entity.
+local DIODES = {
+  working = defines.entity_status_diode.green,
+  waiting = defines.entity_status_diode.yellow,
+  no_power = defines.entity_status_diode.red,
+  disabled = defines.entity_status_diode.red,
+  no_chest = defines.entity_status_diode.red,
+}
+
+--- Zobrazí stav modu v nativním okně entity místo enginového „Vypnuto skriptem“ (entita je pro engine vypnutá).
+local function apply_status(mover)
+  mover.entity.custom_status = { diode = DIODES[mover.state], label = { "storage-optimizer-state." .. mover.state } }
+end
+
 --- Orientace šipky (0–1) ze směru entity; šipka míří k cíli, tj. opačně než ke zdroji.
 function M.orientation(direction)
   return (direction / 16 + 0.5) % 1
@@ -19,6 +33,7 @@ end
 function M.create(mover)
   local entity = mover.entity
   mover.state = "no_chest"
+  apply_status(mover)
   mover.light = rendering.draw_sprite({
     sprite = SPRITES.no_chest,
     target = { entity = entity, offset = { 0.25, -0.25 } },
@@ -41,6 +56,7 @@ end
 function M.set(mover, state)
   if mover.state == state then return end
   mover.state = state
+  apply_status(mover)
   if mover.light and mover.light.valid then mover.light.sprite = SPRITES[state] end
 end
 

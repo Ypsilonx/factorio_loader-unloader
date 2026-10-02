@@ -66,6 +66,41 @@ return {
     steps = { { ticks = 2, run = function(ctx) H.eq(ctx.m.disabled_by_script, true, "disabled_by_script") end } },
   },
   {
+    name = "vlastní stav místo „Vypnuto skriptem“",
+    setup = function(ctx) layout(ctx, { { name = "iron-plate", count = 1000 } }) end,
+    steps = {
+      { ticks = 40, run = function(ctx)
+        local status = ctx.m.custom_status
+        H.truthy(status, "custom_status nastaven")
+        H.eq(status.label[1], "storage-optimizer-state.working", "popisek")
+        H.eq(status.diode, defines.entity_status_diode.green, "zelená dioda")
+        ctx.b.destroy({ raise_destroy = true })
+      end },
+      { ticks = 40, run = function(ctx)
+        H.eq(ctx.m.custom_status.label[1], "storage-optimizer-state.no_chest", "popisek bez cíle")
+        H.eq(ctx.m.custom_status.diode, defines.entity_status_diode.red, "červená dioda")
+      end },
+    },
+  },
+  {
+    name = "indikátory zdroje a cíle se otáčejí s budovou",
+    setup = function(ctx) layout(ctx, {}) end,
+    steps = {
+      { ticks = 1, run = function(ctx)
+        local p = ctx.m.position
+        H.truthy(ctx.m.pickup_position.y < p.y, "bere ze severu (zdroj)")
+        H.truthy(ctx.m.drop_position.y > p.y, "dává na jih (cíl)")
+        ctx.m.rotate()
+        ctx.m.rotate()
+      end },
+      { ticks = 1, run = function(ctx)
+        local p = ctx.m.position
+        H.truthy(ctx.m.pickup_position.y > p.y, "po otočení bere z jihu")
+        H.truthy(ctx.m.drop_position.y < p.y, "po otočení dává na sever")
+      end },
+    },
+  },
+  {
     name = "výpadek proudu zastaví přesun",
     setup = function(ctx)
       ctx.pole = H.power(ctx)

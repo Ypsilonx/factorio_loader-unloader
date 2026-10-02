@@ -1,6 +1,7 @@
 --- Jeden cyklus přesunu: kontroly (proud, síť), výběr předmětu podle filtrů a přesun nejvýše jedné celé dávky.
 local filters = require("scripts.filters")
 local tiers = require("scripts.tiers")
+local registry = require("scripts.registry")
 
 local M = {}
 
@@ -39,15 +40,18 @@ local function batch_size(mover, behavior)
   return mover.batch
 end
 
---- Signál „Počet stacků“ z obvodové sítě.
-local STACKS_SIGNAL = { type = "virtual", name = "storage-optimizer-stacks" }
-
---- Počet stacků za přesun: signál ze sítě (> 0, omezený limitem) → ruční nastavení → 1.
-local function stack_count(mover)
-  local entity = mover.entity
-  local value = entity.get_signal(STACKS_SIGNAL, RED, GREEN)
-  if value > 0 then return math.min(value, tiers.max_stacks(entity.name)) end
-  return mover.stacks or 1
+--- Počet stacků za přesun: řídicí signál ze sítě (je-li zapnutý v panelu a > 0, omezený limitem)
+--- → ruční nastavení → 1. Používá ho přesun i panel (zobrazení aktuální hodnoty).
+--- @return integer počet stacků
+--- @return integer|nil hodnota řídicího signálu (nil, pokud řízení sítí není zapnuté)
+function M.stack_count(mover)
+  if mover.stacks_circuit then
+    local entity = mover.entity
+    local value = entity.get_signal(mover.stacks_signal or registry.STACKS_SIGNAL, RED, GREEN)
+    if value > 0 then return math.min(value, tiers.max_stacks(entity.name)), value end
+    return mover.stacks or 1, value
+  end
+  return mover.stacks or 1, nil
 end
 
 --- Přesune přesně `count` kusů po slotech přes pomocný slot storage.buffer
@@ -78,8 +82,8 @@ end
 --- @return string stav: "working" | "waiting" | "no_power" | "disabled"
 function M.process(mover)
   local entity = mover.entity
-  local stacks = stack_count(mover)
-  local cost = mover.energy * stacks
+  local stacks = M.stack_count(mover)
+  local cost = tiers.cost(entity.name, stacks)
   -- Entita je pro engine vypnutá, status proto proud neukazuje; rozhoduje energie v zásobníku.
   if entity.energy < cost then return "no_power" end
   local behavior = entity.get_control_behavior()

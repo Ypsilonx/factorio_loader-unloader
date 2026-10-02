@@ -4,10 +4,14 @@ local M = {}
 
 --- Rychlost žlutého pásu ve vanille (dlaždice/tick) – referenční bod všech výpočtů.
 M.YELLOW_SPEED = 0.03125
---- Interval přesunu tieru se žlutou rychlostí v tickách (120 t = 2 s). Laditelná hodnota.
-M.BASE_INTERVAL = 120
---- Průměrný výkon pracujícího tieru se žlutou rychlostí v kW. Laditelná hodnota.
-M.BASE_POWER_KW = 50
+--- Interval přesunu tieru se žlutou rychlostí v tickách (60 t = 1 s). Laditelná hodnota.
+M.BASE_INTERVAL = 60
+--- Pevná cena jednoho přesunu v kJ (zahrnuje první stack, stejná pro všechny tiery). Laditelná hodnota.
+M.ENERGY_PER_TRANSFER_KJ = 20
+--- Cena každého dalšího stacku v témže přesunu v kJ – velký přesun je na kus levnější. Laditelná hodnota.
+M.ENERGY_PER_EXTRA_STACK_KJ = 5
+--- Zásobník pojme tolik nejdražších přesunů (rezerva, aby pruh energie neklesal ke dnu). Laditelná hodnota.
+M.BUFFER_RESERVE = 2
 
 --- Spočítá interval přesunu v tickách (nejméně 1).
 --- @param speed number rychlost pásu
@@ -18,27 +22,28 @@ function M.interval_ticks(speed, multiplier)
   return math.max(1, math.floor(raw + 0.5))
 end
 
---- Spočítá energii za jeden přesun dávky v kJ. Je stejná pro všechny tiery (cena za dávku),
---- rychlejší tier proto odebírá úměrně vyšší průměrný výkon.
+--- Spočítá cenu jednoho přesunu v kJ: pevná cena (včetně prvního stacku) + každý další stack.
+--- Je stejná pro všechny tiery, rychlejší tier proto při plné práci odebírá úměrně vyšší průměrný výkon.
+--- @param stacks integer počet stacků v přesunu (≥ 1)
 --- @param multiplier number násobič spotřeby z nastavení
 --- @return number
-function M.energy_per_transfer_kj(multiplier)
-  return M.BASE_POWER_KW * (M.BASE_INTERVAL / 60) * multiplier
+function M.transfer_cost_kj(stacks, multiplier)
+  return (M.ENERGY_PER_TRANSFER_KJ + M.ENERGY_PER_EXTRA_STACK_KJ * (stacks - 1)) * multiplier
 end
 
---- Kapacita zásobníku energie v kJ: musí pojmout nejdražší přesun (všechny stacky naráz).
---- @param energy_kj number energie za přesun jednoho stacku
+--- Kapacita zásobníku energie v kJ: BUFFER_RESERVE × nejdražší přesun (všechny stacky naráz).
 --- @param max_stacks integer maximální počet stacků za přesun
+--- @param multiplier number násobič spotřeby z nastavení
 --- @return number
-function M.buffer_kj(energy_kj, max_stacks)
-  return math.max(energy_kj * max_stacks, 0.001)
+function M.buffer_kj(max_stacks, multiplier)
+  return math.max(M.transfer_cost_kj(max_stacks, multiplier) * M.BUFFER_RESERVE, 0.001)
 end
 
---- Rychlost dobíjení zásobníku v kW: plný zásobník za jeden interval, víc ne
---- (hromadná stavba optimizerů tak nesrazí elektrickou síť nárazovým nabíjením).
+--- Rychlost dobíjení zásobníku v kW: právě na nejdražší přesun za interval, víc ne.
+--- Výkyvy pokryje rezerva v zásobníku a síť nedostává zbytečně vysoké špičky.
 --- @return number
-function M.input_flow_kw(energy_kj, max_stacks, interval_ticks)
-  return M.buffer_kj(energy_kj, max_stacks) / (interval_ticks / 60)
+function M.input_flow_kw(max_stacks, multiplier, interval_ticks)
+  return math.max(M.transfer_cost_kj(max_stacks, multiplier), 0.001) / (interval_ticks / 60)
 end
 
 --- Vrátí klíče tabulky seřazené abecedně (deterministické pořadí i mimo Factorio).

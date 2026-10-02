@@ -9,9 +9,6 @@ local persistence = require("scripts.persistence")
 local gui = require("scripts.gui")
 require("scripts.remote")
 
---- Výchozí signál pro nastavení velikosti dávky ze sítě.
-local BATCH_SIGNAL = { type = "virtual", name = "storage-optimizer-batch" }
-
 --- Založí chybějící tabulky ve storage (nová hra i starší uložená pozice).
 local function init_storage()
   storage.movers = storage.movers or {}
@@ -60,9 +57,7 @@ local function on_built(event)
     local mover = registry.add(entity, settings)
     -- Engine entitu nepočítá (úspora UPS); podmínky a filtry ze sítě vyhodnocuje dál.
     entity.disabled_by_script = true
-    local behavior = entity.get_or_create_control_behavior()
-    -- Engine má výchozí signál signal-S; náš signál nastavíme, dokud hráč funkci nepoužívá (nepřepíše blueprint).
-    if not behavior.circuit_set_stack_size then behavior.circuit_stack_control_signal = BATCH_SIGNAL end
+    -- Řídicí signál velikosti stacku je enginový výchozí signal-S, počtu stacků signal-N (registry.STACKS_SIGNAL).
     indicator.create(mover)
     wake(mover)
     return
@@ -101,7 +96,6 @@ local function on_configuration_changed()
   for unit_number, mover in pairs(storage.movers) do
     if mover.entity.valid then
       mover.interval = tiers.interval(mover.entity.name)
-      mover.energy = tiers.energy(mover.entity.name)
       mover.entity.disabled_by_script = true
       if not (mover.light and mover.light.valid) then indicator.create(mover) end
       wake(mover)
@@ -115,7 +109,9 @@ end
 
 local mover_filters = {}
 for _, name in ipairs(tiers.names()) do mover_filters[#mover_filters + 1] = { filter = "name", name = name } end
-local built_filters = { { filter = "type", type = "container" }, { filter = "type", type = "logistic-container" } }
+-- Postavení bedny nebo stroje probudí sousední optimizery, které na zdroj/cíl čekají.
+local built_filters = {}
+for _, entity_type in ipairs(neighbours.TYPES) do built_filters[#built_filters + 1] = { filter = "type", type = entity_type } end
 for _, f in ipairs(mover_filters) do built_filters[#built_filters + 1] = f end
 
 for _, id in ipairs({
@@ -145,6 +141,10 @@ script.on_event(defines.events.on_entity_settings_pasted, persistence.on_pasted)
 script.on_event(defines.events.on_player_created, function(event) gui.ensure(game.get_player(event.player_index)) end)
 script.on_event(defines.events.on_gui_opened, gui.on_opened)
 script.on_event(defines.events.on_gui_text_changed, gui.on_text_changed)
+script.on_event(defines.events.on_gui_checked_state_changed, gui.on_checked_state_changed)
+script.on_event(defines.events.on_gui_elem_changed, gui.on_elem_changed)
+-- Obnova otevřených panelů; bez otevřeného okna jen jedna kontrola prázdné tabulky.
+script.on_nth_tick(gui.REFRESH_TICKS, gui.refresh)
 script.on_init(function()
   init_storage()
   gui.rebuild_all()

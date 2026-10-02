@@ -1,5 +1,7 @@
 ---@diagnostic disable: missing-fields
 --- Entita tieru: prototyp typu inserter s vyřazeným vlastním pohybem ramene.
+local wires = require("prototypes.wires")
+
 local M = {}
 
 local EMPTY = { filename = "__core__/graphics/empty.png", size = 1 }
@@ -45,7 +47,7 @@ function M.localised_name(belt)
 end
 
 --- Vytvoří entitu tieru.
---- @param info table položka z tiers.collect doplněná o name, tier, interval, energy_kj, buffer_kj, input_flow_kw
+--- @param info table položka z tiers.collect doplněná o name, tier, interval, energy_kj, extra_stack_kj, buffer_kj, input_flow_kw
 --- @param icons table[] vrstvy ikony
 function M.create(info, icons)
   local e = table.deepcopy(data.raw["inserter"]["fast-inserter"])
@@ -62,9 +64,12 @@ function M.create(info, icons)
   e.stack_size_bonus = 0
   e.bulk = false
   e.allow_custom_vectors = false
-  -- Rameno míří na vlastní políčko: engine nenajde zdroj ani cíl a inserter usne (ověřeno spikem).
-  e.pickup_position = { 0, 0 }
-  e.insert_position = { 0, 0 }
+  -- Skutečné pozice zdroje a cíle jen kvůli nativním indikátorům (šipky „odkud → kam“, otáčí se s budovou).
+  -- Samo rameno nikdy nepracuje: entita je za běhu disabled_by_script, přesouvá skript (control.lua).
+  e.pickup_position = { 0, -1 }
+  e.insert_position = { 0, 1.2 }
+  -- Dráty obvodové sítě vedou do svorkovnice vymodelované na převodovce (bez vanilla krabičky).
+  e.circuit_connector = wires.connector()
   e.energy_per_movement = "1J"
   e.energy_per_rotation = "1J"
   -- Entita je za běhu vypnutá pro engine (disabled_by_script), takže drain by se neodebíral.
@@ -98,7 +103,7 @@ function M.create(info, icons)
     },
     {
       name = { "storage-optimizer.energy" },
-      value = { "storage-optimizer.kilojoules", string.format("%.0f", info.energy_kj) },
+      value = { "storage-optimizer.energy-value", string.format("%g", info.energy_kj), string.format("%g", info.extra_stack_kj) },
     },
   }
   data:extend({ e })

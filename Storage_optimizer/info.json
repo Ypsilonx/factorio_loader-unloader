@@ -4,6 +4,6 @@
   "title": "Storage Optimizer",
   "author": "Ypsilonx",
   "factorio_version": "2.0",
-  "description": "Moves whole stacks between chests without belts. One building instead of loader + belt + unloader. Built for UPS.",
+  "description": "Moves whole stacks between chests, assembling machines and furnaces without belts – up to 20 stacks at once. One building instead of loader + belt + unloader. Built for UPS.",
   "dependencies": ["base >= 2.0.0"]
 }

@@ -32,13 +32,13 @@ return {
     end
   end),
   check("intervaly vanilla tierů", function()
-    H.eq(interval("storage-optimizer-transport-belt"), 120, "žlutý")
-    H.eq(interval("storage-optimizer-fast-transport-belt"), 60, "červený")
-    H.eq(interval("storage-optimizer-express-transport-belt"), 40, "modrý")
+    H.eq(interval("storage-optimizer-transport-belt"), 60, "žlutý")
+    H.eq(interval("storage-optimizer-fast-transport-belt"), 30, "červený")
+    H.eq(interval("storage-optimizer-express-transport-belt"), 20, "modrý")
   end),
   check("tier z pásu cizího modu", function()
     H.truthy(prototypes.entity["storage-optimizer-so-test-belt"], "entita testovacího pásu")
-    H.eq(interval("storage-optimizer-so-test-belt"), 15, "interval testovacího pásu")
+    H.eq(interval("storage-optimizer-so-test-belt"), 8, "interval testovacího pásu (7,5 → 8)")
   end),
   check("skrytý pás nemá tier", function()
     H.eq(prototypes.entity["storage-optimizer-so-test-hidden-belt"], nil, "skrytý pás")
@@ -51,10 +51,19 @@ return {
     H.truthy(unlocked_by_some_tech("storage-optimizer-transport-belt"), "žlutý tier")
     H.truthy(unlocked_by_some_tech("storage-optimizer-fast-transport-belt"), "červený tier")
   end),
-  check("signál velikosti dávky", function()
-    H.truthy(prototypes.virtual_signal["storage-optimizer-batch"], "virtuální signál")
+  check("mod nepřidává vlastní signály (výchozí jsou vanilla S a N)", function()
+    H.eq(prototypes.virtual_signal["storage-optimizer-batch"], nil, "bez vlastního signálu velikosti")
+    H.eq(prototypes.virtual_signal["storage-optimizer-stacks"], nil, "bez vlastního signálu počtu")
+  end),
+  check("styly a ukotvení GUI panelu existují", function()
+    -- Headless hra nemá hráče, panel se nevytvoří; aspoň ověřit, že engine zná vše, co gui.lua používá.
+    for _, style in ipairs({ "inside_shallow_frame_with_padding", "caption_label", "caption_checkbox" }) do
+      H.truthy(prototypes.style[style], "styl " .. style)
+    end
+    H.truthy(defines.relative_gui_type.inserter_gui, "relative_gui_type.inserter_gui")
+    H.truthy(defines.relative_gui_position.right, "relative_gui_position.right")
   end),
   check("turbo tier (Space Age)", function()
-    H.eq(interval("storage-optimizer-turbo-transport-belt"), 30, "turbo")
+    H.eq(interval("storage-optimizer-turbo-transport-belt"), 15, "turbo")
   end, "space-age"),
 }
