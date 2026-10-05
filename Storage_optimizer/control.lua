@@ -40,13 +40,23 @@ local function run(mover)
     registry.remove(mover.unit_number)
     return
   end
-  if entity.direction ~= mover.direction or not neighbours.complete(mover) then refresh(mover) end
+  if mover.wagon or entity.direction ~= mover.direction or not neighbours.complete(mover) then refresh(mover) end
   if not neighbours.complete(mover) then
     indicator.set(mover, "no_chest")
     return
   end
   indicator.set(mover, transfer.process(mover))
   scheduler.schedule(mover, game.tick + mover.interval)
+end
+
+--- Probudí nečinné optimizery, které sousedí s entitou (bedna, stroj, vagón).
+local function wake_around(entity)
+  local box = entity.bounding_box
+  local area = { { box.left_top.x - 1, box.left_top.y - 1 }, { box.right_bottom.x + 1, box.right_bottom.y + 1 } }
+  for _, other in pairs(entity.surface.find_entities_filtered({ area = area, name = tiers.names() })) do
+    local mover = registry.get(other.unit_number)
+    if mover and not mover.scheduled_tick then wake(mover) end
+  end
 end
 
 --- Postavení entity (hráč, robot, platforma, skript): optimizer se zaeviduje, bedna probudí sousedy.
@@ -62,11 +72,17 @@ local function on_built(event)
     wake(mover)
     return
   end
-  local box = entity.bounding_box
-  local area = { { box.left_top.x - 1, box.left_top.y - 1 }, { box.right_bottom.x + 1, box.right_bottom.y + 1 } }
-  for _, other in pairs(entity.surface.find_entities_filtered({ area = area, name = tiers.names() })) do
-    local mover = registry.get(other.unit_number)
-    if mover and not mover.scheduled_tick then wake(mover) end
+  wake_around(entity)
+end
+
+--- Vlak zastavil (ve stanici nebo ručně): probudí optimizery kolem všech jeho vagónů.
+local function on_train_changed_state(event)
+  local train = event.train
+  if train.state ~= defines.train_state.wait_station and train.state ~= defines.train_state.manual_control then
+    return
+  end
+  for _, carriage in pairs(train.carriages) do
+    if neighbours.WAGON_TYPES[carriage.type] then wake_around(carriage) end
   end
 end
 
@@ -135,6 +151,7 @@ for _, id in ipairs({
 end
 
 script.on_event({ defines.events.on_player_rotated_entity, defines.events.on_player_flipped_entity }, on_rotated)
+script.on_event(defines.events.on_train_changed_state, on_train_changed_state)
 script.on_event(defines.events.on_tick, function(event) scheduler.run(event.tick, run) end)
 script.on_event(defines.events.on_player_setup_blueprint, persistence.on_setup_blueprint)
 script.on_event(defines.events.on_entity_settings_pasted, persistence.on_pasted)

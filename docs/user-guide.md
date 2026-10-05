@@ -22,13 +22,15 @@ teď:    [bedna] → Storage optimizer → [bedna]
   (klávesa Alt) je navíc vidět šipka mířící k cíli.
 - Klávesa **R** otočí optimizer, tím se prohodí zdroj a cíl. Vždy platí jen jeden směr.
 - **Dráty obvodové sítě** se připojují ke svorkovnici na převodovce (červený a zelený izolátor).
-- Funguje s **bednami a sklady** (typy `container` a `logistic-container`, včetně logistických beden a velkých
-  skladů z jiných modů) a s **montážními stroji a pecemi** (i z modů):
+- Funguje s **bednami a sklady** (typy `container`, `logistic-container` a `infinity-container`, včetně
+  logistických beden, nekonečné bedny a velkých skladů z jiných modů), s **nákladními vagóny** a s **montážními stroji a pecemi** (i z modů):
   - **stroj jako cíl** – optimizer plní jeho **vstup** surovinami receptu, např. jednorázově
     „železné pláty × 2 stacky“ jako zásobu. Stroj bez receptu nepřijme nic (optimizer čeká).
   - **stroj jako zdroj** – optimizer bere hotové **výrobky** z výstupu (po celých přesunech).
   - **Palivo neřeší** – uhlí do pece dál dává inserter; předměty, které nejsou surovinou receptu, zůstanou ve zdroji.
-- Pásy, vagóny a jiné budovy ignoruje.
+- **Vagón** se počítá jen, když stojí (ve stanici nebo zastavený ručně); zastavení vlaku ve stanici optimizer
+  probudí, po odjezdu se sám uspí. Optimizer postav vedle koleje tak, aby zdroj/cíl ležel na vagónu.
+- Pásy, cisterny a jiné budovy ignoruje.
 
 ## Pravidla přesunu
 

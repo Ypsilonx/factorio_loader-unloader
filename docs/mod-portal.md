@@ -19,6 +19,7 @@ A *transfer* is **stack size × stacks per transfer** – e.g. iron plates 100 �
   per item. Can also be driven by any circuit signal you choose ("Stacks per
   transfer from circuit" in the panel – like the native "Set stack size").
 - **No belts needed** – place it between two chests, warehouses or machines, press R to reverse the direction.
+- **Trains** – put it next to the track to load or unload a cargo wagon while the train waits at a station.
 - **Assembling machines and furnaces** – as a target it fills the machine's input (e.g. a one-off buffer of
   "iron plates × 2 stacks"), as a source it takes the finished products. Fuel is left to inserters.
 - **Tiers from any belt mod** – every belt in the game (vanilla, Space Age, or any belt mod) automatically
@@ -52,13 +53,14 @@ A *transfer* is **stack size × stacks per transfer** – e.g. iron plates 100 �
   Tested with Pyanodon and Bob's mods. Ingredients are intermediates (circuits, inserters, belts), so
   overhaul mods make the recipe more expensive on their own; missing items fall back to simpler ones.
 - Works with any mod that adds belts (tiers are generated automatically), any mod that adds chests or
-  warehouses of type `container` / `logistic-container` and any mod that adds assembling machines or furnaces.
+  warehouses of type `container` / `logistic-container` / `infinity-container`, any cargo wagon and any mod that adds assembling machines or furnaces.
 - Default control signals are the plain letters **S** (stack size) and **N** (stacks per transfer);
   any other signal can be chosen.
 
 ## Known limitations
 
-- Works with chests, warehouses, assembling machines and furnaces – not with wagons, rocket silos or labs.
+- Works with chests, warehouses, cargo wagons, assembling machines and furnaces – not with fluid wagons,
+  rocket silos or labs. A wagon counts only while the train stands still.
 - Fuel is not handled (use an inserter for fuel).
 - The native inserter window shows the *Override stack size* slider – it is ignored. Stack size and
   stacks per transfer are set in the panel on the right.

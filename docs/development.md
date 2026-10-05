@@ -117,6 +117,8 @@ Pak ve hře povol mod. Ladění s breakpointy: *Run and Debug → Factorio Mod D
 - [ ] Výchozí řídicí signály jsou S (velikost stacku) a N (počet stacků).
 - [ ] Montážní stroj jako cíl: suroviny receptu se doplní do vstupu, stroj bez receptu nic nepřijme.
 - [ ] Montážní stroj / pec jako zdroj: odebírají se hotové výrobky; palivo pece optimizer neplní.
+- [ ] Vagón: vlak zastaví ve stanici → optimizer vykládá/nakládá; po odjezdu stav „Chybí zdroj nebo cíl“, nic
+      se nepřesune do jedoucího vagónu. Logistické a nekonečné bedny jako zdroj i cíl.
 - [ ] Blueprint s nastavenou dávkou a počtem stacků → postavený optimizer má stejné hodnoty.
 - [ ] Ctrl+C / Ctrl+V zachová dávku i počet stacků.
 - [ ] Shift+pravý klik / Shift+levý klik zkopíruje dávku i počet stacků mezi optimizery.

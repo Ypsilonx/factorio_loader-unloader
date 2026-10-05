@@ -1,4 +1,5 @@
---- Hledání zdroje a cíle kolem Storage optimizeru: bedny a sklady, montážní stroje a pece.
+--- Hledání zdroje a cíle kolem Storage optimizeru: bedny a sklady (i logistické a nekonečné),
+--- montážní stroje, pece a nákladní vagóny.
 local M = {}
 
 --- Inventář podle typu entity a role: zdroj bere z výstupu, cíl plní vstup. Bedny mají jeden inventář.
@@ -6,9 +7,15 @@ local M = {}
 local INVENTORIES = {
   ["container"] = { source = defines.inventory.chest, target = defines.inventory.chest },
   ["logistic-container"] = { source = defines.inventory.chest, target = defines.inventory.chest },
+  ["infinity-container"] = { source = defines.inventory.chest, target = defines.inventory.chest },
   ["assembling-machine"] = { source = defines.inventory.crafter_output, target = defines.inventory.crafter_input },
   ["furnace"] = { source = defines.inventory.crafter_output, target = defines.inventory.crafter_input },
+  ["cargo-wagon"] = { source = defines.inventory.cargo_wagon, target = defines.inventory.cargo_wagon },
+  ["infinity-cargo-wagon"] = { source = defines.inventory.cargo_wagon, target = defines.inventory.cargo_wagon },
 }
+
+--- Typy vagónů: jsou sousedem jen když stojí a optimizer je musí každý cyklus hledat znovu (odjedou).
+M.WAGON_TYPES = { ["cargo-wagon"] = true, ["infinity-cargo-wagon"] = true }
 
 --- Typy entit, se kterými optimizer pracuje (pro hledání sousedů a event filtry).
 M.TYPES = {}
@@ -24,21 +31,26 @@ local TO_SOURCE = {
   [12] = { -1, 0 },
 }
 
---- Najde inventář entity (bedny nebo stroje), jejíž hranice obsahuje daný bod, pro danou roli.
---- @param role string "source" | "target"
-local function inventory_at(surface, position, role)
+--- Najde entitu se známým inventářem, jejíž hranice obsahuje daný bod; jedoucí vagón se nepočítá.
+--- @return LuaEntity|nil
+local function entity_at(surface, position)
   local found = surface.find_entities_filtered({ position = position, type = M.TYPES, limit = 1 })[1]
-  return found and found.get_inventory(INVENTORIES[found.type][role]) or nil
+  if found and M.WAGON_TYPES[found.type] and found.speed ~= 0 then return nil end
+  return found
 end
 
 --- Přepočítá zdroj a cíl podle aktuální pozice a směru entity.
+--- mover.wagon = některá strana je vagón → run() sousedy přepočítá každý cyklus (vlak může odjet).
 function M.refresh(mover)
   local entity = mover.entity
   local v = TO_SOURCE[entity.direction]
   local p = entity.position
+  local from = entity_at(entity.surface, { p.x + v[1], p.y + v[2] })
+  local to = entity_at(entity.surface, { p.x - v[1], p.y - v[2] })
   mover.direction = entity.direction
-  mover.source = inventory_at(entity.surface, { p.x + v[1], p.y + v[2] }, "source")
-  mover.target = inventory_at(entity.surface, { p.x - v[1], p.y - v[2] }, "target")
+  mover.source = from and from.get_inventory(INVENTORIES[from.type].source) or nil
+  mover.target = to and to.get_inventory(INVENTORIES[to.type].target) or nil
+  mover.wagon = (from and M.WAGON_TYPES[from.type] or to and M.WAGON_TYPES[to.type]) and true or nil
 end
 
 --- Má entita platný zdroj i cíl?
