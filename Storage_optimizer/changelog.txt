@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 2026-10-06
+  Features:
+    - Cargo wagons as source or target: place the optimizer next to the track to load or unload a train
+      waiting at a station. A wagon counts only while the train stands still; a stopping train wakes
+      the optimizers around it.
+    - Infinity chest (and infinity cargo wagon) as source or target.
+---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 2026-10-02
   Changes:
