@@ -8,6 +8,7 @@ runner.register(require("cases.transfer"))
 runner.register(require("cases.settings"))
 runner.register(require("cases.persistence"))
 runner.register(require("cases.stacks"))
+runner.register(require("cases.leftovers"))
 runner.register(require("cases.machines"))
 
 script.on_init(runner.on_init)

@@ -7,6 +7,16 @@ local A = require("assert")
 --- Cesta k API dokumentaci; jiná instalace hry → proměnná prostředí FACTORIO_API_JSON.
 local API_JSON = os.getenv("FACTORIO_API_JSON") or "C:/STEAM/steamapps/common/Factorio/doc-html/runtime-api.json"
 
+--- Soubory, které stavějí GUI prvky.
+local GUI_FILES = {
+  "Storage_optimizer/scripts/gui.lua",
+  "Storage_optimizer/scripts/gui/common.lua",
+  "Storage_optimizer/scripts/gui/transfer_section.lua",
+  "Storage_optimizer/scripts/gui/filters_section.lua",
+  "Storage_optimizer/scripts/gui/circuit_section.lua",
+  "Storage_optimizer/scripts/gui/logistic_section.lua",
+}
+
 --- Načte celý soubor jako text (nebo nil).
 local function read(path)
   local file = io.open(path, "rb")
@@ -27,7 +37,7 @@ local function reserved_names(api)
 end
 
 return {
-  { "jména elementů v gui.lua nekolidují s LuaGuiElement", function()
+  { "jména elementů okna nekolidují s LuaGuiElement", function()
     local api = read(API_JSON)
     if not api then
       print("SKIP test_gui_names: chybí " .. API_JSON)
@@ -35,9 +45,12 @@ return {
     end
     local reserved = reserved_names(api)
     A.truthy(reserved["state"] and reserved["caption"], "seznam vlastností LuaGuiElement načten")
-    local source = read("Storage_optimizer/scripts/gui.lua")
-    for name in source:gmatch('name%s*=%s*"([^"]+)"') do
-      A.eq(reserved[name], nil, "jméno elementu '" .. name .. "' koliduje s LuaGuiElement")
+    for _, file in ipairs(GUI_FILES) do
+      local source = read(file)
+      A.truthy(source, "soubor " .. file)
+      for name in source:gmatch('name%s*=%s*"([^"]+)"') do
+        A.eq(reserved[name], nil, file .. ": jméno elementu '" .. name .. "' koliduje s LuaGuiElement")
+      end
     end
   end },
 }

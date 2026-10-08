@@ -54,7 +54,7 @@ return {
   {
     name = "zásobník energie na dva přesuny po 20 stacích",
     steps = { { ticks = 1, run = function()
-      H.eq(prototypes.entity[MOVER].electric_energy_source_prototype.buffer_capacity, 230000, "2 × 115 kJ")
+      H.eq(prototypes.entity[MOVER].electric_energy_source_prototype.buffer_capacity, 290000, "2 × 145 kJ")
     end } },
   },
   {
@@ -72,7 +72,7 @@ return {
       end },
       { ticks = 40, run = function(ctx)
         H.eq(H.count(ctx.b, "iron-plate"), 300, "jeden přesun 3 stacků")
-        H.eq(math.floor(ctx.before - ctx.m.energy + 0.5), 30000, "spotřeba 20 kJ + 2 × 5 kJ")
+        H.eq(math.floor(ctx.before - ctx.m.energy + 0.5), 60000, "spotřeba 50 kJ + 2 × 5 kJ")
       end },
     },
   },

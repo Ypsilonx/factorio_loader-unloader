@@ -66,13 +66,18 @@ return {
     H.eq(prototypes.virtual_signal["storage-optimizer-batch"], nil, "bez vlastního signálu velikosti")
     H.eq(prototypes.virtual_signal["storage-optimizer-stacks"], nil, "bez vlastního signálu počtu")
   end),
-  check("styly a ukotvení GUI panelu existují", function()
-    -- Headless hra nemá hráče, panel se nevytvoří; aspoň ověřit, že engine zná vše, co gui.lua používá.
-    for _, style in ipairs({ "inside_shallow_frame_with_padding", "caption_label", "caption_checkbox" }) do
+  check("styly, sprity a události okna existují", function()
+    -- Headless hra nemá hráče, okno se nevytvoří; aspoň ověřit, že engine zná vše, co scripts/gui* používá.
+    for _, style in ipairs({ "inside_shallow_frame_with_padding", "caption_label", "caption_checkbox", "frame_title",
+                             "draggable_space_header", "frame_action_button", "slot_button_in_shallow_frame" }) do
       H.truthy(prototypes.style[style], "styl " .. style)
     end
-    H.truthy(defines.relative_gui_type.inserter_gui, "relative_gui_type.inserter_gui")
-    H.truthy(defines.relative_gui_position.right, "relative_gui_position.right")
+    H.truthy(helpers.is_valid_sprite_path("utility/close"), "sprite utility/close")
+    for _, event in ipairs({ "on_gui_opened", "on_gui_closed", "on_gui_click", "on_gui_text_changed",
+                             "on_gui_checked_state_changed", "on_gui_elem_changed",
+                             "on_gui_selection_state_changed", "on_gui_switch_state_changed" }) do
+      H.truthy(defines.events[event], "událost " .. event)
+    end
   end),
   check("turbo tier (Space Age)", function()
     H.eq(interval("storage-optimizer-turbo-transport-belt"), 15, "turbo")
