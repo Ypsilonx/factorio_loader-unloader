@@ -27,11 +27,12 @@ A *transfer* is **stack size × stacks per transfer** – e.g. iron plates 100 �
   faster belts are proportionally faster.
 - **Custom stack size** – the item's stack (empty field), any amount (e.g. 5000, not limited to 255) or
   a circuit signal.
-- **Filters and circuit control** – 5 filters with whitelist/blacklist and quality comparison;
+- **Filters and circuit control** – 5 filters with whitelist/blacklist, optionally by quality;
   enable/disable by condition, stack size and stack count from signals, filters from signals.
   Wires connect to a terminal on the building's gearbox.
-- **Own window with only what works** – status, energy, stack size, stack count, leftovers, filters,
-  circuit and logistic conditions. No inserter options that the building ignores.
+- **Own window with only what works** – the same layout as the native inserter window (status, live
+  preview, filters, circuit connection panel), with stack size, stack count and leftovers instead of the
+  inserter options the building would ignore.
 - **Blueprint support** – all settings survive blueprints, copy-paste and tier upgrades.
 - **Quality, spoilage and item data are preserved.**
 - **UPS-friendly** – the building is never updated by the engine; the script touches it only once per

@@ -2,11 +2,13 @@
 Version: 0.4.0
 Date: 2026-10-08
   Features:
-    - Own window instead of the native inserter window: it shows only what the building really uses –
-      status, energy, stack size, stacks per transfer, leftovers, filters, circuit and logistic conditions.
-      Inserter options the building ignored (read hand contents, override stack size) are gone.
-    - Stack size and stacks per transfer can each be set manually or from a circuit signal right next
-      to the field, with the current signal value shown.
+    - Own window with the same layout as the native inserter window, showing only what the building
+      really uses: status, live preview, energy, filters (quality picked in the slot), stack size, stacks
+      per transfer (slider and field) and leftovers. Inserter options the building ignored (read hand
+      contents, override stack size, spoil priority) are gone.
+    - Circuit connection panel next to the window: enable/disable condition, set filters, and set stack
+      size / stack count from a control signal with its current value shown. Logistic network panel
+      when in range of a logistic network.
     - "Move leftovers too": when the source lacks a full transfer or the target has no room for it, the
       building moves as much as possible, so chests and wagons get emptied completely. Off by default.
       A partial transfer pays the base cost plus the matching share of the extra stacks.

@@ -74,7 +74,7 @@ nastavení hry. Výsledek je řádek `SO-TEST DONE pass=… fail=… skip=…`.
 (`cases/compat.lua`): tiery vznikly, každý recept má výzkum a všechny suroviny tieru jdou vyrobit nejpozději
 po jeho výzkumu. Herní testy se vynechají, protože počítají s vanilla bednami a rozvodnami. Vygenerované
 suroviny a prerekvizity každého tieru jsou v logu (`.test-run/mods/write-data/factorio-current.log`, řádky
-`recipe.lua`). Ověřeno (2026-10-02): `pymodpack` (Pyanodon 3.0, 4 tiery) a `boblogistics bobinserters
+`recipe.lua`). Ověřeno (2026-10-02, znovu 2026-10-08 pro 0.4.0): `pymodpack` (Pyanodon 3.0, 4 tiery) a `boblogistics bobinserters
 bobplates bobelectronics bobtech bobassembly` (7 tierů).
 
 ### Výsledky výkonového testu (1000 dvojic beden, 3600 ticků, Factorio 2.0.77)
