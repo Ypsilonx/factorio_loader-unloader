@@ -20,6 +20,9 @@ local LEGACY_FRAMES = { "storage_optimizer_panel", "storage_optimizer_circuit" }
 
 --- Jak často se otevřená okna obnovují (ticky). Laditelná hodnota.
 M.REFRESH_TICKS = 15
+--- Mezera mezi hlavním oknem a bočními panely a mezi panely navzájem (px; 0 = přilepené jako nativní okno).
+--- Laditelná hodnota.
+M.PANEL_SPACING = 0
 
 --- Části okna v pořadí zobrazení: { kam patří ("body" = hlavní okno, "side" = boční sloupec), modul }.
 local SECTIONS = {
@@ -87,12 +90,12 @@ function M.open(player, mover)
   -- Neviditelný rámeček drží hlavní okno a boční panely vedle sebe; přetahuje se a centruje jako celek.
   local frame = player.gui.screen.add({ type = "frame", name = WINDOW, style = "invisible_frame" })
   local row = frame.add({ type = "flow", name = "so_row", direction = "horizontal" })
-  row.style.horizontal_spacing = 12
+  row.style.horizontal_spacing = M.PANEL_SPACING
   local main = row.add({ type = "frame", name = "so_main", direction = "vertical" })
   add_titlebar(main, entity.localised_name, frame)
   local body = main.add({ type = "frame", name = "so_body", direction = "vertical", style = "entity_frame" })
   local side = row.add({ type = "flow", name = "so_side", direction = "vertical" })
-  side.style.vertical_spacing = 12
+  side.style.vertical_spacing = M.PANEL_SPACING
 
   overview_section.build(body)
   filters_section.build(body, entity.filter_slot_count)
