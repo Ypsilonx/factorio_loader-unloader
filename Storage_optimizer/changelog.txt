@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.1
+Date: 2026-10-08
+  Balancing:
+    - The yellow tier no longer waits for the bulk inserter technology (it needs the red belt), so it came
+      at the same time as the red tier. In vanilla it now needs only red science (fast inserter and steel);
+      its recipe uses a fast inserter instead of a bulk inserter, which moved to the red tier recipe.
+---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 2026-10-06
   Features:
