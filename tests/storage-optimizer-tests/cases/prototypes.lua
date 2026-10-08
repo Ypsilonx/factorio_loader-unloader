@@ -54,9 +54,13 @@ return {
       H.truthy(unlocked_by_some_tech(name), "recept " .. name)
     end
     local t1 = prototypes.technology["storage-optimizer-transport-belt"].prerequisites
-    H.truthy(t1["bulk-inserter"], "tier 1 vyžaduje bulk-inserter")
+    H.truthy(t1["fast-inserter"], "tier 1 vyžaduje fast-inserter")
+    H.eq(t1["bulk-inserter"], nil, "tier 1 nečeká na bulk-inserter (ten přichází s červeným pásem)")
+    H.eq(#prototypes.technology["storage-optimizer-transport-belt"].research_unit_ingredients, 1,
+      "tier 1 jen za červenou vědu")
     local t2 = prototypes.technology["storage-optimizer-fast-transport-belt"].prerequisites
     H.truthy(t2["storage-optimizer-transport-belt"], "tier 2 vyžaduje výzkum tieru 1")
+    H.truthy(t2["bulk-inserter"], "tier 2 vyžaduje bulk-inserter")
   end),
   check("mod nepřidává vlastní signály (výchozí jsou vanilla S a N)", function()
     H.eq(prototypes.virtual_signal["storage-optimizer-batch"], nil, "bez vlastního signálu velikosti")

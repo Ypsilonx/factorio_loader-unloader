@@ -59,8 +59,9 @@ Bez proudu (nebo při jeho nedostatku) optimizer čeká, dokud síť nedobije en
 
 Mody, které přidávají další pásy, přidají **automaticky** i další tiery. Každý tier má vlastní výzkum
 „Storage optimizer (<pás>)“. Vyžaduje výzkum pásu, předchozí tier a výzkumy všech surovin receptu. První
-tier se ve vanille odemkne po výzkumu bulk inserteru. Recept obsahuje předchozí tier, 2 pásy a podle rychlosti
-pásu bulk inserter, ocel a elektronické obvody (do žlutého), pokročilé obvody (červený) nebo procesory (rychlejší).
+tier se ve vanille odemkne už za červenou vědu (po rychlém inserteru a oceli), červený až s červeným pásem.
+Recept obsahuje předchozí tier, 2 pásy a podle rychlosti pásu rychlý inserter, ocel a elektronické obvody
+(do žlutého), bulk inserter, pokročilé obvody a ocel (červený) nebo procesory a ocel (rychlejší).
 S overhaul mody (Pyanodon, Bob's …) se prerekvizity dopočítají z jejich stromu výzkumů a recept zdraží
 jejich dražší meziprodukty. Vyšší tier jde postavit přímo přes nižší a funguje i upgrade planner.
 Tier poznáš podle barvy šipek (žlutá, červená, modrá, zelená, …) a podle názvu budovy.

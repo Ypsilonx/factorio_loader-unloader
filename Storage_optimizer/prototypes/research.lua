@@ -20,11 +20,13 @@ M.LEVEL_SPEEDS = { 1, 2 }
 --- Laditelné hodnoty.
 M.LEVELS = {
   {
-    { { "bulk-inserter", "fast-inserter", "inserter" }, 1 },
+    -- Ne bulk inserter: jeho výzkum ve vanille vyžaduje červený pás, žlutý tier by přišel až s červeným.
+    { { "fast-inserter", "inserter" }, 1 },
     { { "steel-plate", "iron-plate" }, 5 },
     { { "electronic-circuit" }, 10 },
   },
   {
+    { { "bulk-inserter", "fast-inserter", "inserter" }, 1 },
     { { "advanced-circuit", "electronic-circuit" }, 10 },
     { { "steel-plate", "iron-plate" }, 10 },
   },

@@ -74,10 +74,11 @@ local function add_tier(raw, name, ingredients, tech)
 end
 
 return {
-  { "suroviny tieru 1: bulk inserter, ocel, obvody, pásy", function()
+  { "suroviny tieru 1: fast inserter, ocel, obvody, pásy", function()
     local list = research.ingredients(vanilla(), Y, "transport-belt", nil)
     A.eq(amount(list, "transport-belt"), 2, "pásy")
-    A.eq(amount(list, "bulk-inserter"), 1, "bulk inserter")
+    A.eq(amount(list, "fast-inserter"), 1, "fast inserter")
+    A.eq(amount(list, "bulk-inserter"), nil, "bez bulk inserteru (přišel by až s červeným pásem)")
     A.eq(amount(list, "steel-plate"), 5, "ocel")
     A.eq(amount(list, "electronic-circuit"), 10, "obvody")
   end },
@@ -95,10 +96,10 @@ return {
     A.eq(research.level(4 * Y), 3, "turbo")
   end },
   { "chybějící předmět nahradí další kandidát, žádný kandidát = vynechat", function()
-    local raw = vanilla({ ["bulk-inserter"] = true, ["steel-plate"] = true })
+    local raw = vanilla({ ["fast-inserter"] = true, ["steel-plate"] = true })
     local list = research.ingredients(raw, Y, "transport-belt", nil)
-    A.eq(amount(list, "bulk-inserter"), nil, "odstraněný bulk inserter")
-    A.eq(amount(list, "fast-inserter"), 1, "náhrada fast inserter")
+    A.eq(amount(list, "fast-inserter"), nil, "odstraněný fast inserter")
+    A.eq(amount(list, "inserter"), 1, "náhrada inserter")
     A.eq(amount(list, "iron-plate"), 5, "náhrada železo")
     raw.item["electronic-circuit"] = nil
     A.eq(amount(research.ingredients(raw, Y, "transport-belt", nil), "electronic-circuit"), nil, "bez náhrady")
@@ -112,15 +113,15 @@ return {
     end
     A.eq(names, 1, "jediná položka")
   end },
-  { "tier 1: prerekvizita bulk inserter, nadbytečné vynechá", function()
+  { "tier 1: jen červená věda (fast inserter, ocel), ne až s červeným pásem", function()
     local raw = vanilla()
     local tech = research.technology(raw, nil, research.ingredients(raw, Y, "transport-belt", nil), "transport-belt")
     local p = set(tech.prerequisites)
-    A.truthy(p["bulk-inserter"], "bulk-inserter")
-    A.truthy(p["steel-processing"], "steel-processing (není v bulk-inserter)")
+    A.truthy(p["fast-inserter"], "fast-inserter")
+    A.truthy(p["steel-processing"], "steel-processing")
     A.eq(#tech.prerequisites, 2, "jen nezbytné")
-    A.eq(tech.unit.count, 225, "1,5 × 150")
-    A.eq(#tech.unit.ingredients, 2, "druhy vědy z bulk-inserter")
+    A.eq(tech.unit.count, 75, "1,5 × 50")
+    A.eq(#tech.unit.ingredients, 1, "jen červená věda")
   end },
   { "tier 2 nejde vyzkoumat dřív než tier 1, i když jeho pás ano", function()
     local raw = vanilla()
@@ -130,7 +131,8 @@ return {
     local t2 = research.technology(raw, "logistics-2", ingredients, "fast-transport-belt")
     local p = set(t2.prerequisites)
     A.truthy(p["storage-optimizer-transport-belt"], "výzkum tieru 1")
-    A.eq(p["logistics-2"], nil, "logistics-2 plyne z tieru 1")
+    A.truthy(p["bulk-inserter"], "bulk-inserter (surovina tieru 2)")
+    A.eq(p["logistics-2"], nil, "logistics-2 plyne z bulk-inserter")
     A.eq(t2.unit.count, 300, "základ z cizích výzkumů (200), ne z tieru 1")
   end },
   { "vše od začátku = bez výzkumu", function()
