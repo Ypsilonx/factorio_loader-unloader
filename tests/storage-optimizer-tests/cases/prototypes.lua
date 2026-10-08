@@ -69,13 +69,20 @@ return {
   check("styly, sprity a události okna existují", function()
     -- Headless hra nemá hráče, okno se nevytvoří; aspoň ověřit, že engine zná vše, co scripts/gui* používá.
     for _, style in ipairs({ "inside_shallow_frame_with_padding", "caption_label", "caption_checkbox", "frame_title",
-                             "draggable_space_header", "frame_action_button", "slot_button_in_shallow_frame" }) do
+                             "draggable_space_header", "frame_action_button", "slot_button_in_shallow_frame",
+                             "invisible_frame", "entity_frame", "deep_frame_in_shallow_frame", "status_image",
+                             "slot_button_deep_frame", "filter_slot_table", "slot_button", "notched_slider",
+                             "slider_value_textfield", "subheader_frame", "circuit_condition_comparator_dropdown" }) do
       H.truthy(prototypes.style[style], "styl " .. style)
     end
-    H.truthy(helpers.is_valid_sprite_path("utility/close"), "sprite utility/close")
+    for _, sprite in ipairs({ "utility/close", "utility/status_working", "utility/status_yellow",
+                              "utility/status_not_working" }) do
+      H.truthy(helpers.is_valid_sprite_path(sprite), "sprite " .. sprite)
+    end
     for _, event in ipairs({ "on_gui_opened", "on_gui_closed", "on_gui_click", "on_gui_text_changed",
                              "on_gui_checked_state_changed", "on_gui_elem_changed",
-                             "on_gui_selection_state_changed", "on_gui_switch_state_changed" }) do
+                             "on_gui_selection_state_changed", "on_gui_switch_state_changed",
+                             "on_gui_value_changed" }) do
       H.truthy(defines.events[event], "událost " .. event)
     end
   end),

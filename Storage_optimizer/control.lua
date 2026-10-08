@@ -164,6 +164,7 @@ script.on_event({
   defines.events.on_gui_elem_changed,
   defines.events.on_gui_selection_state_changed,
   defines.events.on_gui_switch_state_changed,
+  defines.events.on_gui_value_changed,
 }, gui.on_changed)
 -- Obnova otevřených oken; bez otevřeného okna jen jedna kontrola prázdné tabulky.
 script.on_nth_tick(gui.REFRESH_TICKS, gui.refresh)

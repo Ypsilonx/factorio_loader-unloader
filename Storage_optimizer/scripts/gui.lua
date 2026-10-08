@@ -1,10 +1,12 @@
 --- Vlastní okno Storage optimizeru místo nativního okna inserteru (to by ukazovalo volby, které optimizer
---- nepoužívá, např. „Číst obsah ruky“). Okno se skládá ze sekcí v scripts/gui/:
----   přesun (stav, energie, velikost a počet stacků, zbytky), filtry, obvodová síť, logistická síť.
+--- nepoužívá, např. „Číst obsah ruky“). Rozložení napodobuje nativní okno: vlevo hlavní okno (stav, náhled,
+--- filtry, velikost a počet stacků, zbytky), vpravo boční panely „Připojení obvodu“ a „Logistická síť“.
+--- Části jsou v scripts/gui/.
 --- Nastavení filtrů a podmínek zůstává v entitě (engine je přenáší v blueprintech a vyhodnocuje),
 --- okno je jen čte a zapisuje. Dokud je okno otevřené, obnovuje se stav, energie a hodnoty signálů.
 local tiers = require("scripts.tiers")
 local registry = require("scripts.registry")
+local overview_section = require("scripts.gui.overview_section")
 local transfer_section = require("scripts.gui.transfer_section")
 local filters_section = require("scripts.gui.filters_section")
 local circuit_section = require("scripts.gui.circuit_section")
@@ -19,12 +21,13 @@ local LEGACY_FRAMES = { "storage_optimizer_panel", "storage_optimizer_circuit" }
 --- Jak často se otevřená okna obnovují (ticky). Laditelná hodnota.
 M.REFRESH_TICKS = 15
 
---- Sekce v pořadí zobrazení: { jméno rámečku, modul }.
+--- Části okna v pořadí zobrazení: { kam patří ("body" = hlavní okno, "side" = boční sloupec), modul }.
 local SECTIONS = {
-  { "so_transfer", transfer_section },
-  { "so_filters", filters_section },
-  { "so_circuit", circuit_section },
-  { "so_logistic", logistic_section },
+  { "body", overview_section },
+  { "body", filters_section },
+  { "body", transfer_section },
+  { "side", circuit_section },
+  { "side", logistic_section },
 }
 
 --- Obsluha všech sekcí podle tagu `so` prvku.
@@ -39,10 +42,10 @@ local function window(player)
   return (frame and frame.valid) and frame or nil
 end
 
---- Přidá titulek okna: název budovy, plocha pro přetažení a křížek.
-local function add_titlebar(frame, caption)
+--- Přidá titulek hlavního okna: název budovy, plocha pro přetažení (táhne celé okno) a křížek.
+local function add_titlebar(frame, caption, drag_target)
   local bar = frame.add({ type = "flow", name = "so_titlebar", direction = "horizontal" })
-  bar.drag_target = frame
+  bar.drag_target = drag_target
   bar.style.horizontal_spacing = 8
   bar.add({ type = "label", caption = caption, style = "frame_title", ignored_by_interaction = true })
   local drag = bar.add({ type = "empty-widget", style = "draggable_space_header", ignored_by_interaction = true })
@@ -52,10 +55,16 @@ local function add_titlebar(frame, caption)
             tags = { so = "close" } })
 end
 
---- Obnoví proměnlivé části všech sekcí.
+--- Rodiče částí okna: { body = tělo hlavního okna, side = boční sloupec }.
+local function parts(frame)
+  local row = frame.so_row
+  return { body = row.so_main.so_body, side = row.so_side }
+end
+
+--- Obnoví proměnlivé části okna.
 local function refresh_window(frame, mover)
-  local body = frame.so_body
-  for _, section in ipairs(SECTIONS) do section[2].refresh(body[section[1]], mover) end
+  local parents = parts(frame)
+  for _, section in ipairs(SECTIONS) do section[2].refresh(parents[section[1]], mover) end
 end
 
 --- Zavře okno hráče a zapamatuje si jeho polohu.
@@ -75,15 +84,23 @@ end
 function M.open(player, mover)
   M.close(player)
   local entity = mover.entity
-  local frame = player.gui.screen.add({ type = "frame", name = WINDOW, direction = "vertical" })
-  add_titlebar(frame, entity.localised_name)
-  local body = frame.add({ type = "flow", name = "so_body", direction = "vertical" })
-  body.style.vertical_spacing = 8
-  transfer_section.build(body)
+  -- Neviditelný rámeček drží hlavní okno a boční panely vedle sebe; přetahuje se a centruje jako celek.
+  local frame = player.gui.screen.add({ type = "frame", name = WINDOW, style = "invisible_frame" })
+  local row = frame.add({ type = "flow", name = "so_row", direction = "horizontal" })
+  row.style.horizontal_spacing = 12
+  local main = row.add({ type = "frame", name = "so_main", direction = "vertical" })
+  add_titlebar(main, entity.localised_name, frame)
+  local body = main.add({ type = "frame", name = "so_body", direction = "vertical", style = "entity_frame" })
+  local side = row.add({ type = "flow", name = "so_side", direction = "vertical" })
+  side.style.vertical_spacing = 12
+
+  overview_section.build(body)
   filters_section.build(body, entity.filter_slot_count)
-  circuit_section.build(body)
-  logistic_section.build(body)
-  for _, section in ipairs(SECTIONS) do section[2].fill(body[section[1]], mover) end
+  transfer_section.build(body, tiers.max_stacks(entity.name))
+  circuit_section.build(side)
+  logistic_section.build(side)
+  local parents = parts(frame)
+  for _, section in ipairs(SECTIONS) do section[2].fill(parents[section[1]], mover) end
   refresh_window(frame, mover)
 
   local location = storage.gui_location and storage.gui_location[player.index]

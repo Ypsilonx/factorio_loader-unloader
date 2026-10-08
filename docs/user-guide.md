@@ -71,29 +71,36 @@ Tier poznáš podle barvy šipek (žlutá, červená, modrá, zelená, …) a po
 
 ## Nastavení
 
-Kliknutím na optimizer se otevře **okno Storage optimizer** (místo nativního okna inserteru, které by
-ukazovalo i volby, jež optimizer nepoužívá). Okno jde přetáhnout za titulek a pamatuje si polohu;
-zavírá se klávesou E, Esc nebo křížkem. Nahoře je tier, trasa „zdroj → cíl“, stav a pruh energie.
+Kliknutím na optimizer se otevře **okno Storage optimizer**. Rozložením odpovídá nativnímu oknu inserteru,
+jen bez voleb, které optimizer nepoužívá (a bez inventáře postavy). Okno jde přetáhnout za titulek
+a pamatuje si polohu; zavírá se klávesou E, Esc nebo křížkem.
 
+**Hlavní okno (vlevo):**
+
+- Nahoře **stav** s barevnou tečkou a **živý náhled budovy**, pod ním tier, cena aktuálního přesunu,
+  trasa „zdroj → cíl“ a pruh energie.
+- **Používat filtry**, **bílá / černá listina** a 5 slotů. Kvalita se vybírá přímo ve slotu:
+  *normální* = libovolná kvalita, vyšší kvalita = přesně tato kvalita. Bez filtrů se přesouvá cokoliv.
 - **Velikost stacku**: prázdné pole = **stack materiálu** (např. 100 železných plátů), nebo libovolné číslo
   (např. 5000). Hodnota **není omezena na 255** jako u inserteru.
-- **Počet stacků za přesun**: výchozí 1, ručně 1–20 (limit lze změnit v nastavení modu).
+- **Počet stacků za přesun**: posuvník a pole, výchozí 1, ručně 1–20 (limit lze změnit v nastavení modu).
   Přesun = velikost stacku × počet stacků, např. železo 100 × 5 = 500 kusů. **Přesun stojí 50 kJ + 5 kJ za
-  každý další stack** (okno ukazuje cenu aktuálního přesunu).
-- **Ze sítě** (u obou polí, zobrazí se jen u budovy připojené drátem): po zaškrtnutí určuje hodnotu
-  **signál** ze sítě – výchozí **S** pro velikost stacku a **N** pro počet stacků, lze vybrat libovolný.
-  Vedle je vidět jeho **aktuální hodnota**. Hodnota > 0 nahradí ruční nastavení (počet stacků nejvýš
-  limit); bez signálu nebo při 0 platí ruční nastavení. Pole řízené sítí zešedne.
-  Pokud signály S/N v téže síti používáš i k něčemu jinému, vyber jiný.
+  každý další stack.**
 - **Přesouvat i zbytky**: viz [Pravidla přesunu](#pravidla-přesunu). Vypnuto = jen celé přesuny.
-- **Filtry**: zapnutí, **Povolit/Zakázat** a 5 slotů. Se Space Age má každý slot i **kvalitu**
-  (libovolná, nebo porovnání s vybranou kvalitou, např. ≥ neobvyklá). Bez filtrů se přesouvá cokoliv.
-- **Obvodová síť** (jen u budovy připojené drátem):
-  - *Zapnout/vypnout* – podmínka (signál, porovnání, signál nebo číslo), kdy optimizer pracuje.
-    Stav **„Vypnuto obvodovou sítí“** znamená, že podmínka není splněná.
-  - *Nastavit filtry* – předměty se signálem v síti se stanou filtry (sloty se pak jen zobrazují).
-    Bez signálu se nepřesouvá nic.
-- **Logistická síť** (jen v dosahu logistické sítě): *Připojit k logistické síti* a podmínka zapnutí.
+
+**Připojení obvodu (panel vpravo, jen u budovy připojené drátem):**
+
+- *Připojeno k* – čísla připojených sítí (červená, zelená).
+- *Povolit/Zakázat* – podmínka (signál, porovnání, signál nebo číslo), kdy optimizer pracuje.
+  Stav **„Vypnuto obvodovou sítí“** znamená, že podmínka není splněná.
+- *Nastavit filtry* – předměty se signálem v síti se stanou filtry (sloty se pak jen zobrazují).
+  Bez signálu se nepřesouvá nic.
+- *Nastavit velikost stacku* / *Nastavit počet stacků* – hodnotu určí **řídicí signál** (výchozí **S** a **N**,
+  lze vybrat libovolný); vedle je vidět jeho **aktuální hodnota**. Hodnota > 0 nahradí ruční nastavení
+  (počet stacků nejvýš limit), bez signálu nebo při 0 platí ruční nastavení. Pole v hlavním okně zešedne.
+  Pokud signály S/N v téže síti používáš i k něčemu jinému, vyber jiný.
+
+**Logistická síť (panel vpravo, jen v dosahu logistické sítě):** *Připojit k logistické síti* a podmínka.
 
 Všechna nastavení okna se přenáší v **blueprintech**, při **kopírování nastavení** (Shift+klik) i při
 **přestavění na jiný tier**.

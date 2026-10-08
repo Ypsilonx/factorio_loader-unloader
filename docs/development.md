@@ -26,7 +26,8 @@ Storage_optimizer/            samotný mod
   scripts/indicator.lua       ikonka stavu a šipka v alt režimu
   scripts/persistence.lua     blueprint tagy, copy-paste, výměna tieru
   scripts/gui.lua             vlastní okno místo nativního okna inserteru (otevření, zavření, obnova, události)
-  scripts/gui/                sekce okna: přesun, filtry, obvodová a logistická síť; common = sdílené řádky
+  scripts/gui/                části okna: overview (stav, náhled), filtry, přesun (stacky, zbytky), boční panely
+                              obvodové a logistické sítě; common = sdílené řádky
   scripts/remote.lua          remote rozhraní "storage-optimizer"
 tests/unit/                   jednotkové testy (lua 5.3)
 tests/storage-optimizer-tests/  testovací mod pro headless integrační testy
@@ -112,11 +113,14 @@ Pak ve hře povol mod. Ladění s breakpointy: *Run and Debug → Factorio Mod D
       příště otevře na stejném místě.
 - [ ] Velikost stacku 300 → přesouvá po 300; smazání pole → stack materiálu.
 - [ ] Počet stacků 5 → přesouvá po 5 stacích; 50 → ořízne se na 20; nápověda ukazuje cenu přesunu.
-- [ ] Řádky „Ze sítě“ u obou polí se ukážou jen po připojení drátu; po zaškrtnutí signál (výchozí S / N,
+- [ ] Rozložení odpovídá nativnímu oknu inserteru (stav, náhled, filtry, stacky; vpravo Připojení obvodu).
+- [ ] Panel „Připojení obvodu“ se ukáže jen po připojení drátu; Nastavit velikost / počet stacků: signál (výchozí S / N,
       i vlastní vybraný) přebije ruční hodnotu, pole zešedne a vedle je vidět aktuální hodnota;
       smazání výběru signálu vrátí výchozí.
 - [ ] „Přesouvat i zbytky“: bedna s 320 ks a přesunem 500 ks se vyprázdní; vypnuto → čeká.
-- [ ] Filtry: zapnutí, Povolit/Zakázat, předmět ve slotu; se Space Age kvalita „libovolná“ / „≥ neobvyklá“.
+- [ ] Filtry: zapnutí, bílá/černá listina, předmět ve slotu; se Space Age normální = libovolná kvalita,
+      neobvyklá = jen neobvyklá.
+- [ ] Posuvník počtu stacků a pole se navzájem srovnávají.
 - [ ] Obvodová síť: podmínka Zapnout/vypnout (signál × číslo i signál × signál) vypne přesun;
       „Nastavit filtry“ zamkne sloty a ukazuje filtry ze sítě.
 - [ ] Logistická síť: sekce se ukáže v dosahu roboportu, podmínka vypne přesun.

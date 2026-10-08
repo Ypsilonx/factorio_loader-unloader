@@ -11,6 +11,7 @@ local API_JSON = os.getenv("FACTORIO_API_JSON") or "C:/STEAM/steamapps/common/Fa
 local GUI_FILES = {
   "Storage_optimizer/scripts/gui.lua",
   "Storage_optimizer/scripts/gui/common.lua",
+  "Storage_optimizer/scripts/gui/overview_section.lua",
   "Storage_optimizer/scripts/gui/transfer_section.lua",
   "Storage_optimizer/scripts/gui/filters_section.lua",
   "Storage_optimizer/scripts/gui/circuit_section.lua",

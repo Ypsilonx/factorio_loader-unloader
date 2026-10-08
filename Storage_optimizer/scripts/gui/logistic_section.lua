@@ -1,36 +1,40 @@
---- Sekce okna „Logistická síť“ (jen v dosahu logistické sítě): připojení a podmínka zapnutí/vypnutí.
---- Podmínku vyhodnocuje engine (skript čte `disabled` z control behavior).
+--- Boční panel „Logistická síť“ (jako nativní, jen v dosahu logistické sítě nebo při zapnutém připojení):
+--- připojení a podmínka zapnutí/vypnutí. Podmínku vyhodnocuje engine (skript čte `disabled`).
 local common = require("scripts.gui.common")
+local circuit_section = require("scripts.gui.circuit_section")
 
 local M = {}
 
---- Postaví sekci do rodiče.
---- @return LuaGuiElement rámeček sekce
-function M.build(parent)
-  local frame = parent.add({ type = "frame", name = "so_logistic", direction = "vertical",
-                             style = "inside_shallow_frame_with_padding" })
-  frame.add({ type = "label", caption = { "storage-optimizer-gui.logistic-title" }, style = "caption_label" })
-  frame.add({ type = "checkbox", name = "so_connect", state = false,
-              caption = { "storage-optimizer-gui.logistic-connect" }, tags = { so = "logistic_connect" } })
-  common.add_condition_row(frame, "so_condition", "logistic_condition")
-  return frame
+--- Postaví panel do bočního sloupce.
+function M.build(side)
+  local frame = side.add({ type = "frame", name = "so_logistic", direction = "vertical",
+                          caption = { "storage-optimizer-gui.logistic-title" } })
+  frame.style.width = circuit_section.WIDTH
+  local content = frame.add({ type = "frame", name = "so_content", direction = "vertical",
+                              style = "inside_shallow_frame_with_padding" })
+  content.style.horizontally_stretchable = true
+  content.add({ type = "checkbox", name = "so_connect", state = false, style = "caption_checkbox",
+                caption = { "storage-optimizer-gui.logistic-connect" }, tags = { so = "logistic_connect" } })
+  common.add_condition_row(content, "so_condition", "logistic_condition")
 end
 
---- Naplní sekci z control behavior.
-function M.fill(frame, mover)
+--- Naplní panel z control behavior.
+function M.fill(side, mover)
+  local content = side.so_logistic.so_content
   local behavior = mover.entity.get_control_behavior()
-  frame.so_connect.state = behavior and behavior.connect_to_logistic_network or false
-  common.fill_condition_row(frame.so_condition, behavior and behavior.logistic_condition)
+  content.so_connect.state = behavior and behavior.connect_to_logistic_network or false
+  common.fill_condition_row(content.so_condition, behavior and behavior.logistic_condition)
 end
 
---- Sekce je vidět v dosahu sítě nebo když je připojení už zapnuté (aby šlo vypnout i mimo dosah).
-function M.refresh(frame, mover)
+--- Panel je vidět v dosahu sítě nebo když je připojení zapnuté (aby šlo vypnout i mimo dosah).
+function M.refresh(side, mover)
+  local frame = side.so_logistic
   local entity = mover.entity
   local behavior = entity.get_control_behavior()
   local connected = behavior and behavior.connect_to_logistic_network or false
   frame.visible = connected or common.in_logistic_network(entity)
   if not frame.visible then return end
-  common.set_condition_enabled(frame.so_condition, connected, behavior and behavior.logistic_condition)
+  common.set_condition_enabled(frame.so_content.so_condition, connected, behavior and behavior.logistic_condition)
 end
 
 --- Zapíše podmínku z řádku do control behavior.
