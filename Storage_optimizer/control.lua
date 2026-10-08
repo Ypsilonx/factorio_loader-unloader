@@ -120,7 +120,7 @@ local function on_configuration_changed()
       storage.movers[unit_number] = nil
     end
   end
-  gui.rebuild_all()
+  gui.reset_all()
 end
 
 local mover_filters = {}
@@ -155,15 +155,17 @@ script.on_event(defines.events.on_train_changed_state, on_train_changed_state)
 script.on_event(defines.events.on_tick, function(event) scheduler.run(event.tick, run) end)
 script.on_event(defines.events.on_player_setup_blueprint, persistence.on_setup_blueprint)
 script.on_event(defines.events.on_entity_settings_pasted, persistence.on_pasted)
-script.on_event(defines.events.on_player_created, function(event) gui.ensure(game.get_player(event.player_index)) end)
 script.on_event(defines.events.on_gui_opened, gui.on_opened)
-script.on_event(defines.events.on_gui_text_changed, gui.on_text_changed)
-script.on_event(defines.events.on_gui_checked_state_changed, gui.on_checked_state_changed)
-script.on_event(defines.events.on_gui_elem_changed, gui.on_elem_changed)
--- Obnova otevřených panelů; bez otevřeného okna jen jedna kontrola prázdné tabulky.
+script.on_event(defines.events.on_gui_closed, gui.on_closed)
+script.on_event(defines.events.on_gui_click, gui.on_click)
+script.on_event({
+  defines.events.on_gui_text_changed,
+  defines.events.on_gui_checked_state_changed,
+  defines.events.on_gui_elem_changed,
+  defines.events.on_gui_selection_state_changed,
+  defines.events.on_gui_switch_state_changed,
+}, gui.on_changed)
+-- Obnova otevřených oken; bez otevřeného okna jen jedna kontrola prázdné tabulky.
 script.on_nth_tick(gui.REFRESH_TICKS, gui.refresh)
-script.on_init(function()
-  init_storage()
-  gui.rebuild_all()
-end)
+script.on_init(init_storage)
 script.on_configuration_changed(on_configuration_changed)

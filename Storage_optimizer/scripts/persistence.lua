@@ -1,4 +1,4 @@
---- Přenos ručního nastavení (velikost stacku, počet stacků, počet stacků ze sítě a jeho signál):
+--- Přenos ručního nastavení (velikost stacku, počet stacků, počet stacků ze sítě a jeho signál, zbytky):
 --- blueprinty (tagy), kopírování nastavení, rychlá výměna tieru.
 --- Nastavení se předává jako tabulka se stejnými poli jako záznam optimizeru (viz M.TAGS).
 local tiers = require("scripts.tiers")
@@ -12,6 +12,7 @@ M.TAGS = {
   stacks = "so_stacks",
   stacks_circuit = "so_stacks_circuit",
   stacks_signal = "so_stacks_signal",
+  leftovers = "so_leftovers",
 }
 
 --- Vrátí nastavení z tagů stavěné entity (nebo nil, pokud žádné nemá).
@@ -64,6 +65,7 @@ function M.on_pasted(event)
   to.stacks = registry.clean_stacks(destination.name, from.stacks)
   to.stacks_circuit = from.stacks_circuit
   to.stacks_signal = from.stacks_signal
+  to.leftovers = from.leftovers
 end
 
 --- Klíč pozice pro spárování vytěžené a nově postavené entity.

@@ -21,10 +21,10 @@ end
 
 --- Cena přesunu v joulech: pevná cena (včetně prvního stacku) + každý další stack.
 --- @param name string jméno entity tieru
---- @param stacks integer počet stacků v přesunu
+--- @param stacks number počet stacků v přesunu (u zbytku i neceločíselný; pod 1 stojí jako 1)
 function M.cost(name, stacks)
   local tier = DATA[name]
-  return tier.energy + tier.extra_stack_energy * (stacks - 1)
+  return tier.energy + tier.extra_stack_energy * math.max(stacks - 1, 0)
 end
 
 --- Pevná cena přesunu a cena každého dalšího stacku v kJ (pro texty v GUI).

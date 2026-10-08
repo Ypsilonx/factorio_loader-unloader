@@ -1,191 +1,176 @@
---- Boční panely u nativního okna inserteru:
----   1. „Storage optimizer“ – tier, trasa, stav, velikost stacku, počet stacků;
----   2. „Připojení obvodu – Storage optimizer“ – počet stacků ze sítě (jen u budovy připojené drátem).
---- Dokud má hráč okno otevřené, panely se obnovují (stav, hodnota signálu, zešednutí polí řízených sítí).
+--- Vlastní okno Storage optimizeru místo nativního okna inserteru (to by ukazovalo volby, které optimizer
+--- nepoužívá, např. „Číst obsah ruky“). Okno se skládá ze sekcí v scripts/gui/:
+---   přesun (stav, energie, velikost a počet stacků, zbytky), filtry, obvodová síť, logistická síť.
+--- Nastavení filtrů a podmínek zůstává v entitě (engine je přenáší v blueprintech a vyhodnocuje),
+--- okno je jen čte a zapisuje. Dokud je okno otevřené, obnovuje se stav, energie a hodnoty signálů.
 local tiers = require("scripts.tiers")
 local registry = require("scripts.registry")
-local transfer = require("scripts.transfer")
+local transfer_section = require("scripts.gui.transfer_section")
+local filters_section = require("scripts.gui.filters_section")
+local circuit_section = require("scripts.gui.circuit_section")
+local logistic_section = require("scripts.gui.logistic_section")
 
 local M = {}
 
-local FRAME = "storage_optimizer_panel"
-local CIRCUIT_FRAME = "storage_optimizer_circuit"
+local WINDOW = "so_window"
+--- Panely u nativního okna z verzí do 0.3.x (při změně konfigurace se odstraní).
+local LEGACY_FRAMES = { "storage_optimizer_panel", "storage_optimizer_circuit" }
 
---- Jak často se otevřené panely obnovují (ticky). Laditelná hodnota.
+--- Jak často se otevřená okna obnovují (ticky). Laditelná hodnota.
 M.REFRESH_TICKS = 15
 
---- Přidá do relative GUI rámeček ukotvený vpravo od okna inserteru (jen pro entity tohoto modu).
-local function anchored_frame(relative, name, caption)
-  if relative[name] then relative[name].destroy() end
-  local frame = relative.add({
-    type = "frame",
-    name = name,
-    direction = "vertical",
-    caption = caption,
-    anchor = {
-      gui = defines.relative_gui_type.inserter_gui,
-      position = defines.relative_gui_position.right,
-      names = tiers.names(),
-    },
-  })
-  return frame.add({ type = "frame", name = "so_inner", direction = "vertical", style = "inside_shallow_frame_with_padding" })
+--- Sekce v pořadí zobrazení: { jméno rámečku, modul }.
+local SECTIONS = {
+  { "so_transfer", transfer_section },
+  { "so_filters", filters_section },
+  { "so_circuit", circuit_section },
+  { "so_logistic", logistic_section },
+}
+
+--- Obsluha všech sekcí podle tagu `so` prvku.
+local HANDLERS = {}
+for _, section in ipairs(SECTIONS) do
+  for action, handler in pairs(section[2].handlers) do HANDLERS[action] = handler end
 end
 
---- Vytvoří (znovu) oba panely hráče.
-function M.ensure(player)
-  local inner = anchored_frame(player.gui.relative, FRAME, { "storage-optimizer-gui.title" })
-  inner.add({ type = "label", name = "so_tier" })
-  inner.add({ type = "label", name = "so_route" })
-  inner.add({ type = "label", name = "so_state" })
-  inner.add({ type = "line" })
-  inner.add({ type = "label", caption = { "storage-optimizer-gui.batch" }, style = "caption_label" })
-  inner.add({ type = "textfield", name = "so_batch", numeric = true, allow_decimal = false, allow_negative = false })
-  inner.add({ type = "label", name = "so_batch_hint" })
-  inner.add({ type = "label", caption = { "storage-optimizer-gui.stacks" }, style = "caption_label" })
-  inner.add({ type = "textfield", name = "so_stacks", numeric = true, allow_decimal = false, allow_negative = false })
-  inner.add({ type = "label", name = "so_stacks_hint" })
-
-  -- Obdoba nativní volby „Nastavit velikost štosu“ pro počet stacků (do nativního okna ji přidat nejde).
-  local circuit = anchored_frame(player.gui.relative, CIRCUIT_FRAME, { "storage-optimizer-gui.circuit-title" })
-  circuit.add({
-    type = "checkbox",
-    name = "so_stacks_circuit",
-    state = false,
-    caption = { "storage-optimizer-gui.stacks-circuit" },
-    tooltip = { "storage-optimizer-gui.stacks-circuit-tooltip" },
-    style = "caption_checkbox",
-  })
-  local row = circuit.add({ type = "flow", name = "so_signal_row", direction = "horizontal" })
-  row.style.vertical_align = "center"
-  row.add({ type = "label", caption = { "storage-optimizer-gui.stacks-signal" } })
-  row.add({ type = "choose-elem-button", name = "so_stacks_signal", elem_type = "signal" })
-  row.add({ type = "label", name = "so_stacks_value", style = "caption_label" })
+--- Otevřené okno hráče (nebo nil).
+local function window(player)
+  local frame = player.gui.screen[WINDOW]
+  return (frame and frame.valid) and frame or nil
 end
 
---- Znovu vytvoří panely všech hráčů (po změně konfigurace se mohou změnit jména tierů).
-function M.rebuild_all()
-  for _, player in pairs(game.players) do M.ensure(player) end
+--- Přidá titulek okna: název budovy, plocha pro přetažení a křížek.
+local function add_titlebar(frame, caption)
+  local bar = frame.add({ type = "flow", name = "so_titlebar", direction = "horizontal" })
+  bar.drag_target = frame
+  bar.style.horizontal_spacing = 8
+  bar.add({ type = "label", caption = caption, style = "frame_title", ignored_by_interaction = true })
+  local drag = bar.add({ type = "empty-widget", style = "draggable_space_header", ignored_by_interaction = true })
+  drag.style.height = 24
+  drag.style.horizontally_stretchable = true
+  bar.add({ type = "sprite-button", name = "so_close", sprite = "utility/close", style = "frame_action_button",
+            tags = { so = "close" } })
 end
 
---- Lokalizovaný název bedny, které patří inventář (nebo „nic“).
-local function owner_name(inventory)
-  if inventory and inventory.valid then return inventory.entity_owner.localised_name end
-  return { "storage-optimizer-gui.none" }
+--- Obnoví proměnlivé části všech sekcí.
+local function refresh_window(frame, mover)
+  local body = frame.so_body
+  for _, section in ipairs(SECTIONS) do section[2].refresh(body[section[1]], mover) end
 end
 
---- Je entita připojená k obvodové síti (červeným nebo zeleným drátem)?
-local function wired(entity)
-  return entity.get_circuit_network(defines.wire_connector_id.circuit_red) ~= nil
-    or entity.get_circuit_network(defines.wire_connector_id.circuit_green) ~= nil
-end
-
---- Obnoví proměnlivé části panelů (stav, hodnota signálu, zešednutí polí). Textová pole nepřepisuje,
---- aby hráči nemazala rozepsanou hodnotu.
-local function refresh_dynamic(player, mover)
-  local frame, circuit = player.gui.relative[FRAME], player.gui.relative[CIRCUIT_FRAME]
-  if not (frame and circuit) then return end
-  local entity = mover.entity
-  local inner = frame.so_inner
-  local info = tiers.all()[entity.name]
-  inner.so_tier.caption = { "storage-optimizer-gui.tier", info.tier, string.format("%.2f", info.interval / 60) }
-  inner.so_route.caption = { "storage-optimizer-gui.route", owner_name(mover.source), owner_name(mover.target) }
-  inner.so_state.caption = { "storage-optimizer-gui.state", { "storage-optimizer-state." .. (mover.state or "no_chest") } }
-
-  -- Velikost stacku řídí nativní volba „Nastavit velikost štosu“.
-  local behavior = entity.get_control_behavior()
-  local batch_from_circuit = behavior and behavior.circuit_set_stack_size or false
-  inner.so_batch.enabled = not batch_from_circuit
-  inner.so_batch_hint.caption = batch_from_circuit and { "storage-optimizer-gui.batch-circuit" }
-    or { "storage-optimizer-gui.batch-hint" }
-
-  -- Počet stacků řídí naše volba „Počet stacků ze sítě“.
-  local count, value = transfer.stack_count(mover)
-  inner.so_stacks.enabled = not mover.stacks_circuit
-  inner.so_stacks_hint.caption = mover.stacks_circuit
-    and { "storage-optimizer-gui.stacks-effective", count, tiers.max_stacks(entity.name) }
-    or { "storage-optimizer-gui.stacks-hint", tiers.max_stacks(entity.name),
-      string.format("%.0f", tiers.cost(entity.name, count) / 1000), tiers.energy_kj(entity.name) }
-
-  circuit.visible = wired(entity)
-  local row = circuit.so_inner.so_signal_row
-  row.so_stacks_signal.enabled = mover.stacks_circuit == true
-  row.so_stacks_value.caption = value and ("= " .. value) or ""
-end
-
---- Naplní panely údaji o otevřené entitě a zapamatuje si, kterou entitu hráč upravuje.
-function M.update(player, mover)
-  local frame, circuit = player.gui.relative[FRAME], player.gui.relative[CIRCUIT_FRAME]
-  -- Panel ze starší verze modu (bez on_configuration_changed, např. při vývoji) se přestaví.
-  if not (frame and circuit and frame.so_inner and frame.so_inner.so_batch_hint) then
-    M.ensure(player)
-    frame, circuit = player.gui.relative[FRAME], player.gui.relative[CIRCUIT_FRAME]
+--- Zavře okno hráče a zapamatuje si jeho polohu.
+function M.close(player)
+  local frame = window(player)
+  if frame then
+    storage.gui_location = storage.gui_location or {}
+    storage.gui_location[player.index] = frame.location
+    frame.destroy()
   end
-  frame.so_inner.so_batch.text = mover.batch and tostring(mover.batch) or ""
-  frame.so_inner.so_stacks.text = tostring(mover.stacks or 1)
-  circuit.so_inner.so_stacks_circuit.state = mover.stacks_circuit == true
-  circuit.so_inner.so_signal_row.so_stacks_signal.elem_value = mover.stacks_signal or registry.STACKS_SIGNAL
-  refresh_dynamic(player, mover)
+  if storage.gui_target then storage.gui_target[player.index] = nil end
+end
+
+--- Otevře okno optimizeru (nahradí nativní okno entity).
+--- @param player LuaPlayer
+--- @param mover table záznam optimizeru
+function M.open(player, mover)
+  M.close(player)
+  local entity = mover.entity
+  local frame = player.gui.screen.add({ type = "frame", name = WINDOW, direction = "vertical" })
+  add_titlebar(frame, entity.localised_name)
+  local body = frame.add({ type = "flow", name = "so_body", direction = "vertical" })
+  body.style.vertical_spacing = 8
+  transfer_section.build(body)
+  filters_section.build(body, entity.filter_slot_count)
+  circuit_section.build(body)
+  logistic_section.build(body)
+  for _, section in ipairs(SECTIONS) do section[2].fill(body[section[1]], mover) end
+  refresh_window(frame, mover)
+
+  local location = storage.gui_location and storage.gui_location[player.index]
+  if location then frame.location = location else frame.auto_center = true end
+  -- Přiřazení zavře nativní okno entity; E/Esc pak zavírá naše okno (on_gui_closed).
+  player.opened = frame
   storage.gui_target = storage.gui_target or {}
   storage.gui_target[player.index] = mover.unit_number
 end
 
---- Periodické obnovení otevřených panelů; hráče, kteří okno zavřeli, vyřadí.
+--- Otevření okna entity: u optimizeru místo nativního okna otevře vlastní.
+function M.on_opened(event)
+  local entity = event.entity
+  if not (entity and entity.valid and tiers.is_mover(entity.name)) then return end
+  local mover = registry.get(entity.unit_number)
+  if mover then M.open(game.get_player(event.player_index), mover) end
+end
+
+--- Zavření (E, Esc, otevření jiného okna): u našeho okna ho zruší.
+function M.on_closed(event)
+  local element = event.element
+  if element and element.valid and element.name == WINDOW and element.get_mod() == script.mod_name then
+    M.close(game.get_player(event.player_index))
+  end
+end
+
+--- Optimizer, jehož okno má hráč otevřené (nebo nil).
+local function opened_mover(player_index)
+  local unit_number = storage.gui_target and storage.gui_target[player_index]
+  local mover = unit_number and registry.get(unit_number)
+  return (mover and mover.entity.valid) and mover or nil
+end
+
+--- Prvek tohoto modu s akcí (tag `so`), nebo nil.
+local function action_of(element)
+  if not (element and element.valid and element.get_mod() == script.mod_name) then return nil end
+  return element.tags.so
+end
+
+--- Klik: jen křížek okna (ostatní prvky reagují na své vlastní události, ne na klik).
+function M.on_click(event)
+  if action_of(event.element) == "close" then M.close(game.get_player(event.player_index)) end
+end
+
+--- Změna prvku okna (text, zaškrtnutí, signál, výběr, přepínač): uloží nastavení a obnoví okno.
+function M.on_changed(event)
+  local handler = HANDLERS[action_of(event.element)]
+  if not handler then return end
+  local player = game.get_player(event.player_index)
+  local mover = opened_mover(event.player_index)
+  if not mover then
+    M.close(player)
+    return
+  end
+  handler(event, mover, player)
+  local frame = window(player)
+  if frame then refresh_window(frame, mover) end
+end
+
+--- Periodické obnovení otevřených oken; zavře okna, jejichž budova zmizela nebo je mimo dosah hráče.
 function M.refresh()
   if not (storage.gui_target and next(storage.gui_target)) then return end
-  for player_index, unit_number in pairs(storage.gui_target) do
+  for player_index in pairs(storage.gui_target) do
     local player = game.get_player(player_index)
-    local mover = registry.get(unit_number)
-    if player and mover and mover.entity.valid and player.opened == mover.entity then
-      refresh_dynamic(player, mover)
+    local mover = opened_mover(player_index)
+    local frame = player and window(player)
+    local reachable = mover and (player.controller_type ~= defines.controllers.character
+      or player.can_reach_entity(mover.entity))
+    if frame and reachable then
+      refresh_window(frame, mover)
+    elseif player then
+      M.close(player)
     else
       storage.gui_target[player_index] = nil
     end
   end
 end
 
---- Otevření okna entity: pokud jde o optimizer, naplní panely.
-function M.on_opened(event)
-  local entity = event.entity
-  if not (entity and entity.valid and tiers.is_mover(entity.name)) then return end
-  local mover = registry.get(entity.unit_number)
-  if mover then M.update(game.get_player(event.player_index), mover) end
-end
-
---- Optimizer, jehož panel má hráč otevřený, pokud událost patří prvku tohoto modu s daným jménem (jinak nil).
-local function target(event, names)
-  local element = event.element
-  if not (element and element.valid and names[element.name] and element.get_mod() == script.mod_name) then return nil end
-  local unit_number = storage.gui_target and storage.gui_target[event.player_index]
-  return unit_number and registry.get(unit_number)
-end
-
---- Změna textu v panelu: velikost stacku (prázdné, 0 nebo nečíslo = Auto) nebo počet stacků (omezený limitem).
-function M.on_text_changed(event)
-  local mover = target(event, { so_batch = true, so_stacks = true })
-  if not mover then return end
-  local element = event.element
-  if element.name == "so_batch" then
-    mover.batch = registry.clean_batch(element.text)
-  else
-    mover.stacks = registry.clean_stacks(mover.entity.name, element.text)
+--- Po změně konfigurace: zavře okna (struktura se mohla změnit) a odstraní panely starších verzí.
+function M.reset_all()
+  for _, player in pairs(game.players) do
+    M.close(player)
+    for _, name in ipairs(LEGACY_FRAMES) do
+      local legacy = player.gui.relative[name]
+      if legacy then legacy.destroy() end
+    end
   end
-end
-
---- Zaškrtnutí „Počet stacků ze sítě“: uloží volbu a hned zešedne / povolí ruční pole.
-function M.on_checked_state_changed(event)
-  local mover = target(event, { so_stacks_circuit = true })
-  if not mover then return end
-  mover.stacks_circuit = event.element.state or nil
-  refresh_dynamic(game.get_player(event.player_index), mover)
-end
-
---- Výběr řídicího signálu počtu stacků; smazání výběru vrátí výchozí signál „Počet stacků“.
-function M.on_elem_changed(event)
-  local mover = target(event, { so_stacks_signal = true })
-  if not mover then return end
-  mover.stacks_signal = registry.clean_signal(event.element.elem_value)
-  if not mover.stacks_signal then event.element.elem_value = registry.STACKS_SIGNAL end
-  refresh_dynamic(game.get_player(event.player_index), mover)
 end
 
 return M

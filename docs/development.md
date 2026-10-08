@@ -25,7 +25,8 @@ Storage_optimizer/            samotný mod
   scripts/filters.lua         logika filtrů (čistá logika)
   scripts/indicator.lua       ikonka stavu a šipka v alt režimu
   scripts/persistence.lua     blueprint tagy, copy-paste, výměna tieru
-  scripts/gui.lua             boční panel u okna inserteru
+  scripts/gui.lua             vlastní okno místo nativního okna inserteru (otevření, zavření, obnova, události)
+  scripts/gui/                sekce okna: přesun, filtry, obvodová a logistická síť; common = sdílené řádky
   scripts/remote.lua          remote rozhraní "storage-optimizer"
 tests/unit/                   jednotkové testy (lua 5.3)
 tests/storage-optimizer-tests/  testovací mod pro headless integrační testy
@@ -37,7 +38,7 @@ tools/                        skripty: testy, výkon, junction, balení
 
 | Co | Kde |
 |---|---|
-| Interval žlutého tieru (60 t = 1 s), cena přesunu (20 kJ + 5 kJ za další stack), rezerva zásobníku (2×) | `Storage_optimizer/prototypes/tiers.lua` – `BASE_INTERVAL`, `ENERGY_PER_TRANSFER_KJ`, `ENERGY_PER_EXTRA_STACK_KJ`, `BUFFER_RESERVE` |
+| Interval žlutého tieru (60 t = 1 s), cena přesunu (50 kJ + 5 kJ za další stack), rezerva zásobníku (2×) | `Storage_optimizer/prototypes/tiers.lua` – `BASE_INTERVAL`, `ENERGY_PER_TRANSFER_KJ`, `ENERGY_PER_EXTRA_STACK_KJ`, `BUFFER_RESERVE` |
 | Malá ikonka pásu v rohu ikony (vypnuto) | `Storage_optimizer/prototypes/icons.lua` – `SHOW_BELT_OVERLAY` |
 | Limit počtu stacků za přesun (výchozí 20) | startup nastavení `storage-optimizer-max-stacks` (`Storage_optimizer/settings.lua`) |
 | Suroviny receptů (úrovně a náhrady za předměty, které mod odstranil), počet pásů v receptu | `Storage_optimizer/prototypes/research.lua` – `LEVELS`, `BELTS_PER_TIER` |
@@ -59,7 +60,7 @@ bash tools/run-tests.sh mods pymodpack # kompatibilita s jinými mody (jen obecn
 bash tools/run-perf.sh                 # výkonové srovnání (PERF_N=počet dvojic, PERF_MODES=režimy)
 ```
 
-**GUI:** headless Factorio nemá hráče, takže integrační testy panely nevytvoří. Pokrývá je jednotkový test
+**GUI:** headless Factorio nemá hráče, takže integrační testy okno nevytvoří. Pokrývá je jednotkový test
 `tests/unit/test_gui.lua` s napodobeninou herních GUI prvků (stavba, plnění, obnova, obsluha událostí)
 a `tests/unit/test_gui_names.lua` (jména prvků nesmí kolidovat s vlastnostmi `LuaGuiElement`).
 Vykreslení a vzhled je nutné ověřit ručně ve hře.
@@ -105,15 +106,21 @@ Pak ve hře povol mod. Ladění s breakpointy: *Run and Debug → Factorio Mod D
 
 ## Checklist ruční kontroly před vydáním
 
-- [ ] Panel vpravo se ukáže u optimizeru, **ne** u obyčejného inserteru.
-- [ ] Velikost dávky 300 → přesouvá po 300; smazání pole → Auto.
-- [ ] Počet stacků 5 → přesouvá po 5 stacích; 50 → ořízne se na 20; panel ukazuje nápovědu „1–20“.
-- [ ] Rámeček „Připojení obvodu – Storage optimizer“ se ukáže jen po připojení drátu.
-- [ ] Bez zaškrtnutí „Počet stacků ze sítě“ se signál ignoruje; po zaškrtnutí ho řídicí signál
-      (výchozí „Počet stacků“, i vlastní vybraný) přebije; vedle výběru je vidět aktuální hodnota;
+- [ ] Klik na optimizer otevře **vlastní okno** (ne nativní okno inserteru) bez probliknutí; obyčejný
+      inserter dál otevírá nativní okno.
+- [ ] Okno zavře E, Esc i křížek; zavře se i po vytěžení budovy a po odchodu z dosahu; přetažené okno se
+      příště otevře na stejném místě.
+- [ ] Velikost stacku 300 → přesouvá po 300; smazání pole → stack materiálu.
+- [ ] Počet stacků 5 → přesouvá po 5 stacích; 50 → ořízne se na 20; nápověda ukazuje cenu přesunu.
+- [ ] Řádky „Ze sítě“ u obou polí se ukážou jen po připojení drátu; po zaškrtnutí signál (výchozí S / N,
+      i vlastní vybraný) přebije ruční hodnotu, pole zešedne a vedle je vidět aktuální hodnota;
       smazání výběru signálu vrátí výchozí.
-- [ ] Pole „Počet stacků“ zešedne při zapnutém „Počet stacků ze sítě“, „Velikost stacku“ při zapnutém
-      nativním „Nastavit velikost štosu“; hodnoty se v otevřeném okně průběžně obnovují.
+- [ ] „Přesouvat i zbytky“: bedna s 320 ks a přesunem 500 ks se vyprázdní; vypnuto → čeká.
+- [ ] Filtry: zapnutí, Povolit/Zakázat, předmět ve slotu; se Space Age kvalita „libovolná“ / „≥ neobvyklá“.
+- [ ] Obvodová síť: podmínka Zapnout/vypnout (signál × číslo i signál × signál) vypne přesun;
+      „Nastavit filtry“ zamkne sloty a ukazuje filtry ze sítě.
+- [ ] Logistická síť: sekce se ukáže v dosahu roboportu, podmínka vypne přesun.
+- [ ] Starý save z 0.3.x: boční panely zmizí, nastavení optimizerů zůstanou.
 - [ ] Výchozí řídicí signály jsou S (velikost stacku) a N (počet stacků).
 - [ ] Montážní stroj jako cíl: suroviny receptu se doplní do vstupu, stroj bez receptu nic nepřijme.
 - [ ] Montážní stroj / pec jako zdroj: odebírají se hotové výrobky; palivo pece optimizer neplní.

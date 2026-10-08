@@ -1,10 +1,22 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.3.1
+Version: 0.4.0
 Date: 2026-10-08
+  Features:
+    - Own window instead of the native inserter window: it shows only what the building really uses –
+      status, energy, stack size, stacks per transfer, leftovers, filters, circuit and logistic conditions.
+      Inserter options the building ignored (read hand contents, override stack size) are gone.
+    - Stack size and stacks per transfer can each be set manually or from a circuit signal right next
+      to the field, with the current signal value shown.
+    - "Move leftovers too": when the source lacks a full transfer or the target has no room for it, the
+      building moves as much as possible, so chests and wagons get emptied completely. Off by default.
+      A partial transfer pays the base cost plus the matching share of the extra stacks.
   Balancing:
+    - A transfer costs 50 kJ + 5 kJ for each additional stack (was 20 kJ + 5 kJ).
     - The yellow tier no longer waits for the bulk inserter technology (it needs the red belt), so it came
       at the same time as the red tier. In vanilla it now needs only red science (fast inserter and steel);
       its recipe uses a fast inserter instead of a bulk inserter, which moved to the red tier recipe.
+  Changes:
+    - The side panels next to the inserter window are removed (also from existing saves).
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 2026-10-06

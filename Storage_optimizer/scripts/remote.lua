@@ -36,6 +36,16 @@ remote.add_interface("storage-optimizer", {
     mover.stacks_circuit = enabled == true or nil
     mover.stacks_signal = registry.clean_signal(signal)
   end,
+  --- Přesouvat i zbytky (neúplný přesun).
+  get_leftovers = function(unit_number)
+    local mover = registry.get(unit_number)
+    return mover and mover.leftovers == true
+  end,
+  --- Zapne/vypne přesun zbytků.
+  set_leftovers = function(unit_number, enabled)
+    local mover = registry.get(unit_number)
+    if mover then mover.leftovers = enabled == true or nil end
+  end,
   --- Počet stacků, který se použije při příštím přesunu: vrátí (počet, hodnota řídicího signálu nebo nil).
   get_effective_stacks = function(unit_number)
     local mover = registry.get(unit_number)

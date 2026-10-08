@@ -7,7 +7,7 @@ M.YELLOW_SPEED = 0.03125
 --- Interval přesunu tieru se žlutou rychlostí v tickách (60 t = 1 s). Laditelná hodnota.
 M.BASE_INTERVAL = 60
 --- Pevná cena jednoho přesunu v kJ (zahrnuje první stack, stejná pro všechny tiery). Laditelná hodnota.
-M.ENERGY_PER_TRANSFER_KJ = 20
+M.ENERGY_PER_TRANSFER_KJ = 50
 --- Cena každého dalšího stacku v témže přesunu v kJ – velký přesun je na kus levnější. Laditelná hodnota.
 M.ENERGY_PER_EXTRA_STACK_KJ = 5
 --- Zásobník pojme tolik nejdražších přesunů (rezerva, aby pruh energie neklesal ke dnu). Laditelná hodnota.

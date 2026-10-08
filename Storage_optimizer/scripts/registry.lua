@@ -28,7 +28,8 @@ end
 --- Založí záznam pro novou entitu.
 --- @param entity LuaEntity
 --- @param settings table|nil { batch = velikost stacku (nil = Auto), stacks = počet stacků (nil = 1),
----   stacks_circuit = počet stacků ze sítě (nil = ne), stacks_signal = řídicí signál (nil = výchozí) }
+---   stacks_circuit = počet stacků ze sítě (nil = ne), stacks_signal = řídicí signál (nil = výchozí),
+---   leftovers = přesouvat i zbytky (nil = ne) }
 --- @return table mover
 function M.add(entity, settings)
   settings = settings or {}
@@ -40,6 +41,7 @@ function M.add(entity, settings)
     stacks = M.clean_stacks(entity.name, settings.stacks),
     stacks_circuit = settings.stacks_circuit == true or nil,
     stacks_signal = M.clean_signal(settings.stacks_signal),
+    leftovers = settings.leftovers == true or nil,
     cursor = 1,
   }
   storage.movers[entity.unit_number] = mover

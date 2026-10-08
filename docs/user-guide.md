@@ -12,7 +12,7 @@ teď:    [bedna] → Storage optimizer → [bedna]
 ```
 
 **Pojmy:** *přesun* = **velikost stacku × počet stacků**. Velikost stacku je standardně stack předmětu
-(Auto, např. 100 železných plátů), počet stacků nastavuješ 1–20.
+(prázdné pole, např. 100 železných plátů), počet stacků nastavuješ 1–20 (limit lze zvýšit v nastavení modu).
 
 ## Postavení a směr
 
@@ -36,6 +36,9 @@ teď:    [bedna] → Storage optimizer → [bedna]
 
 - Přesun proběhne **jen celý**: ve zdroji musí být všechny kusy (velikost stacku × počet stacků)
   a v cíli na ně musí být místo („všechno, nebo nic“). Jinak optimizer čeká.
+- Se zapnutým **„Přesouvat i zbytky“** se přesune, kolik jde: nejvýš celý přesun, jinak tolik, kolik je ve
+  zdroji a kolik se vejde do cíle. Bedna nebo vagón se tak vyprázdní úplně. Neúplný přesun stojí 50 kJ
+  + poměrnou část za stacky navíc (např. 2,5 stacku = 50 + 1,5 × 5 kJ).
 - Za jeden interval proběhne **nejvýše jeden přesun**. Má-li zdroj více druhů předmětů, střídá je.
 - Zachová **kvalitu**, **čerstvost** (zkáza ve Space Age) i **data předmětů** (např. brnění s vybavením).
 
@@ -43,16 +46,16 @@ teď:    [bedna] → Storage optimizer → [bedna]
 
 Každý pás ve hře dává jeden tier. Rychlejší pás = rychlejší optimizer.
 
-Energie se platí **za přesun: 20 kJ + 5 kJ za každý další stack** (u všech tierů). Přesun 5 stacků
-tedy stojí 40 kJ, 20 stacků 115 kJ – větší přesun je na kus levnější. Optimizer, který nic nepřesouvá,
+Energie se platí **za přesun: 50 kJ + 5 kJ za každý další stack** (u všech tierů). Přesun 5 stacků
+tedy stojí 70 kJ, 20 stacků 145 kJ – větší přesun je na kus levnější. Optimizer, který nic nepřesouvá,
 nespotřebovává nic.
 
 | Tier (pás) | Interval přesunu | Výkon při plné práci: 1 stack | 5 stacků | 20 stacků |
 |---|---|---|---|---|
-| Žlutý pás | 1 s | 20 kW | 40 kW | 115 kW |
-| Červený pás | 0,5 s | 40 kW | 80 kW | 230 kW |
-| Modrý pás | 0,33 s | 60 kW | 120 kW | 345 kW |
-| Turbo pás (Space Age) | 0,25 s | 80 kW | 160 kW | 460 kW |
+| Žlutý pás | 1 s | 50 kW | 70 kW | 145 kW |
+| Červený pás | 0,5 s | 100 kW | 140 kW | 290 kW |
+| Modrý pás | 0,33 s | 150 kW | 210 kW | 435 kW |
+| Turbo pás (Space Age) | 0,25 s | 200 kW | 280 kW | 580 kW |
 
 Zásobník energie pojme dva nejdražší přesuny, takže pruh energie v okně při práci jen mírně kolísá.
 Bez proudu (nebo při jeho nedostatku) optimizer čeká, dokud síť nedobije energii na další přesun.
@@ -68,47 +71,41 @@ Tier poznáš podle barvy šipek (žlutá, červená, modrá, zelená, …) a po
 
 ## Nastavení
 
-Po otevření optimizeru se zobrazí nativní okno inserteru a **vpravo od něj panel Storage optimizer**.
+Kliknutím na optimizer se otevře **okno Storage optimizer** (místo nativního okna inserteru, které by
+ukazovalo i volby, jež optimizer nepoužívá). Okno jde přetáhnout za titulek a pamatuje si polohu;
+zavírá se klávesou E, Esc nebo křížkem. Nahoře je tier, trasa „zdroj → cíl“, stav a pruh energie.
 
-- **Velikost stacku** (panel vpravo): prázdné pole = **Auto** (stack předmětu, např. 100 železných plátů),
-  nebo libovolné číslo (např. 5000). Hodnota **není omezena na 255** jako u inserteru.
-- **Počet stacků za přesun** (panel vpravo): 1–20 (limit lze změnit v nastavení modu).
-  Přesun = velikost stacku × počet stacků, např. železo 100 × 5 = 500 kusů. **Přesun stojí 20 kJ + 5 kJ za každý další stack**
-  (panel ukazuje cenu aktuálního přesunu).
-- **Počet stacků ze sítě** (rámeček **„Připojení obvodu – Storage optimizer“** vpravo, zobrazí se jen u budovy
-  připojené drátem; obdoba nativního „Nastavit velikost štosu“, které do nativního okna přidat nejde):
-  po zaškrtnutí určuje počet stacků hodnota **řídicího signálu** (výchozí **N**, lze vybrat libovolný).
-  Vedle výběru signálu je vidět jeho **aktuální hodnota ze sítě**. Hodnota > 0 nahradí ruční počet stacků
-  (nejvýš limit 20); bez signálu nebo při 0 platí ruční nastavení.
-- Pole řízená sítí **zešednou**: „Počet stacků“ při zapnutém „Počet stacků ze sítě“, „Velikost stacku“ při
-  zapnutém nativním „Nastavit velikost štosu“. Panely se obnovují, dokud je okno otevřené.
-- Výchozí řídicí signály jsou klasická písmena **S** (velikost stacku) a **N** (počet stacků). Pokud je
-  v téže síti používáš i k něčemu jinému, vyber jiný řídicí signál.
-- Pokud stav ukazuje **„Vypnuto obvodovou sítí“**, není splněná podmínka *Povolit/Zakázat* v nativním
-  okně (např. signál z podmínky v síti chybí) – optimizer pak nepřesouvá vůbec.
-- **Filtry** (nativní okno): 5 slotů, režim povolit/zakázat, volitelně i podle kvality.
-  Bez filtrů se přesouvá cokoliv.
-- **Obvodová síť** (nativní okno, po připojení drátu):
-  - *Zapnout/vypnout* – podmínka, kdy optimizer pracuje.
-  - *Nastavit velikost štosu* – hodnota signálu je **velikost stacku**. Výchozí signál je **S**.
-    Hodnota 0 nebo žádný signál = použije se ruční nastavení / Auto.
-  - *Nastavit filtry* – předměty se signálem v síti se stanou filtry. Bez signálu se nepřesouvá nic.
+- **Velikost stacku**: prázdné pole = **stack materiálu** (např. 100 železných plátů), nebo libovolné číslo
+  (např. 5000). Hodnota **není omezena na 255** jako u inserteru.
+- **Počet stacků za přesun**: výchozí 1, ručně 1–20 (limit lze změnit v nastavení modu).
+  Přesun = velikost stacku × počet stacků, např. železo 100 × 5 = 500 kusů. **Přesun stojí 50 kJ + 5 kJ za
+  každý další stack** (okno ukazuje cenu aktuálního přesunu).
+- **Ze sítě** (u obou polí, zobrazí se jen u budovy připojené drátem): po zaškrtnutí určuje hodnotu
+  **signál** ze sítě – výchozí **S** pro velikost stacku a **N** pro počet stacků, lze vybrat libovolný.
+  Vedle je vidět jeho **aktuální hodnota**. Hodnota > 0 nahradí ruční nastavení (počet stacků nejvýš
+  limit); bez signálu nebo při 0 platí ruční nastavení. Pole řízené sítí zešedne.
+  Pokud signály S/N v téže síti používáš i k něčemu jinému, vyber jiný.
+- **Přesouvat i zbytky**: viz [Pravidla přesunu](#pravidla-přesunu). Vypnuto = jen celé přesuny.
+- **Filtry**: zapnutí, **Povolit/Zakázat** a 5 slotů. Se Space Age má každý slot i **kvalitu**
+  (libovolná, nebo porovnání s vybranou kvalitou, např. ≥ neobvyklá). Bez filtrů se přesouvá cokoliv.
+- **Obvodová síť** (jen u budovy připojené drátem):
+  - *Zapnout/vypnout* – podmínka (signál, porovnání, signál nebo číslo), kdy optimizer pracuje.
+    Stav **„Vypnuto obvodovou sítí“** znamená, že podmínka není splněná.
+  - *Nastavit filtry* – předměty se signálem v síti se stanou filtry (sloty se pak jen zobrazují).
+    Bez signálu se nepřesouvá nic.
+- **Logistická síť** (jen v dosahu logistické sítě): *Připojit k logistické síti* a podmínka zapnutí.
 
-> **Pozor:** posuvník *Override stack size* v nativním okně inserteru patří inserteru a optimizer ho
-> **ignoruje**. Platí velikost stacku a počet stacků z panelu vpravo. Řádek se stavem v nativním okně
-> ukazuje stav optimizeru (Pracuje / Čeká / Bez proudu / …).
-
-Velikost stacku, počet stacků i volba „Počet stacků ze sítě“ s řídicím signálem se přenáší
-v **blueprintech**, při **kopírování nastavení** (Shift+klik) i při **přestavění na jiný tier**.
+Všechna nastavení okna se přenáší v **blueprintech**, při **kopírování nastavení** (Shift+klik) i při
+**přestavění na jiný tier**.
 
 ## Indikátor stavu
 
-Malá ikonka v rohu budovy (stejnou barvu má i dioda stavu v okně budovy):
+Malá ikonka v rohu budovy (stejný stav ukazuje i okno budovy):
 
 | Barva | Význam |
 |---|---|
 | Zelená | Pracuje – poslední cyklus proběhl přesun |
-| Žlutá | Čeká – zdroj nemá celý přesun nebo cíl nemá místo |
+| Žlutá | Čeká – zdroj nemá dost předmětů nebo cíl nemá místo |
 | Červená | Bez proudu, vypnuto obvodovou sítí, nebo chybí zdrojová/cílová bedna |
 
 ## Nastavení modu (startup)
@@ -116,6 +113,6 @@ Malá ikonka v rohu budovy (stejnou barvu má i dioda stavu v okně budovy):
 *Nastavení → Mody → Startup* (vyžaduje restart):
 
 - **Násobič intervalu přesunu** – žlutý tier 1 s; 2 = poloviční rychlost, 0,5 = dvojnásobná.
-- **Násobič spotřeby energie** – násobí cenu přesunu (20 kJ + 5 kJ za další stack); 0 = bez spotřeby.
+- **Násobič spotřeby energie** – násobí cenu přesunu (50 kJ + 5 kJ za další stack); 0 = bez spotřeby.
 - **Maximální počet stacků za přesun** – výchozí 20. Zásobník energie optimizeru pojme dva nejdražší
   přesuny, takže po výpadku proudu optimizer ještě chvíli dojede z uložené energie.
