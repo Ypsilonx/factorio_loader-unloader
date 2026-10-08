@@ -136,7 +136,7 @@ Pak ve hře povol mod. Ladění s breakpointy: *Run and Debug → Factorio Mod D
 3. `bash tools/publish.sh` – sestaví zip a nahraje ho přes Mod upload API (`--details` navíc přepíše popis
    na portálu obsahem `docs/mod-portal.md` a krátký popis z `info.json`). Klíč z <https://factorio.com/profile>
    (oprávnění *ModPortal: Upload Mods*, pro `--details` i *Edit Mods*) v proměnné `FACTORIO_API_KEY` nebo
-   v souboru `~/.factorio-api-key` – nikdy ne v repozitáři. Skript odmítne verzi, která už na portálu je,
+   v souboru `FACTORIO_API_KEY_FILE` (výchozí `~/.factorio-api-key/all_api_key.txt`) – nikdy ne v repozitáři. Skript odmítne verzi, která už na portálu je,
    nebo chybí v changelogu.
 4. První vydání a změny licence nebo thumbnailu se dělají ručně na <https://mods.factorio.com> (licence MIT,
    thumbnail `Storage_optimizer/thumbnail.png` 144×144).

@@ -3,14 +3,16 @@
 # Použití: tools/publish.sh [--details]
 #   --details  navíc aktualizuje na portálu popis z docs/mod-portal.md a krátký popis z info.json
 # API klíč (https://factorio.com/profile → API keys, oprávnění „ModPortal: Upload Mods“, pro --details
-# i „ModPortal: Edit Mods“): proměnná FACTORIO_API_KEY, jinak soubor ~/.factorio-api-key. Nikdy ne do repozitáře.
+# i „ModPortal: Edit Mods“): proměnná FACTORIO_API_KEY, jinak soubor FACTORIO_API_KEY_FILE (výchozí
+# ~/.factorio-api-key/all_api_key.txt – klíče leží ve složce ~/.factorio-api-key/). Nikdy ne do repozitáře.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 API="https://mods.factorio.com/api"
 MOD="Storage_optimizer"
-KEY="${FACTORIO_API_KEY:-$(cat "$HOME/.factorio-api-key" 2>/dev/null || true)}"
+KEY_FILE="${FACTORIO_API_KEY_FILE:-$HOME/.factorio-api-key/all_api_key.txt}"
+KEY="${FACTORIO_API_KEY:-$(cat "$KEY_FILE" 2>/dev/null || true)}"
 KEY="$(printf '%s' "$KEY" | tr -d '\r\n ')"
-[ -z "$KEY" ] && { echo "Chybí API klíč: FACTORIO_API_KEY nebo ~/.factorio-api-key"; exit 1; }
+[ -z "$KEY" ] && { echo "Chybí API klíč: FACTORIO_API_KEY nebo soubor $KEY_FILE"; exit 1; }
 
 VERSION=$(grep -oE '"version"[^"]*"[^"]+"' "$ROOT/$MOD/info.json" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 grep -q "^Version: $VERSION$" "$ROOT/$MOD/changelog.txt" || { echo "changelog.txt nemá sekci $VERSION"; exit 1; }
