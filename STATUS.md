@@ -4,26 +4,27 @@ Aktualizováno: 2026-10-17
 
 ## Cíl
 
-Vydat 0.4.1: oprava řetězu tierů s mody, které mají stejně rychlé pásy (hlášení hráče s Tenebris Prime).
+Není stanovený – 0.4.1 vydaná, další milník čeká na rozhodnutí (viz otevřené otázky).
 
 ## Hotovo
 
+- 0.4.1 vydaná 2026-10-17: řetěz tierů přes nejdřív dostupný pás, stejně rychlé varianty bokem (`variant_of`) –
+  hlášení hráče s Tenebris Prime. Testy: unit 46/0, vanilla 56/0, space-age 60/0, mods pymodpack / Bob's
+  (tiery beze změny), tenebris-prime 1.3.10.
 - 0.4.0 vydaná na mod portálu: vlastní okno místo nativního, přesun zbytků,
   energie 50 kJ + 5 kJ za další stack.
 - Dřív vydáno 0.2.0–0.3.1: tiery ze všech pásů s vlastním výzkumem, stroje, vagóny, nekonečné bedny, signály S/N,
   publikace přes API (`tools/publish.sh`).
-- Testy 2026-10-17: unit 45/0, vanilla 56/0 (4 skip = Space Age). Kompatibilita (pymodpack, Bob's) ověřena 2026-10-08.
 - Audit dokumentace 2026-10-17: spec v `docs/specs/` přepsaný na stav 0.4.0, CLAUDE.md bez duplicit se skillem,
   opravené README a development.md.
 
 ## Rozpracováno
 
-- 0.4.1 připravená, nevydaná: hlavní tier na rychlost + varianty bokem (`variant_of`). Testy 2026-10-17: unit 46/0,
-  vanilla 56/0, space-age 60/0, mods pymodpack / Bob's (tiery beze změny), tenebris-prime 1.3.10.
+- Nic.
 
 ## Další krok
 
-1. Commit, `tools/package.sh`, `tools/publish.sh`; odpovědět hráči na portálu.
+1. Odpovědět hráči na portálu (Tenebris Prime).
 2. Rozhodnout obsah další verze (viz otevřené otázky).
 
 ## Otevřené otázky / slepé uličky
