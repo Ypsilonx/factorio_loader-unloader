@@ -32,7 +32,9 @@ bash tools/link-mod.sh               # junction %APPDATA%/Factorio/mods/Storage_
 
 **Data stage → runtime přes mod-data.** `data.lua` definuje jen prototypy nezávislé na jiných modech; tiery se
 generují v `data-final-fixes.lua` ze **všech pásů ve hře** (`prototypes/tiers.lua: collect(data.raw)`), jeden tier
-na pás, propojené `next_upgrade`. Parametry tierů (interval, energie, max_stacks) se zapisují do prototypu
+na pás. Řetěz (`previous` v receptu, `next_upgrade`) tvoří jen hlavní tier každé rychlosti (dostupný nejdřív);
+stejně rychlé varianty z modů (`variant_of`) se vyrábí z hlavního tieru bokem – jinak by abecedně první
+pozdní varianta zablokovala celý řetěz. Parametry tierů (interval, energie, max_stacks) se zapisují do prototypu
 `mod-data` `storage-optimizer-tiers`, který runtime čte v `scripts/tiers.lua` (`prototypes.mod_data`). Runtime proto
 nikdy nepočítá parametry z pásů znovu – změna výpočtu patří do `prototypes/tiers.lua`.
 Recept a **vlastní výzkum každého tieru** skládá `prototypes/research.lua` (čistá logika): suroviny podle rychlosti

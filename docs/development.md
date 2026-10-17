@@ -75,7 +75,9 @@ nastavení hry. Výsledek je řádek `SO-TEST DONE pass=… fail=… skip=…`.
 po jeho výzkumu. Herní testy se vynechají, protože počítají s vanilla bednami a rozvodnami. Vygenerované
 suroviny a prerekvizity každého tieru jsou v logu (`.test-run/mods/write-data/factorio-current.log`, řádky
 `recipe.lua`). Ověřeno (2026-10-02, znovu 2026-10-08 pro 0.4.0): `pymodpack` (Pyanodon 3.0, 4 tiery) a `boblogistics bobinserters
-bobplates bobelectronics bobtech bobassembly` (7 tierů).
+bobplates bobelectronics bobtech bobassembly` (7 tierů). 2026-10-17: `tenebris-prime` 1.3.10 (poslední pro
+Factorio 2.0; staženo z portálu do zvláštní složky a předáno přes `MODS_SOURCE`) – 10 tierů, 5 hlavních
++ 5 svítících variant za `bioinfusor`; Pyanodon a Bob's se změnou řetězu beze změny tierů.
 
 ### Výsledky výkonového testu (1000 dvojic beden, 3600 ticků, Factorio 2.0.77)
 

@@ -44,7 +44,9 @@ teď:    [bedna] → Storage optimizer → [bedna]
 
 ## Tiery
 
-Každý pás ve hře dává jeden tier. Rychlejší pás = rychlejší optimizer.
+Každý pás ve hře dává jeden tier. Rychlejší pás = rychlejší optimizer. Má-li mod víc pásů stejné rychlosti
+(např. svítící pásy Tenebris Prime), řetěz tierů vede přes ten dostupný nejdřív; ostatní jsou varianty
+stejného tieru, které se vyrábí z hlavního tieru a nejsou v řetězu upgrade planneru.
 
 Energie se platí **za přesun: 50 kJ + 5 kJ za každý další stack** (u všech tierů). Přesun 5 stacků
 tedy stojí 70 kJ, 20 stacků 145 kJ – větší přesun je na kus levnější. Optimizer, který nic nepřesouvá,

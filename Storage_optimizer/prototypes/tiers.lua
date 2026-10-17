@@ -138,10 +138,19 @@ function M.item_source(raw, item_name)
   return best_recipe, best_tech
 end
 
+--- Shodná rychlost pásů s tolerancí na zaokrouhlení v modech (např. 0.0625000001).
+local function same_speed(a, b)
+  return math.abs(a - b) <= a * 1e-6
+end
+
 --- Projde všechny pásy a vrátí použitelné (neskryté, s předmětem a receptem dostupným od začátku
---- nebo přes výzkum), seřazené podle rychlosti.
+--- nebo přes výzkum), seřazené podle rychlosti. Ze stejně rychlých pásů (kosmetické varianty v modech,
+--- např. svítící pásy Tenebris Prime) je hlavní ten dostupný nejdřív – výzkum s nejmenším počtem prerekvizit,
+--- při shodě podle jména; ostatní jsou varianty. Hlavní tiery tvoří řetěz, varianta na něm visí bokem,
+--- aby řetěz nikdy nečekal na pozdější výzkum varianty.
 --- @param raw table data.raw nebo jeho testovací náhrada
---- @return table[] { belt, speed, item, recipe, tech } – tech = nil znamená recept dostupný od začátku
+--- @return table[] { belt, speed, item, recipe, tech, variant_of } – tech = nil znamená recept dostupný od začátku,
+---   variant_of = jméno hlavního pásu stejné rychlosti (nil = hlavní pás)
 function M.collect(raw)
   local result = {}
   for _, name in ipairs(sorted_keys(raw["transport-belt"])) do
@@ -150,13 +159,24 @@ function M.collect(raw)
     local recipe, tech
     if item then recipe, tech = M.item_source(raw, item) end
     if recipe then
-      result[#result + 1] = { belt = name, speed = belt.speed, item = item, recipe = recipe, tech = tech }
+      result[#result + 1] = {
+        belt = name, speed = belt.speed, item = item, recipe = recipe, tech = tech,
+        depth = tech and count(M.tech_closure(raw, tech)) + 1 or 0,
+      }
     end
   end
   table.sort(result, function(a, b)
-    if a.speed ~= b.speed then return a.speed < b.speed end
+    if not same_speed(a.speed, b.speed) then return a.speed < b.speed end
+    if a.depth ~= b.depth then return a.depth < b.depth end
     return a.belt < b.belt
   end)
+  for index = 2, #result do
+    local previous = result[index - 1]
+    if same_speed(previous.speed, result[index].speed) then
+      result[index].variant_of = previous.variant_of or previous.belt
+    end
+  end
+  for _, info in ipairs(result) do info.depth = nil end
   return result
 end
 

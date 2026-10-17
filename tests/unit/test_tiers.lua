@@ -64,6 +64,23 @@ return {
     A.eq(#list, 1, "zbyde jen dostupný")
     A.eq(list[1].belt, "ok", "jméno")
   end },
+  { "stejně rychlá varianta s pozdějším výzkumem nepředběhne hlavní pás (regrese Tenebris Prime)", function()
+    local raw = fake_raw({
+      belt = { speed = 0.03125 },
+      ["a-glowing-belt"] = { speed = 0.03125, tech = "late" },
+      fast = { speed = 0.0625, tech = "t2" },
+      ["a-glowing-fast"] = { speed = 0.0625000001, tech = "late-fast" },
+    })
+    raw.technology["late"].prerequisites = { "t2" }
+    raw.technology["late-fast"].prerequisites = { "late" }
+    local list = tiers.collect(raw)
+    A.eq(#list, 4, "varianty zůstávají jako tiery")
+    A.eq(list[1].belt, "belt", "hlavní pás je dostupný od začátku, ne první podle abecedy")
+    A.eq(list[1].variant_of, nil, "hlavní pás")
+    A.eq(list[2].variant_of, "belt", "varianta visí na hlavním pásu své rychlosti")
+    A.eq(list[3].belt, "fast", "druhý hlavní pás")
+    A.eq(list[4].variant_of, "fast", "rychlost se shoduje i se zaokrouhlením")
+  end },
   { "pás bez předmětu nebo receptu se vyřadí", function()
     local raw = fake_raw({ a = { speed = 0.03125 } })
     raw["transport-belt"].orphan = { name = "orphan", speed = 0.0625 }

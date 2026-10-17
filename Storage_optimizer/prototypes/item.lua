@@ -13,7 +13,7 @@ function M.create(info, icons)
       localised_name = entity.localised_name(info.belt),
       localised_description = { "entity-description.storage-optimizer" },
       subgroup = "inserter",
-      order = string.format("z[storage-optimizer]-%03d", info.tier),
+      order = string.format("z[storage-optimizer]-%03d-%s", info.tier, info.variant_of and "b" or "a"),
       place_result = info.name,
       stack_size = 50,
     },

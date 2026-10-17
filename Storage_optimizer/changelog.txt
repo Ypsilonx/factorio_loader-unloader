@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.1
+Date: 2026-10-17
+  Compatibility:
+    - Mods with several belts of the same speed (e.g. glowing belts from Tenebris Prime) no longer lock the
+      whole tier chain behind the late technology of one of them. For each speed the tier chain uses the
+      belt available first; the other belts give side variants crafted from that tier, outside the upgrade
+      planner chain.
+---------------------------------------------------------------------------------------------------
 Version: 0.4.0
 Date: 2026-10-08
   Features:

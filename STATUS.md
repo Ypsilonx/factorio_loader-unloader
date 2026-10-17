@@ -4,7 +4,7 @@ Aktualizováno: 2026-10-17
 
 ## Cíl
 
-Není stanovený – 0.4.0 je vydaná, další milník čeká na rozhodnutí (viz otevřené otázky).
+Vydat 0.4.1: oprava řetězu tierů s mody, které mají stejně rychlé pásy (hlášení hráče s Tenebris Prime).
 
 ## Hotovo
 
@@ -18,11 +18,13 @@ Není stanovený – 0.4.0 je vydaná, další milník čeká na rozhodnutí (vi
 
 ## Rozpracováno
 
-- Nic.
+- 0.4.1 připravená, nevydaná: hlavní tier na rychlost + varianty bokem (`variant_of`). Testy 2026-10-17: unit 46/0,
+  vanilla 56/0, space-age 60/0, mods pymodpack / Bob's (tiery beze změny), tenebris-prime 1.3.10.
 
 ## Další krok
 
-1. Rozhodnout obsah další verze (viz otevřené otázky).
+1. Commit, `tools/package.sh`, `tools/publish.sh`; odpovědět hráči na portálu.
+2. Rozhodnout obsah další verze (viz otevřené otázky).
 
 ## Otevřené otázky / slepé uličky
 
@@ -31,3 +33,5 @@ Není stanovený – 0.4.0 je vydaná, další milník čeká na rozhodnutí (vi
 - ❌ Velikost dávky v `inserter_stack_size_override` – engine ji omezí na 0–255. Řešení: `storage` + tagy blueprintu.
 - ❌ Nativní okno inserteru + boční panel (do 0.3.x) – ukazovalo volby, které mod ignoruje. Nahrazeno vlastním oknem.
 - ❌ Energie 100 kJ za stack – při 1000 budovách stovky MW. Nyní 50 kJ za přesun + 5 kJ za další stack.
+- ❌ Shoda rychlostí pásů řešená abecedou – svítící pás Tenebris (`bioluminescent-…`) se stal tierem 1 a celý řetěz
+  čekal na `bioinfusor`. Řešení: řetěz přes pás dostupný nejdřív.

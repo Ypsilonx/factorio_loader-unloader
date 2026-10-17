@@ -53,7 +53,8 @@ A *transfer* is **stack size × stacks per transfer** – e.g. iron plates 100 �
 - Factorio 2.0, with or without Space Age.
 - Overhaul mods: each tier has its own technology whose prerequisites are derived from the belt and from every
   recipe ingredient, so the tier is never unlocked before its ingredients – also in reshuffled tech trees.
-  Tested with Pyanodon and Bob's mods. Ingredients are intermediates (circuits, inserters, belts), so
+  Tested with Pyanodon, Bob's mods and Tenebris Prime. When a mod adds belts with the same speed (e.g.
+  glowing belts), the tier chain follows the one available first and the others become side variants. Ingredients are intermediates (circuits, inserters, belts), so
   overhaul mods make the recipe more expensive on their own; missing items fall back to simpler ones.
 - Works with any mod that adds belts (tiers are generated automatically), any mod that adds chests or
   warehouses of type `container` / `logistic-container` / `infinity-container`, any cargo wagon and any mod that adds assembling machines or furnaces.
