@@ -5,11 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Mod do Factoria 2.0 (Lua) „Storage Optimizer“: budova 1×1, která bez pásů přesouvá celé stacky mezi bednami
 a stroji. Dokumentace projektu je česky (komentáře, docstringy, docs/), lokalizace hry v `locale/en` i `locale/cs`.
 Podrobnosti k ladění hodnot, grafice a publikaci jsou v `docs/development.md` – při změně tam popsaného chování
-ho aktualizuj.
+ho aktualizuj. Proč je mod postavený, jak je: `docs/specs/2026-10-01-storage-optimizer-design.md` (drž aktuální).
+Stav práce: `STATUS.md`.
 
 ## Příkazy
-
-Skripty v `tools/` jsou bash – spouštět přes Git Bash (Bash tool), ne PowerShell.
 
 ```bash
 bash tools/run-unit.sh               # jednotkové testy čisté logiky (lua 5.3 v PATH), výstup "UNIT pass=… fail=…"
@@ -23,8 +22,7 @@ bash tools/link-mod.sh               # junction %APPDATA%/Factorio/mods/Storage_
 ```
 
 - Cesta k Factoriu: proměnná `FACTORIO_EXE` (výchozí `C:/STEAM/steamapps/common/Factorio/bin/x64/factorio.exe`).
-- Jediný unit test: runner nemá filtr – dočasně zúžit seznam `SUITES` v `tests/unit/run.lua`, nebo nová sada
-  se musí do `SUITES` přidat, jinak se nespustí.
+- Jediný unit test: runner nemá filtr – dočasně zúžit seznam `SUITES` v `tests/unit/run.lua`.
 - Integrační test: nový soubor v `tests/storage-optimizer-tests/cases/` je nutné zaregistrovat v
   `tests/storage-optimizer-tests/control.lua`. Úspěch = řádek `SO-TEST DONE pass=… fail=0 …`; logy v `.test-run/<varianta>/`.
 - Lint: `.luacheckrc` (globály Factoria; `tests/unit` je lua53, mod lua52).
@@ -42,10 +40,11 @@ pásu s náhradami za chybějící předměty, prerekvizity = výzkum pásu + v�
 Kvůli overhaul modům nikdy nepřipojovat recept k cizímu výzkumu natvrdo – kompatibilitu ověřuje
 `tools/run-tests.sh mods <mod>…`.
 
-**Entita je prototyp `inserter`** (kvůli nativnímu GUI, podmínkám obvodové sítě a filtrům), ale po postavení se
-nastaví `disabled_by_script = true` – engine ji nepočítá, veškerý přesun dělá skript. Engine dál vyhodnocuje
-podmínku sítě a filtry ze signálů, skript je čte z `control_behavior`. Vypnutá entita neodebírá `drain`, proto si
-`transfer.lua` bere energii přímo ze zásobníku entity (`buffer_capacity`).
+**Entita je prototyp `inserter`** (kvůli podmínkám obvodové sítě, filtrům, blueprintům a upgrade planneru), ale
+po postavení se nastaví `disabled_by_script = true` – engine ji nepočítá, veškerý přesun dělá skript. Engine dál
+vyhodnocuje podmínku sítě a filtry ze signálů, skript je čte z `control_behavior`. Vypnutá entita neodebírá
+`drain`, proto si `transfer.lua` bere energii přímo ze zásobníku entity (`buffer_capacity`). Nativní okno
+inserteru se neukazuje: `scripts/gui.lua` v `on_gui_opened` otevře vlastní okno (části v `scripts/gui/`).
 
 **UPS model – plánovač místo on_tick pro všechny.** `scripts/scheduler.lua` drží `storage.schedule[tick] = {unit_number…}`;
 `control.lua` v `on_tick` zpracuje jen entity naplánované na daný tick a po cyklu je přeplánuje o `interval`.
@@ -69,10 +68,4 @@ Body drátů obvodové sítě (`prototypes/wires.lua`) se počítají ze stejné
 v `so_model.py` (`terminal`) vyžaduje úpravu `TERMINAL` ve `wires.lua`, změna směru slunce v `so_render.py`
 úpravu `SHADOW_X`/`SHADOW_Y`. Rozměry spritů hlídá `tests/unit/test_graphics.lua`.
 
-## Konvence
-
-- Nové texty pro hráče vždy do obou lokalizací (`locale/en`, `locale/cs`) – kontroluje `test_locale.lua`.
-- `changelog.txt` má striktní formát Factoria: oddělovač 99 pomlček, `Version: x.y.z`, `Date: …`, kategorie
-  odsazená 2 mezerami, položky 4 mezerami s `- `.
-- Vydání: zvýšit `version` v `Storage_optimizer/info.json` + sekce v changelogu, pak `tools/publish.sh`
-  (balí přes `tools/package.sh`). Mění-li se chování z pohledu savu, přidat `Storage_optimizer/migrations/`.
+Vydání a formát changelogu: `docs/development.md` → Publikace.

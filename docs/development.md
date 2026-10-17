@@ -16,7 +16,7 @@
 Storage_optimizer/            samotný mod
   prototypes/tiers.lua        výběr pásů, interval, spotřeba (čistá logika)
   prototypes/research.lua     suroviny receptu a výzkum tieru s prerekvizitami (čistá logika)
-  prototypes/entity|item|recipe|icons|signal.lua   prototypy tierů
+  prototypes/entity|item|recipe|icons.lua   prototypy tierů
   prototypes/wires.lua        body drátů obvodové sítě (projekce svorkovnice z Blenderu, čistá logika)
   scripts/registry.lua        evidence postavených optimizerů (storage.movers)
   scripts/neighbours.lua      hledání zdrojové a cílové bedny
