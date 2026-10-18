@@ -4,10 +4,13 @@ Aktualizováno: 2026-10-18
 
 ## Cíl
 
-Vydat 0.4.2 – strom tierů místo řetězu podle rychlosti (hlášení hráče: UBSA + Planetaris Arig/Hyarion).
+Není stanovený – 0.4.2 vydaná, další milník čeká na rozhodnutí (viz otevřené otázky).
 
 ## Hotovo
 
+- 0.4.2 vydaná 2026-10-18: strom tierů místo řetězu podle rychlosti (`tiers.lua: link_tree`) – hlášení hráče
+  s UBSA + Planetaris Arig/Hyarion. Testy: unit 50/0, vanilla 56/0, space-age 60/0, mods Py / Bob's /
+  Tenebris / UBSA / Arig+Hyarion+UBSA (řetězy porovnány před/po).
 - 0.4.1 vydaná 2026-10-17: řetěz tierů přes nejdřív dostupný pás, stejně rychlé varianty bokem (`variant_of`) –
   hlášení hráče s Tenebris Prime.
 - 0.4.0 vydaná na mod portálu: vlastní okno místo nativního, přesun zbytků,
@@ -17,14 +20,11 @@ Vydat 0.4.2 – strom tierů místo řetězu podle rychlosti (hlášení hráče
 
 ## Rozpracováno
 
-- 0.4.2 připravená, nevydaná (changelog + `info.json`): `tiers.lua: link_tree` – tier z nejrychlejšího
-  pomalejšího tieru, který je zaručeně dřív (pás = surovina receptu nebo výzkum v uzávěru prerekvizit).
-  Testy: unit 50/0, vanilla 56/0, space-age 60/0, mods Py / Bob's / Tenebris / UBSA / Arig+Hyarion+UBSA
-  (řetězy porovnány před/po – mění se jen opravovaná větev a testovací pás).
+- Nic.
 
 ## Další krok
 
-1. Commit, vydat 0.4.2 (`tools/publish.sh`), odpovědět hráči ve vlákně „Compatibility Issue: Tenebris Prime“.
+1. Odpovědět hráči ve vlákně „Compatibility Issue: Tenebris Prime“ (UBSA + Planetaris, opraveno v 0.4.2).
 2. Rozhodnout obsah další verze (viz otevřené otázky).
 
 ## Otevřené otázky / slepé uličky
