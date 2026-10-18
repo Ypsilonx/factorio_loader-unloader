@@ -44,8 +44,9 @@ return {
     H.eq(prototypes.entity["storage-optimizer-so-test-hidden-belt"], nil, "skrytý pás")
   end),
   check("upgrade řetěz", function()
-    local first = prototypes.entity["storage-optimizer-transport-belt"]
-    H.eq(first.next_upgrade and first.next_upgrade.name, "storage-optimizer-fast-transport-belt", "next_upgrade")
+    -- Žlutý tier vede na testovací pás (dostupný od začátku, rychlejší), proto se kontroluje až červený.
+    local fast = prototypes.entity["storage-optimizer-fast-transport-belt"]
+    H.eq(fast.next_upgrade and fast.next_upgrade.name, "storage-optimizer-express-transport-belt", "next_upgrade")
   end),
   check("recepty odemyká vlastní výzkum tieru", function()
     for _, belt in ipairs({ "transport-belt", "fast-transport-belt", "express-transport-belt" }) do

@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.2
+Date: 2026-10-18
+  Compatibility:
+    - Belts from mods with their own research branches no longer lock faster tiers behind unrelated
+      technologies (e.g. Ultimate Belts Space Age with Planetaris: Arig/Hyarion, or Ultimate Belts behind
+      the turbo belt). Each tier is now crafted from the fastest slower tier you are guaranteed to have
+      first: its belt is an ingredient of the new belt, or its technology is a prerequisite. Tiers form a
+      tree that follows the mods' research; the upgrade planner follows the branch available first.
+    - Existing saves keep all buildings and researched technologies; only recipes and prerequisites of
+      the affected tiers change.
+---------------------------------------------------------------------------------------------------
 Version: 0.4.1
 Date: 2026-10-17
   Compatibility:

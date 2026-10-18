@@ -143,14 +143,59 @@ local function same_speed(a, b)
   return math.abs(a - b) <= a * 1e-6
 end
 
+--- Zjistí, zda je pás `earlier` zaručeně dostupný nejpozději s pásem `later`: je od začátku, je surovinou
+--- receptu `later`, nebo jeho výzkum je výzkumem `later` či jeho (i nepřímou) prerekvizitou.
+--- Surovina receptu pokrývá mody, které prerekvizity doplňují až po nás (Pyanodon v pypostprocessing).
+--- @param earlier table položka collect
+--- @param later table položka collect s předpočítaným uzávěrem `closure` a surovinami `inputs`
+--- @return boolean
+local function available_before(earlier, later)
+  return earlier.tech == nil or later.inputs[earlier.item] == true
+    or earlier.tech == later.tech or later.closure[earlier.tech] == true
+end
+
+--- Vrátí množinu předmětů, které recept spotřebovává.
+--- @return table<string, true>
+local function recipe_inputs(raw, recipe_name)
+  local set = {}
+  for _, ingredient in ipairs(raw.recipe[recipe_name].ingredients or {}) do
+    if ingredient.type ~= "fluid" then set[ingredient.name] = true end
+  end
+  return set
+end
+
+--- Doplní hlavním pásům `previous` a `next_upgrade` – strom místo řetězu podle rychlosti.
+--- Rychlejší pás z jiného modu může mít vlastní větev výzkumu (Ultimate Belts jen za `logistics-3`, turbo pás až
+--- po Vulcanu, hyper pás z Planetaris za Hyarionem). Tier se proto vyrábí z nejrychlejšího pomalejšího hlavního
+--- tieru, který je zaručeně vyzkoumaný dřív, a nikdy nečeká na výzkum, který jeho pás nepotřebuje.
+--- `next_upgrade` má jen jeden cíl: z větví vede do potomka dostupného nejdřív.
+--- @param mains table[] hlavní pásy seřazené podle rychlosti, s `depth` a `closure`
+local function link_tree(mains)
+  local best_child = {}
+  for index = 2, #mains do
+    local info = mains[index]
+    for candidate = index - 1, 1, -1 do
+      local parent = mains[candidate]
+      if available_before(parent, info) then
+        info.previous = parent.belt
+        local best = best_child[candidate]
+        if not best or info.depth < best.depth then best_child[candidate] = info end
+        break
+      end
+    end
+  end
+  for index, child in pairs(best_child) do mains[index].next_upgrade = child.belt end
+end
+
 --- Projde všechny pásy a vrátí použitelné (neskryté, s předmětem a receptem dostupným od začátku
 --- nebo přes výzkum), seřazené podle rychlosti. Ze stejně rychlých pásů (kosmetické varianty v modech,
 --- např. svítící pásy Tenebris Prime) je hlavní ten dostupný nejdřív – výzkum s nejmenším počtem prerekvizit,
---- při shodě podle jména; ostatní jsou varianty. Hlavní tiery tvoří řetěz, varianta na něm visí bokem,
---- aby řetěz nikdy nečekal na pozdější výzkum varianty.
+--- při shodě podle jména; ostatní jsou varianty. Hlavní tiery tvoří strom (viz link_tree), varianta na hlavním
+--- tieru své rychlosti visí bokem, aby nic nečekalo na pozdější výzkum varianty.
 --- @param raw table data.raw nebo jeho testovací náhrada
---- @return table[] { belt, speed, item, recipe, tech, variant_of } – tech = nil znamená recept dostupný od začátku,
----   variant_of = jméno hlavního pásu stejné rychlosti (nil = hlavní pás)
+--- @return table[] { belt, speed, item, recipe, tech, variant_of, previous, next_upgrade } – tech = nil znamená
+---   recept dostupný od začátku, variant_of = jméno hlavního pásu stejné rychlosti (nil = hlavní pás),
+---   previous / next_upgrade = jméno pásu hlavního tieru, ze kterého se tier vyrábí / na který se vylepšuje
 function M.collect(raw)
   local result = {}
   for _, name in ipairs(sorted_keys(raw["transport-belt"])) do
@@ -159,9 +204,10 @@ function M.collect(raw)
     local recipe, tech
     if item then recipe, tech = M.item_source(raw, item) end
     if recipe then
+      local closure = tech and M.tech_closure(raw, tech) or {}
       result[#result + 1] = {
         belt = name, speed = belt.speed, item = item, recipe = recipe, tech = tech,
-        depth = tech and count(M.tech_closure(raw, tech)) + 1 or 0,
+        closure = closure, inputs = recipe_inputs(raw, recipe), depth = tech and count(closure) + 1 or 0,
       }
     end
   end
@@ -170,13 +216,17 @@ function M.collect(raw)
     if a.depth ~= b.depth then return a.depth < b.depth end
     return a.belt < b.belt
   end)
+  local mains = { result[1] }
   for index = 2, #result do
     local previous = result[index - 1]
     if same_speed(previous.speed, result[index].speed) then
       result[index].variant_of = previous.variant_of or previous.belt
+    else
+      mains[#mains + 1] = result[index]
     end
   end
-  for _, info in ipairs(result) do info.depth = nil end
+  link_tree(mains)
+  for _, info in ipairs(result) do info.depth, info.closure, info.inputs = nil, nil, nil end
   return result
 end
 

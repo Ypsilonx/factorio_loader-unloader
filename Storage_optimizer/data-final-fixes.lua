@@ -11,9 +11,9 @@ local max_stacks = settings.startup["storage-optimizer-max-stacks"].value
 
 local list = tiers.collect(data.raw)
 local runtime = {}
--- Řetěz tvoří jen hlavní tiery (jeden na rychlost); varianta se vyrábí z hlavního tieru své rychlosti.
-local mains = {}
-local previous, tier = nil, 0
+-- Hlavní tiery (jeden na rychlost) tvoří strom podle výzkumů (tiers.collect); varianta se vyrábí z hlavního
+-- tieru své rychlosti.
+local tier = 0
 
 for _, info in ipairs(list) do
   info.name = "storage-optimizer-" .. info.belt
@@ -21,9 +21,7 @@ for _, info in ipairs(list) do
     info.previous = "storage-optimizer-" .. info.variant_of
   else
     tier = tier + 1
-    info.previous = previous
-    previous = info.name
-    mains[#mains + 1] = info.name
+    info.previous = info.previous and "storage-optimizer-" .. info.previous
   end
   info.tier = tier
   info.interval = tiers.interval_ticks(info.speed, interval_multiplier)
@@ -44,8 +42,10 @@ for _, info in ipairs(list) do
   }
 end
 
-for index = 1, #mains - 1 do
-  data.raw["inserter"][mains[index]].next_upgrade = mains[index + 1]
+for _, info in ipairs(list) do
+  if info.next_upgrade then
+    data.raw["inserter"][info.name].next_upgrade = "storage-optimizer-" .. info.next_upgrade
+  end
 end
 
 data:extend({ { type = "mod-data", name = "storage-optimizer-tiers", data = runtime } })

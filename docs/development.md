@@ -78,6 +78,9 @@ suroviny a prerekvizity každého tieru jsou v logu (`.test-run/mods/write-data/
 bobplates bobelectronics bobtech bobassembly` (7 tierů). 2026-10-17: `tenebris-prime` 1.3.10 (poslední pro
 Factorio 2.0; staženo z portálu do zvláštní složky a předáno přes `MODS_SOURCE`) – 10 tierů, 5 hlavních
 + 5 svítících variant za `bioinfusor`; Pyanodon a Bob's se změnou řetězu beze změny tierů.
+2026-10-18 (strom tierů): `planetaris-hyarion` 1.3.22 + `planetaris-arig` 1.1.46 + `UltimateBeltsSpaceAge` 1.3.0
+(staženo do zvláštní složky, `MODS_SOURCE`) – větev UBSA z modrého tieru, hyper pás z turba. Pyanodon, Bob's,
+Tenebris a Space Age beze změny vanilla řetězu (porovnány logy `recipe.lua` před/po změně).
 
 ### Výsledky výkonového testu (1000 dvojic beden, 3600 ticků, Factorio 2.0.77)
 

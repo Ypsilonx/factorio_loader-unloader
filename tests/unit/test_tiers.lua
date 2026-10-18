@@ -81,6 +81,68 @@ return {
     A.eq(list[3].belt, "fast", "druhý hlavní pás")
     A.eq(list[4].variant_of, "fast", "rychlost se shoduje i se zaokrouhlením")
   end },
+  { "vanilla: řetěz podle rychlosti, upgrade vede na další tier", function()
+    local raw = fake_raw({
+      belt = { speed = 0.03125 },
+      fast = { speed = 0.0625, tech = "logistics-2" },
+      express = { speed = 0.09375, tech = "logistics-3" },
+    })
+    raw.technology["logistics-3"].prerequisites = { "logistics-2" }
+    local list = tiers.collect(raw)
+    A.eq(list[1].previous, nil, "první tier bez předchůdce")
+    A.eq(list[2].previous, "belt", "fast z belt")
+    A.eq(list[3].previous, "fast", "express z fast")
+    A.eq(list[1].next_upgrade, "fast", "upgrade belt")
+    A.eq(list[2].next_upgrade, "express", "upgrade fast")
+    A.eq(list[3].next_upgrade, nil, "poslední bez upgradu")
+  end },
+  { "rychlejší pás s vlastní větví výzkumu nečeká na cizí pomalejší pás (regrese UBSA + Planetaris)", function()
+    -- Turbo je až po Vulcanu, ultra-fast (UBSA) jen za logistics-3, hyper (Arig/Hyarion) za turbem.
+    local raw = fake_raw({
+      express = { speed = 0.09375, tech = "logistics-3" },
+      turbo = { speed = 0.125, tech = "turbo-tech" },
+      hyper = { speed = 0.15625, tech = "hyper-tech" },
+      ultra = { speed = 0.1875, tech = "ultra-tech" },
+      extreme = { speed = 0.28125, tech = "extreme-tech" },
+    })
+    raw.technology["turbo-tech"].prerequisites = { "logistics-3", "metallurgic-science" }
+    raw.technology["metallurgic-science"] = { name = "metallurgic-science" }
+    raw.technology["hyper-tech"].prerequisites = { "turbo-tech", "polishing-science" }
+    raw.technology["polishing-science"] = { name = "polishing-science" }
+    raw.technology["ultra-tech"].prerequisites = { "logistics-3" }
+    raw.technology["extreme-tech"].prerequisites = { "ultra-tech" }
+    local by_belt = {}
+    for _, info in ipairs(tiers.collect(raw)) do by_belt[info.belt] = info end
+    A.eq(by_belt.turbo.previous, "express", "turbo z express")
+    A.eq(by_belt.hyper.previous, "turbo", "hyper z turbo")
+    A.eq(by_belt.ultra.previous, "express", "ultra přeskočí turbo i hyper")
+    A.eq(by_belt.extreme.previous, "ultra", "extreme ve větvi UBSA")
+    A.eq(by_belt.express.next_upgrade, "ultra", "z větví vede upgrade do dostupné nejdřív")
+    A.eq(by_belt.ultra.next_upgrade, "extreme", "upgrade ve větvi UBSA")
+    A.eq(by_belt.hyper.next_upgrade, nil, "hyper je konec větve")
+  end },
+  { "pás bez dřív dostupného pomalejšího tieru začíná vlastní strom", function()
+    local raw = fake_raw({
+      slow = { speed = 0.03125, tech = "a" },
+      fast = { speed = 0.0625, tech = "b" },
+    })
+    local list = tiers.collect(raw)
+    A.eq(list[2].previous, nil, "nezávislé výzkumy → bez předchůdce")
+    A.eq(list[1].next_upgrade, nil, "bez upgradu")
+  end },
+  { "pomalejší pás jako surovina receptu je dostupný dřív i bez prerekvizit (regrese Pyanodon)", function()
+    -- Py doplňuje prerekvizity až v pypostprocessing po nás; logistics-3 je v naší fázi bez prerekvizit.
+    local raw = fake_raw({
+      belt = { speed = 0.03125 },
+      fast = { speed = 0.0625, tech = "logistics-2" },
+      express = { speed = 0.09375, tech = "logistics-3" },
+    })
+    raw.recipe.express.ingredients = { { type = "item", name = "fast", amount = 1 },
+      { type = "fluid", name = "lubricant", amount = 10 } }
+    local list = tiers.collect(raw)
+    A.eq(list[3].previous, "fast", "express z fast díky surovině receptu")
+    A.eq(list[2].next_upgrade, "express", "upgrade fast")
+  end },
   { "pás bez předmětu nebo receptu se vyřadí", function()
     local raw = fake_raw({ a = { speed = 0.03125 } })
     raw["transport-belt"].orphan = { name = "orphan", speed = 0.0625 }
