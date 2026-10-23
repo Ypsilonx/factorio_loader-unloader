@@ -21,7 +21,7 @@ import bpy
 import numpy as np
 
 # Kořen repozitáře; při jiném umístění nastav proměnnou prostředí SO_ROOT.
-ROOT = os.environ.get("SO_ROOT", r"D:/61_Programing/factorio_loader-unloader")
+ROOT = os.environ.get("SO_ROOT", r"E:/Dev/61_Programing/factorio_loader-unloader")
 HERE = os.path.join(ROOT, "blender")
 MOD = os.path.join(ROOT, "Storage_optimizer")
 WORK = os.path.join(HERE, "renders")
