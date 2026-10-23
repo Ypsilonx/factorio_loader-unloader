@@ -11,6 +11,10 @@ now:     [chest] → Storage Optimizer → [chest]
 
 A *transfer* is **stack size × stacks per transfer** – e.g. iron plates 100 × 5 = 500 plates at once.
 
+Enjoying the mod? You can support its development:
+
+[![Buy Me a Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/ypsilonx)
+
 ## Features
 
 - **Whole-stack transfers** – one transfer per cycle, and only when the source holds all items and the
