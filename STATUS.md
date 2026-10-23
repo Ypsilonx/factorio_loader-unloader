@@ -8,6 +8,8 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Hotovo
 
+- 0.5.1 vydaná 2026-10-23: tipy a triky ve hře (`prototypes/tips.lua`), banner Buy Me a Coffee na portálu.
+  Testy: unit 50/0, vanilla 56/0, space-age 60/0.
 - 0.5.0 vydaná 2026-10-23 (pro 2.1; 2.0 zůstává na 0.4.2): `factorio_version` 2.1, oprava pádu s Pyanodonem 3.1 (`inherit_metatable`
   v `data-final-fixes.lua`), `recycler` a závislosti `+` v `run-tests.sh`. Testy: unit 50/0, vanilla 56/0,
   space-age 60/0, mods Py 3.1 / Bob's 3.0 / Tenebris / Arig+Hyarion (verze pro 2.1), perf zapsaný v docs.
@@ -23,13 +25,11 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Rozpracováno
 
-- 0.5.1 připravená, nevydaná: tipy a triky ve hře (`prototypes/tips.lua`). Banner Buy Me a Coffee je na portálu
-  (`publish.sh --details-only`, 2026-10-23). Testy: unit 50/0, vanilla 56/0, space-age 60/0.
 - 0.5.0 vydaná bez předchozí ruční kontroly ve hře – kontrola (okno, stín drátů, blueprint) proběhne dodatečně.
 
 ## Další krok
 
-1. Kontrola tipů ve hře (en i cs), commit a vydání 0.5.1 (`bash tools/publish.sh`).
+1. Kontrola tipů 0.5.1 ve hře (en i cs, ikony vagónu a signálů S/N).
 2. Zpětná vazba z kontroly 0.5.0 ve hře, případná oprava 0.5.1.
 3. Odpovědět hráči ve vlákně „Compatibility Issue: Tenebris Prime“ (opraveno v 0.4.2).
 4. UBSA zatím nemá verzi pro 2.1 – otestovat strom tierů s UBSA, až vyjde.
