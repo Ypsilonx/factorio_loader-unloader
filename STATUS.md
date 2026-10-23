@@ -1,13 +1,16 @@
 # Stav projektu
 
-Aktualizováno: 2026-10-18
+Aktualizováno: 2026-10-23
 
 ## Cíl
 
-Není stanovený – 0.4.2 vydaná, další milník čeká na rozhodnutí (viz otevřené otázky).
+Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na rozhodnutí.
 
 ## Hotovo
 
+- 0.5.0 vydaná 2026-10-23 (pro 2.1; 2.0 zůstává na 0.4.2): `factorio_version` 2.1, oprava pádu s Pyanodonem 3.1 (`inherit_metatable`
+  v `data-final-fixes.lua`), `recycler` a závislosti `+` v `run-tests.sh`. Testy: unit 50/0, vanilla 56/0,
+  space-age 60/0, mods Py 3.1 / Bob's 3.0 / Tenebris / Arig+Hyarion (verze pro 2.1), perf zapsaný v docs.
 - 0.4.2 vydaná 2026-10-18: strom tierů místo řetězu podle rychlosti (`tiers.lua: link_tree`) – hlášení hráče
   s UBSA + Planetaris Arig/Hyarion. Testy: unit 50/0, vanilla 56/0, space-age 60/0, mods Py / Bob's /
   Tenebris / UBSA / Arig+Hyarion+UBSA (řetězy porovnány před/po).
@@ -20,12 +23,13 @@ Není stanovený – 0.4.2 vydaná, další milník čeká na rozhodnutí (viz o
 
 ## Rozpracováno
 
-- Nic.
+- 0.5.0 vydaná bez předchozí ruční kontroly ve hře – kontrola (okno, stín drátů, blueprint) proběhne dodatečně.
 
 ## Další krok
 
-1. Odpovědět hráči ve vlákně „Compatibility Issue: Tenebris Prime“ (UBSA + Planetaris, opraveno v 0.4.2).
-2. Rozhodnout obsah další verze (viz otevřené otázky).
+1. Zpětná vazba z kontroly 0.5.0 ve hře, případná oprava 0.5.1.
+2. Odpovědět hráči ve vlákně „Compatibility Issue: Tenebris Prime“ (opraveno v 0.4.2).
+3. UBSA zatím nemá verzi pro 2.1 – otestovat strom tierů s UBSA, až vyjde.
 
 ## Otevřené otázky / slepé uličky
 
