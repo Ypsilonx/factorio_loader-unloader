@@ -1,1 +1,2 @@
 -- Data stage: prototypy nezávislé na ostatních modech (tiery se generují v data-final-fixes.lua).
+require("prototypes.tips")

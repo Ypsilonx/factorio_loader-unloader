@@ -17,6 +17,7 @@ Storage_optimizer/            samotný mod
   prototypes/tiers.lua        výběr pásů, interval, spotřeba (čistá logika)
   prototypes/research.lua     suroviny receptu a výzkum tieru s prerekvizitami (čistá logika)
   prototypes/entity|item|recipe|icons.lua   prototypy tierů
+  prototypes/tips.lua         tipy a triky ve hře (texty v locale)
   prototypes/wires.lua        body drátů obvodové sítě (projekce svorkovnice z Blenderu, čistá logika)
   scripts/registry.lua        evidence postavených optimizerů (storage.movers)
   scripts/neighbours.lua      hledání zdrojové a cílové bedny
@@ -151,13 +152,15 @@ Pak ve hře povol mod. Ladění s breakpointy: *Run and Debug → Factorio Mod D
 - [ ] Šipka v alt režimu míří k cíli ve všech 4 směrech.
 - [ ] Barvy indikátoru: zelená (pracuje), žlutá (čeká), červená (bez proudu / bez bedny / vypnuto sítí).
 - [ ] Otočení klávesou R a převrácení (F/G) prohodí zdroj a cíl.
+- [ ] Tipy a triky: kategorie Storage Optimizer s 5 tipy, ikony vagónu a signálů S/N se zobrazí (en i cs).
 
 ## Publikace
 
 1. Zvýšit `version` v `Storage_optimizer/info.json` a přidat sekci do `changelog.txt`.
 2. `bash tools/package.sh` → `dist/Storage_optimizer_<verze>.zip`.
 3. `bash tools/publish.sh` – sestaví zip a nahraje ho přes Mod upload API (`--details` navíc přepíše popis
-   na portálu obsahem `docs/mod-portal.md` a krátký popis z `info.json`). Klíč z <https://factorio.com/profile>
+   na portálu obsahem `docs/mod-portal.md` a krátký popis z `info.json`; `--details-only` jen popis bez nové
+   verze). Klíč z <https://factorio.com/profile>
    (oprávnění *ModPortal: Upload Mods*, pro `--details` i *Edit Mods*) v proměnné `FACTORIO_API_KEY` nebo
    v souboru `FACTORIO_API_KEY_FILE` (výchozí `~/.factorio-api-key/all_api_key.txt`) – nikdy ne v repozitáři. Skript odmítne verzi, která už na portálu je,
    nebo chybí v changelogu.

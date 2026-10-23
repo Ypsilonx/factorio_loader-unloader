@@ -23,13 +23,16 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Rozpracováno
 
+- 0.5.1 připravená, nevydaná: tipy a triky ve hře (`prototypes/tips.lua`). Banner Buy Me a Coffee je na portálu
+  (`publish.sh --details-only`, 2026-10-23). Testy: unit 50/0, vanilla 56/0, space-age 60/0.
 - 0.5.0 vydaná bez předchozí ruční kontroly ve hře – kontrola (okno, stín drátů, blueprint) proběhne dodatečně.
 
 ## Další krok
 
-1. Zpětná vazba z kontroly 0.5.0 ve hře, případná oprava 0.5.1.
-2. Odpovědět hráči ve vlákně „Compatibility Issue: Tenebris Prime“ (opraveno v 0.4.2).
-3. UBSA zatím nemá verzi pro 2.1 – otestovat strom tierů s UBSA, až vyjde.
+1. Kontrola tipů ve hře (en i cs), commit a vydání 0.5.1 (`bash tools/publish.sh`).
+2. Zpětná vazba z kontroly 0.5.0 ve hře, případná oprava 0.5.1.
+3. Odpovědět hráči ve vlákně „Compatibility Issue: Tenebris Prime“ (opraveno v 0.4.2).
+4. UBSA zatím nemá verzi pro 2.1 – otestovat strom tierů s UBSA, až vyjde.
 
 ## Otevřené otázky / slepé uličky
 
