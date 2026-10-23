@@ -48,4 +48,26 @@ for _, info in ipairs(list) do
   end
 end
 
+--- Přidělí našemu prototypu metatabulku, kterou mají ostatní prototypy stejného typu.
+--- Pyanodon 3.1 dává všem receptům metody (`recipe:has_category`) přes metatabulku jen při svém načtení a ve
+--- svém data-final-fixes je volá i na recepty vytvořené po něm – bez metatabulky hra při načítání spadne.
+--- @param prototype table náš nový prototyp v data.raw
+local function inherit_metatable(prototype)
+  if getmetatable(prototype) then return end
+  for _, other in pairs(data.raw[prototype.type]) do
+    local meta = getmetatable(other)
+    if meta then
+      setmetatable(prototype, meta)
+      return
+    end
+  end
+end
+
+for _, info in ipairs(list) do
+  for _, type in ipairs({ "inserter", "item", "recipe", "technology" }) do
+    local prototype = data.raw[type][info.name]
+    if prototype then inherit_metatable(prototype) end
+  end
+end
+
 data:extend({ { type = "mod-data", name = "storage-optimizer-tiers", data = runtime } })

@@ -1,6 +1,6 @@
 # Storage Optimizer
 
-Mod do Factoria 2.0: jedna budova 1×1, která bez pásů přesouvá celé stacky mezi bednami, vagóny,
+Mod do Factoria 2.1: jedna budova 1×1, která bez pásů přesouvá celé stacky mezi bednami, vagóny,
 montážními stroji a pecemi. Nahrazuje sestavu unloader → pás → loader, tiery se generují automaticky
 ze všech pásů ve hře.
 

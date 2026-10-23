@@ -50,10 +50,10 @@ A *transfer* is **stack size × stacks per transfer** – e.g. iron plates 100 �
 
 ## Compatibility
 
-- Factorio 2.0, with or without Space Age.
+- Factorio 2.1, with or without Space Age (Factorio 2.0: version 0.4.2).
 - Overhaul mods: each tier has its own technology whose prerequisites are derived from the belt and from every
   recipe ingredient, so the tier is never unlocked before its ingredients – also in reshuffled tech trees.
-  Tested with Pyanodon, Bob's mods and Tenebris Prime. When a mod adds belts with the same speed (e.g.
+  Tested with Pyanodon, Bob's mods, Tenebris Prime and Planetaris. When a mod adds belts with the same speed (e.g.
   glowing belts), the tier chain follows the one available first and the others become side variants. Ingredients are intermediates (circuits, inserters, belts), so
   overhaul mods make the recipe more expensive on their own; missing items fall back to simpler ones.
 - Works with any mod that adds belts (tiers are generated automatically), any mod that adds chests or
@@ -69,13 +69,13 @@ A *transfer* is **stack size × stacks per transfer** – e.g. iron plates 100 �
 
 ## Benchmark
 
-1000 pairs of chests, 3600 ticks, Factorio 2.0.77, yellow tier, 1 stack per transfer:
+1000 pairs of chests, 3600 ticks, Factorio 2.1.23, yellow tier, 1 stack per transfer:
 
 | Setup | ms/tick | Items moved in 50 s |
 |---|---|---|
-| chests only (baseline) | 0.138 | 0 |
-| **Storage Optimizer** | **0.293** | **4 800 000** (all source chests emptied) |
-| 2× vanilla loader per pair | 0.261 | 744 000 |
+| chests only (baseline) | 0.102 | 0 |
+| **Storage Optimizer** | **0.247** | **4 800 000** (all source chests emptied) |
+| 2× vanilla loader per pair | 0.242 | 744 000 |
 
 Per tick it costs about as much as a pair of loaders, but it moves 6.5× more items – far less UPS per item.
 

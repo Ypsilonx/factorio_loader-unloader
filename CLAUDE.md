@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Mod do Factoria 2.0 (Lua) „Storage Optimizer“: budova 1×1, která bez pásů přesouvá celé stacky mezi bednami
+Mod do Factoria 2.1 (Lua) „Storage Optimizer“: budova 1×1, která bez pásů přesouvá celé stacky mezi bednami
 a stroji. Dokumentace projektu je česky (komentáře, docstringy, docs/), lokalizace hry v `locale/en` i `locale/cs`.
 Podrobnosti k ladění hodnot, grafice a publikaci jsou v `docs/development.md` – při změně tam popsaného chování
 ho aktualizuj. Proč je mod postavený, jak je: `docs/specs/2026-10-01-storage-optimizer-design.md` (drž aktuální).

@@ -81,18 +81,25 @@ Factorio 2.0; staženo z portálu do zvláštní složky a předáno přes `MODS
 2026-10-18 (strom tierů): `planetaris-hyarion` 1.3.22 + `planetaris-arig` 1.1.46 + `UltimateBeltsSpaceAge` 1.3.0
 (staženo do zvláštní složky, `MODS_SOURCE`) – větev UBSA z modrého tieru, hyper pás z turba. Pyanodon, Bob's,
 Tenebris a Space Age beze změny vanilla řetězu (porovnány logy `recipe.lua` před/po změně).
+2026-10-23 (Factorio 2.1.23, 0.5.0): verze modů pro 2.1 stažené z portálu – `pymodpack` 3.1.0 (4 tiery), Bob's 3.0.x
+(7 tierů), `tenebris-prime` 1.3.18 (10 tierů), `planetaris-hyarion` 1.3.24 + `planetaris-arig` 1.1.47 (hyper pás
+z turba); `UltimateBeltsSpaceAge` verzi pro 2.1 zatím nemá. Pyanodon 3.1 ve svém data-final-fixes volá
+`recipe:has_category` na všechny recepty – naše prototypy proto přebírají metatabulku ostatních prototypů
+stejného typu (`data-final-fixes.lua: inherit_metatable`, regrese v `tests/storage-optimizer-tests/data-final-fixes.lua`).
+Vestavěný mod `recycler` (nový v 2.1) se zapíná jen ve variantě `space-age`; závislosti s prefixem `+`
+(doporučené, ve výchozím stavu zapnuté) `run-tests.sh` načítá jako povinné.
 
-### Výsledky výkonového testu (1000 dvojic beden, 3600 ticků, Factorio 2.0.77)
+### Výsledky výkonového testu (1000 dvojic beden, 3600 ticků, Factorio 2.1.23)
 
 Aktuální stav (žlutý tier 1 s, 1 stack za přesun):
 
 | Režim | ms/tick | Přesunuto kusů za 50 s |
 |---|---|---|
-| `idle` – jen bedny | 0,138 | 0 |
-| `mover` – Storage optimizer (žlutý tier) | 0,293 | 4 800 000 (všechny zdroje vyprázdněné) |
-| `loader` – 2× vanilla loader-1x1 | 0,261 | 744 000 |
+| `idle` – jen bedny | 0,102 | 0 |
+| `mover` – Storage optimizer (žlutý tier) | 0,247 | 4 800 000 (všechny zdroje vyprázdněné) |
+| `loader` – 2× vanilla loader-1x1 | 0,242 | 744 000 |
 
-Historie: s intervalem 2 s stál `mover` 0,225 ms/tick (2 500 000 kusů); před vypnutím entity pro engine
+Historie: na Factoriu 2.0.77 idle 0,138, mover 0,293, loader 0,261 ms/tick. S intervalem 2 s stál `mover` 0,225 ms/tick (2 500 000 kusů); před vypnutím entity pro engine
 0,350 ms/tick. `mover-nochest` (optimizery bez beden) 0,136 ms/tick = entita sama nestojí nic.
 
 Entita je pro engine vypnutá (`disabled_by_script`), takže celá cena je skriptová logika – úměrná počtu
