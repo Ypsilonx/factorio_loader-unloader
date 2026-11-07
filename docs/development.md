@@ -159,7 +159,7 @@ Pak ve hře povol mod. Ladění s breakpointy: *Run and Debug → Factorio Mod D
 1. Zvýšit `version` v `Storage_optimizer/info.json` a přidat sekci do `changelog.txt`.
 2. `bash tools/package.sh` → `dist/Storage_optimizer_<verze>.zip`.
 3. `bash tools/publish.sh` – sestaví zip a nahraje ho přes Mod upload API (`--details` navíc přepíše popis
-   na portálu obsahem `docs/mod-portal.md` a krátký popis z `info.json`; `--details-only` jen popis bez nové
+   na portálu obsahem `docs/mod-portal.md`, název a krátký popis z `info.json` a tagy z `TAGS` v `publish.sh`; `--details-only` jen popis bez nové
    verze). Klíč z <https://factorio.com/profile>
    (oprávnění *ModPortal: Upload Mods*, pro `--details` i *Edit Mods*) v proměnné `FACTORIO_API_KEY` nebo
    v souboru `FACTORIO_API_KEY_FILE` (výchozí `~/.factorio-api-key/all_api_key.txt`) – nikdy ne v repozitáři. Skript odmítne verzi, která už na portálu je,

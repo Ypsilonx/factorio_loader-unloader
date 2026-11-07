@@ -1,5 +1,12 @@
 # Storage Optimizer
 
+![Factorio 2.1](https://img.shields.io/badge/Factorio-2.1-orange)
+![Space Age](https://img.shields.io/badge/Space%20Age-optional-blueviolet)
+![Downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fmods.factorio.com%2Fapi%2Fmods%2FStorage_optimizer&query=%24.downloads_count&label=downloads&color=blue)
+![UPS friendly](https://img.shields.io/badge/UPS-friendly-brightgreen)
+![License MIT](https://img.shields.io/badge/license-MIT-green)
+[![GitHub](https://img.shields.io/badge/source-GitHub-black?logo=github)](https://github.com/Ypsilonx/factorio_loader-unloader)
+
 **One building instead of unloader + belt + loader.** Storage Optimizer moves **whole stacks** from one chest
 or warehouse straight into another – up to 20 stacks at once, no belts, no inserters, and built from the
 ground up to be gentle on UPS.

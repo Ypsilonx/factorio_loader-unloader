@@ -10,6 +10,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 API="https://mods.factorio.com/api"
 MOD="Storage_optimizer"
+# Tagy na portálu (pevný seznam portálu: logistics, storage, trains, circuit-network, manufacturing…);
+# slouží jen k filtrování v kategoriích, hledání jde přes název a krátký popis.
+TAGS=(logistics storage trains circuit-network)
 KEY_FILE="${FACTORIO_API_KEY_FILE:-$HOME/.factorio-api-key/all_api_key.txt}"
 KEY="${FACTORIO_API_KEY:-$(cat "$KEY_FILE" 2>/dev/null || true)}"
 KEY="$(printf '%s' "$KEY" | tr -d '\r\n ')"
@@ -40,16 +43,24 @@ upload_release() {
   echo "Verze $version nahrána: https://mods.factorio.com/mod/$MOD"
 }
 
-# Aktualizuje krátký popis (info.json) a dlouhý popis (docs/mod-portal.md). Texty jdou curlu ze souborů –
-# argument by v Git Bash prošel kódovou stránkou Windows a rozbil znaky jako „–“.
+# Vypíše hodnotu textového pole z info.json (bez konce řádku).
+info_field() {
+  grep -oE "\"$1\" *: *\"[^\"]*\"" "$ROOT/$MOD/info.json" | sed -E "s/^\"$1\" *: *\"(.*)\"$/\1/" | tr -d '\n'
+}
+
+# Aktualizuje název a krátký popis (info.json), dlouhý popis (docs/mod-portal.md) a tagy (TAGS).
+# Texty jdou curlu ze souborů – argument by v Git Bash prošel kódovou stránkou Windows a rozbil znaky jako „–“.
 update_details() {
-  local summary_file result
+  local summary_file title_file result tag tag_args=()
   summary_file="$(mktemp)"
-  grep -oE '"description" *: *"[^"]*"' "$ROOT/$MOD/info.json" \
-    | sed -E 's/^"description" *: *"(.*)"$/\1/' | tr -d '\n' >"$summary_file"
-  result="$(curl -sS -H "Authorization: Bearer $KEY" -F "mod=$MOD" -F "summary=<$(cygpath -m "$summary_file")" \
-    -F "description=<$(cygpath -m "$ROOT/docs/mod-portal.md")" "$API/v2/mods/edit_details")"
-  rm -f "$summary_file"
+  title_file="$(mktemp)"
+  info_field description >"$summary_file"
+  info_field title >"$title_file"
+  for tag in "${TAGS[@]}"; do tag_args+=(-F "tags=$tag"); done
+  result="$(curl -sS -H "Authorization: Bearer $KEY" -F "mod=$MOD" -F "title=<$(cygpath -m "$title_file")" \
+    -F "summary=<$(cygpath -m "$summary_file")" -F "description=<$(cygpath -m "$ROOT/docs/mod-portal.md")" \
+    "${tag_args[@]}" "$API/v2/mods/edit_details")"
+  rm -f "$summary_file" "$title_file"
   printf '%s' "$result" | grep -q '"success" *: *true' || { echo "Úprava popisu selhala: $result"; exit 1; }
   echo "Popis na portálu aktualizován."
 }
