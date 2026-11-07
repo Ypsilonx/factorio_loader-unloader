@@ -1,6 +1,6 @@
 # Stav projektu
 
-Aktualizováno: 2026-10-23
+Aktualizováno: 2026-11-07
 
 ## Cíl
 
@@ -8,6 +8,9 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Hotovo
 
+- 2026-11-07 portál (`publish.sh --details-only`): název „Storage Optimizer – UPS-friendly stack inserter & loader“,
+  krátký popis s klíčovými slovy, badges v `docs/mod-portal.md`, tagy + trains, circuit-network. Ve hře se název
+  projeví až s další verzí (title v `info.json` je už upravený).
 - 0.5.1 vydaná 2026-10-23: tipy a triky ve hře (`prototypes/tips.lua`), banner Buy Me a Coffee na portálu.
   Testy: unit 50/0, vanilla 56/0, space-age 60/0.
 - 0.5.0 vydaná 2026-10-23 (pro 2.1; 2.0 zůstává na 0.4.2): `factorio_version` 2.1, oprava pádu s Pyanodonem 3.1 (`inherit_metatable`
@@ -31,12 +34,18 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 1. Kontrola tipů 0.5.1 ve hře (en i cs, ikony vagónu a signálů S/N).
 2. Zpětná vazba z kontroly 0.5.0 ve hře, případná oprava 0.5.1.
-3. Odpovědět hráči ve vlákně „Compatibility Issue: Tenebris Prime“ (opraveno v 0.4.2).
-4. UBSA zatím nemá verzi pro 2.1 – otestovat strom tierů s UBSA, až vyjde.
+3. Odpovědět hráči ve vlákně o plnění strojů (text připraven v session 2026-11-07).
+4. Odpovědět hráči ve vlákně „Compatibility Issue: Tenebris Prime“ (opraveno v 0.4.2).
+5. UBSA zatím nemá verzi pro 2.1 – otestovat strom tierů s UBSA, až vyjde.
 
 ## Otevřené otázky / slepé uličky
 
 - Co dál po 0.4.x? Odloženo: čtení přesunů do obvodové sítě. ROADMAP.md se založí, až budou plány.
+- Odloženo, přibalit k další větší verzi: volba „neplnit stroje víc, než potřebují“ (hlášení hráče 2026-11).
+  Dnes cíl-stroj bere až plný stack (`get_insertable_count` v `transfer.lua:120`), takže při rozjezdu stroje hamstrují
+  a vzdálenější hladoví; za běhu tok = spotřeba. Návrh: checkbox (výchozí vypnutý), `room` omezit na ~2× suroviny
+  receptu. Zamítnuto: přeskakování intervalů (zlomky nevyřeší, příčinu neodstraní). Obejití dnes: síť, stroj
+  *Read contents* → podmínka optimizeru *předmět < 10*.
 - ❌ Rameno inserteru namířené na vlastní políčko – engine entitu dál počítá (~0,107 ms/tick na 1000 ks). Řešení `disabled_by_script`.
 - ❌ Velikost dávky v `inserter_stack_size_override` – engine ji omezí na 0–255. Řešení: `storage` + tagy blueprintu.
 - ❌ Nativní okno inserteru + boční panel (do 0.3.x) – ukazovalo volby, které mod ignoruje. Nahrazeno vlastním oknem.
