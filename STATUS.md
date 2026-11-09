@@ -1,6 +1,6 @@
 # Stav projektu
 
-Aktualizováno: 2026-11-07
+Aktualizováno: 2026-11-09
 
 ## Cíl
 
@@ -28,10 +28,11 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Rozpracováno
 
+- 0.5.2 (nevydaná): skrytá volitelná závislost `(?) DoubleSpeedBelts` – tiery vždy vidí zdvojené rychlosti pásů
+  (bez ní by DSB s Bob's Logistics mohl běžet až po nás). Ověřeno: mods space-age+One More Tier+DSB 2/0, vanilla 56/0.
 - 0.5.0 vydaná bez předchozí ruční kontroly ve hře – kontrola (okno, stín drátů, blueprint) proběhne dodatečně.
 
-## Další krok
-
+. Odpovědět hráči na One More Tier + Double Speed Belts (text připraven v session 2026-11-09), vydat 0.5.2.
 1. Kontrola tipů 0.5.1 ve hře (en i cs, ikony vagónu a signálů S/N).
 2. Zpětná vazba z kontroly 0.5.0 ve hře, případná oprava 0.5.1.
 3. Odpovědět hráči ve vlákně o plnění strojů (text připraven v session 2026-11-07).

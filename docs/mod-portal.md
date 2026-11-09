@@ -67,7 +67,8 @@ Enjoying the mod? You can support its development:
   Tested with Pyanodon, Bob's mods, Tenebris Prime and Planetaris. When a mod adds belts with the same speed (e.g.
   glowing belts), the tier chain follows the one available first and the others become side variants. Ingredients are intermediates (circuits, inserters, belts), so
   overhaul mods make the recipe more expensive on their own; missing items fall back to simpler ones.
-- Works with any mod that adds belts (tiers are generated automatically), any mod that adds chests or
+- Works with any mod that adds belts or changes their speed (tiers are generated automatically from the final
+  belt speeds; tested with One More Tier and Double Speed Belts), any mod that adds chests or
   warehouses of type `container` / `logistic-container` / `infinity-container`, any cargo wagon and any mod that adds assembling machines or furnaces.
 - Default control signals are the plain letters **S** (stack size) and **N** (stacks per transfer);
   any other signal can be chosen.
