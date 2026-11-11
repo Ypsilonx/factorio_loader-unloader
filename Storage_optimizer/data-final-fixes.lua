@@ -1,6 +1,7 @@
 -- Generování tierů až po načtení všech modů, aby se zahrnuly i pásy z jiných modů.
 local tiers = require("prototypes.tiers")
 local icons = require("prototypes.icons")
+local colors = require("prototypes.colors")
 local entity = require("prototypes.entity")
 local item = require("prototypes.item")
 local recipe = require("prototypes.recipe")
@@ -10,12 +11,15 @@ local power_multiplier = settings.startup["storage-optimizer-power-multiplier"].
 local max_stacks = settings.startup["storage-optimizer-max-stacks"].value
 
 local list = tiers.collect(data.raw)
+local belts = {}
+for i, info in ipairs(list) do belts[i] = data.raw["transport-belt"][info.belt] end
+local tints = colors.assign(belts)
 local runtime = {}
 -- Hlavní tiery (jeden na rychlost) tvoří strom podle výzkumů (tiers.collect); varianta se vyrábí z hlavního
 -- tieru své rychlosti.
 local tier = 0
 
-for _, info in ipairs(list) do
+for i, info in ipairs(list) do
   info.name = "storage-optimizer-" .. info.belt
   if info.variant_of then
     info.previous = "storage-optimizer-" .. info.variant_of
@@ -24,12 +28,13 @@ for _, info in ipairs(list) do
     info.previous = info.previous and "storage-optimizer-" .. info.previous
   end
   info.tier = tier
+  info.tint = tints[i]
   info.interval = tiers.interval_ticks(info.speed, interval_multiplier)
   info.energy_kj = tiers.transfer_cost_kj(1, power_multiplier)
   info.extra_stack_kj = tiers.transfer_cost_kj(2, power_multiplier) - info.energy_kj
   info.buffer_kj = tiers.buffer_kj(max_stacks, power_multiplier)
   info.input_flow_kw = tiers.input_flow_kw(max_stacks, power_multiplier, info.interval)
-  local layers = icons.tier_icons(info.item, entity.tint(tier))
+  local layers = icons.tier_icons(info.item, info.tint)
   entity.create(info, layers)
   item.create(info, layers)
   recipe.create(info, layers)

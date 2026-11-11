@@ -46,7 +46,8 @@ tools/                        skripty: testy, výkon, junction, balení
 | Suroviny receptů (úrovně a náhrady za předměty, které mod odstranil), počet pásů v receptu | `Storage_optimizer/prototypes/research.lua` – `LEVELS`, `BELTS_PER_TIER` |
 | Hranice úrovní surovin podle rychlosti pásu (násobky žlutého: do 1×, do 2×, rychlejší) | `Storage_optimizer/prototypes/research.lua` – `LEVEL_SPEEDS` |
 | Cena výzkumu tieru (násobek nejdražší přímé prerekvizity, výchozí 1,5×) | `Storage_optimizer/prototypes/research.lua` – `TECH_COUNT_MULTIPLIER` |
-| Barvy tierů (dočasná grafika) | `Storage_optimizer/prototypes/entity.lua` – `TINTS` |
+| Šipka směru v alt režimu (velikost, průhlednost, posun od středu) | `Storage_optimizer/scripts/indicator.lua` – `ARROW_SCALE`, `ARROW_TINT`, `ARROW_SHIFT` |
+| Barvy šipek podle pásu (paleta, známé ikony vanilla/Space Age, slova v názvu ikony, pořadí náhradních barev) | `Storage_optimizer/prototypes/colors.lua` – `PALETTE`, `KNOWN_ICONS`, `WORDS`, `FALLBACK` |
 | Cesta k Factoriu | proměnná `FACTORIO_EXE` (výchozí hodnota v `tools/run-tests.sh` a `tools/run-perf.sh`) |
 | Cesta ke Git Bash pro VSCode úlohy | `.vscode/tasks.json` – `options.shell.executable` |
 
@@ -208,7 +209,7 @@ Kořen repozitáře se bere z proměnné prostředí `SO_ROOT`, výchozí hodnot
 | Barva rzi, holého kovu a špíny | `blender/so_materials.py` – `RUST`, `RUST_DARK`, `BARE_METAL`, `GRIME` |
 | Tvar a rozměry dílů | `blender/so_model.py` – funkce `build`, `mouth` a `terminal` (svorkovnice drátů) |
 | Světlo (směr stínu, síla), kvalita renderu | `blender/so_render.py` – `setup_camera_and_lights`, `SAMPLES`, `SUPERSAMPLE` |
-| Barvy tierů ve hře | `Storage_optimizer/prototypes/entity.lua` – `TINTS` (pro náhled je zrcadlí `PREVIEW_TINTS` ve skriptu) |
+| Barvy tierů ve hře | `Storage_optimizer/prototypes/colors.lua` – `PALETTE` (pro náhled je zrcadlí `PREVIEW_TINTS` ve skriptu) |
 
 Promítání odpovídá hře: ortografická kamera pod 45° a model roztažený v ose Y o √2, takže dlaždice
 vychází čtvercová; 2 dlaždice = 128 px, ve hře `scale = 0.5`. Rozměry souborů hlídá jednotkový test

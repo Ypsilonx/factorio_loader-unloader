@@ -6,24 +6,10 @@ local M = {}
 
 local EMPTY = { filename = "__core__/graphics/empty.png", size = 1 }
 
---- Barvy tierů (dočasné odlišení do grafiky z Blenderu); při více tierech se cyklí.
-M.TINTS = {
-  { r = 1.0, g = 0.85, b = 0.25 },
-  { r = 1.0, g = 0.35, b = 0.3 },
-  { r = 0.35, g = 0.65, b = 1.0 },
-  { r = 0.55, g = 1.0, b = 0.45 },
-  { r = 0.8, g = 0.45, b = 1.0 },
-  { r = 1.0, g = 1.0, b = 1.0 },
-}
-
---- Barva tieru podle jeho pořadí.
-function M.tint(tier)
-  return M.TINTS[(tier - 1) % #M.TINTS + 1]
-end
-
 --- Grafika entity ze 3 vrstev renderovaných v Blenderu (blender/build_sprites.py):
---- základ, šipky obarvené podle tieru a stín. Každý list má 4 snímky N, E, S, W po 128×128 px.
-function M.platform(tier)
+--- základ, šipky obarvené barvou pásu a stín. Každý list má 4 snímky N, E, S, W po 128×128 px.
+--- @param tint table barva šipek (prototypes/colors.lua)
+function M.platform(tint)
   local path = "__Storage_optimizer__/graphics/entity/storage-optimizer-"
   --- Jeden list směrů.
   local function sheet(layer, extra)
@@ -35,7 +21,7 @@ function M.platform(tier)
     sheets = {
       sheet("shadow", { draw_as_shadow = true }),
       sheet("base"),
-      sheet("mask", { tint = M.tint(tier) }),
+      sheet("mask", { tint = tint }),
     },
   }
 end
@@ -47,7 +33,7 @@ function M.localised_name(belt)
 end
 
 --- Vytvoří entitu tieru.
---- @param info table položka z tiers.collect doplněná o name, tier, interval, energy_kj, extra_stack_kj, buffer_kj, input_flow_kw
+--- @param info table položka z tiers.collect doplněná o name, tier, tint, interval, energy_kj, extra_stack_kj, buffer_kj, input_flow_kw
 --- @param icons table[] vrstvy ikony
 function M.create(info, icons)
   local e = table.deepcopy(data.raw["inserter"]["fast-inserter"])
@@ -95,7 +81,7 @@ function M.create(info, icons)
   e.hand_base_frozen = nil
   e.hand_closed_frozen = nil
   e.hand_open_frozen = nil
-  e.platform_picture = M.platform(info.tier)
+  e.platform_picture = M.platform(info.tint)
   e.custom_tooltip_fields = {
     {
       name = { "storage-optimizer.interval" },
