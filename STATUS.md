@@ -30,6 +30,14 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Rozpracováno
 
+- Barvy šipek podle pásu (hlášení hráče s mody pásů): krok 1 hotový – `prototypes/colors.lua` (tint ikony →
+  známé ikony vanilla/SA → barva v názvu ikony → nepoužitá barva). Ověřeno: unit 56/0, vanilla 56/0, space-age 60/0,
+  mods Bob / SA+Bob 2/0, barvy z logu sedí. Krok 2 hotový: šipka směru v alt režimu zmenšená, průhledná a
+  posunutá ke kraji (`scripts/indicator.lua`) – dřív velká šipka zakrývala ikonu filtru; „černé“ pásy světle šedé.
+  Ověřeno snímky ze hry (Bob, SA, filtr viditelný) + unit 56/0, vanilla 56/0, space-age 60/0. Neověřeno: uložená
+  hra se starší verzí (`on_configuration_changed` vykreslení vždy přestaví).
+- ❌ Ikona pásu v alt režimu – zamítnuto: střed patří ikoně filtru, hodně hráčů má alt režim zapnutý trvale.
+
 - 0.5.0 vydaná bez předchozí ruční kontroly ve hře – kontrola (okno, stín drátů, blueprint) proběhne dodatečně.
 
 . Odpovědět hráči na One More Tier + Double Speed Belts (text připraven v session 2026-11-09), vydat 0.5.2.

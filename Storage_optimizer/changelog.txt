@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.3
+Date: unreleased
+  Graphics:
+    - The arrows on the building now take the colour of the tier's belt, also for belts from mods (e.g.
+      Bob's Logistics: grey basic, purple turbo, green ultimate belt). Unknown belts get a colour that no
+      other tier uses, so tiers no longer share a colour or depend on the order of the belts.
+    - Alt mode: the direction arrow is smaller, semi-transparent and moved to the edge, so the filter icon
+      and the coloured arrows stay visible.
+---------------------------------------------------------------------------------------------------
 Version: 0.5.2
 Date: 2026-11-09
   Compatibility:

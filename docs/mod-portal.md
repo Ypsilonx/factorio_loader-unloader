@@ -50,7 +50,8 @@ Enjoying the mod? You can support its development:
   transfer interval. Benchmark: see below.
 - **Cheap on power** – 50 kJ per transfer + 5 kJ for each additional stack (e.g. 500 plates for 70 kJ);
   an idle building uses no power, and a small energy reserve keeps power spikes low.
-- **Hand-made look** – weathered industrial graphics rendered in Blender, arrows coloured by tier.
+- **Hand-made look** – weathered industrial graphics rendered in Blender, arrows coloured like the belt of the tier
+  (also for belts from mods such as Bob's Logistics).
 
 ## How to use
 
