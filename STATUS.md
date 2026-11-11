@@ -1,6 +1,6 @@
 # Stav projektu
 
-Aktualizováno: 2026-11-09
+Aktualizováno: 2026-11-11
 
 ## Cíl
 
@@ -8,6 +8,9 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Hotovo
 
+- 0.5.3 vydaná 2026-11-11: barva šipek podle pásu (`prototypes/colors.lua`: tint ikony → známé ikony vanilla/SA →
+  barva v názvu ikony → nepoužitá barva), v alt režimu malá průhledná šipka u kraje (dřív zakrývala filtr).
+  Testy: unit 56/0, vanilla 56/0, space-age 60/0, mods Bob 2/0, snímky ze hry, ruční kontrola savu.
 - 0.5.2 vydaná 2026-11-09: skrytá závislost `(?) DoubleSpeedBelts` (tiery vždy ze zdvojených rychlostí pásů),
   portál zmiňuje One More Tier + DSB. Testy: unit 50/0, vanilla 56/0, space-age 60/0, mods SA+OMT+DSB 2/0.
 - 2026-11-07 portál (`publish.sh --details-only`): název „Storage Optimizer – UPS-friendly stack inserter & loader“,
@@ -30,17 +33,10 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Rozpracováno
 
-- Barvy šipek podle pásu (hlášení hráče s mody pásů): krok 1 hotový – `prototypes/colors.lua` (tint ikony →
-  známé ikony vanilla/SA → barva v názvu ikony → nepoužitá barva). Ověřeno: unit 56/0, vanilla 56/0, space-age 60/0,
-  mods Bob / SA+Bob 2/0, barvy z logu sedí. Krok 2 hotový: šipka směru v alt režimu zmenšená, průhledná a
-  posunutá ke kraji (`scripts/indicator.lua`) – dřív velká šipka zakrývala ikonu filtru; „černé“ pásy světle šedé.
-  Ověřeno snímky ze hry (Bob, SA, filtr viditelný) + unit 56/0, vanilla 56/0, space-age 60/0. Neověřeno: uložená
-  hra se starší verzí (`on_configuration_changed` vykreslení vždy přestaví).
-- ❌ Ikona pásu v alt režimu – zamítnuto: střed patří ikoně filtru, hodně hráčů má alt režim zapnutý trvale.
-
 - 0.5.0 vydaná bez předchozí ruční kontroly ve hře – kontrola (okno, stín drátů, blueprint) proběhne dodatečně.
 
-. Odpovědět hráči na One More Tier + Double Speed Belts (text připraven v session 2026-11-09), vydat 0.5.2.
+. Odpovědět hráči, kterému se pletly barvy tierů s mody pásů: opraveno v 0.5.3.
+. Odpovědět hráči na One More Tier + Double Speed Belts (text připraven v session 2026-11-09), vyšlo v 0.5.2.
 1. Kontrola tipů 0.5.1 ve hře (en i cs, ikony vagónu a signálů S/N).
 2. Zpětná vazba z kontroly 0.5.0 ve hře, případná oprava 0.5.1.
 3. Odpovědět hráči ve vlákně o plnění strojů (text připraven v session 2026-11-07).
@@ -49,6 +45,7 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Otevřené otázky / slepé uličky
 
+- ❌ Ikona pásu v alt režimu – střed patří ikoně filtru, hodně hráčů má alt režim zapnutý trvale.
 - Co dál po 0.4.x? Odloženo: čtení přesunů do obvodové sítě. ROADMAP.md se založí, až budou plány.
 - Odloženo, přibalit k další větší verzi: volba „neplnit stroje víc, než potřebují“ (hlášení hráče 2026-11).
   Dnes cíl-stroj bere až plný stack (`get_insertable_count` v `transfer.lua:120`), takže při rozjezdu stroje hamstrují
