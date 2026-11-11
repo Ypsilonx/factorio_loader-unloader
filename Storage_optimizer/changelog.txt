@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.2
-Date: unreleased
+Date: 2026-11-09
   Compatibility:
     - Double Speed Belts: tiers always follow the doubled belt speeds, also with mods that change the load
       order (e.g. Bob's Logistics).

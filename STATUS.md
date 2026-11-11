@@ -8,6 +8,8 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Hotovo
 
+- 0.5.2 vydaná 2026-11-09: skrytá závislost `(?) DoubleSpeedBelts` (tiery vždy ze zdvojených rychlostí pásů),
+  portál zmiňuje One More Tier + DSB. Testy: unit 50/0, vanilla 56/0, space-age 60/0, mods SA+OMT+DSB 2/0.
 - 2026-11-07 portál (`publish.sh --details-only`): název „Storage Optimizer – UPS-friendly stack inserter & loader“,
   krátký popis s klíčovými slovy, badges v `docs/mod-portal.md`, tagy + trains, circuit-network. Ve hře se název
   projeví až s další verzí (title v `info.json` je už upravený).
@@ -28,8 +30,6 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Rozpracováno
 
-- 0.5.2 (nevydaná): skrytá volitelná závislost `(?) DoubleSpeedBelts` – tiery vždy vidí zdvojené rychlosti pásů
-  (bez ní by DSB s Bob's Logistics mohl běžet až po nás). Ověřeno: mods space-age+One More Tier+DSB 2/0, vanilla 56/0.
 - 0.5.0 vydaná bez předchozí ruční kontroly ve hře – kontrola (okno, stín drátů, blueprint) proběhne dodatečně.
 
 . Odpovědět hráči na One More Tier + Double Speed Belts (text připraven v session 2026-11-09), vydat 0.5.2.
