@@ -113,7 +113,9 @@ local function on_configuration_changed()
     if mover.entity.valid then
       mover.interval = tiers.interval(mover.entity.name)
       mover.entity.disabled_by_script = true
-      if not (mover.light and mover.light.valid) then indicator.create(mover) end
+      -- Vykreslení se staví znovu vždy, aby se po aktualizaci modu projevila změna vzhledu (např. velikost šipky).
+      indicator.destroy(mover)
+      indicator.create(mover)
       wake(mover)
     else
       indicator.destroy(mover)
