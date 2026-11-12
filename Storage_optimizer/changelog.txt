@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.4
+Date: 2026-11-12
+  Graphics:
+    - Arrow colours now match the belt in many more belt mods. A tint on any layer of the belt icon is used
+      (not only the first one) and snapped to the arrow palette, so very dark tints no longer hide the arrows.
+    - Checked with: Bob's Logistics (also with Artisanal Reskins: Bob's Mods), One More Tier (purple, also
+      without Space Age), Space Exploration, 5Dim's Transport, Factorio+, Nullius, More Belts, Advanced Belts,
+      Iper Belt, Wooden Logistics, Aquilo Overhaul: Lithium Battery, UMR: Ultimate Modular Reactor Fixed,
+      Omnienergy, Prismatic Belts, Renai Transportation, Muluna, Moon of Nauvis and Factorio HD Age.
+    - If a belt keeps its real colour, two tiers can share it (e.g. More Belts mk5 is blue like the express
+      belt); the tier name tells them apart.
+---------------------------------------------------------------------------------------------------
 Version: 0.5.3
 Date: 2026-11-11
   Graphics:

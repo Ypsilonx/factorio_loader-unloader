@@ -73,6 +73,11 @@ Enjoying the mod? You can support its development:
   warehouses of type `container` / `logistic-container` / `infinity-container`, any cargo wagon and any mod that adds assembling machines or furnaces.
 - Default control signals are the plain letters **S** (stack size) and **N** (stacks per transfer);
   any other signal can be chosen.
+- Arrow colours are checked against the belts of: Bob's Logistics (also with Artisanal Reskins), One More Tier,
+  Space Exploration, 5Dim's Transport, Factorio+, Nullius, More Belts, Advanced Belts, Iper Belt, Wooden Logistics,
+  Aquilo Overhaul: Lithium Battery, UMR, Omnienergy, Prismatic Belts, Renai Transportation, Muluna and Factorio HD Age.
+  Belts don't store their colour, so it is guessed from the icon – if a belt of another mod gets a wrong colour,
+  let me know in the discussion and I'll add it.
 
 ## Known limitations
 

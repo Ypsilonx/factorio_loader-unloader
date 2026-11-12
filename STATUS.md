@@ -1,6 +1,6 @@
 # Stav projektu
 
-Aktualizováno: 2026-11-11
+Aktualizováno: 2026-11-12
 
 ## Cíl
 
@@ -8,6 +8,10 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 ## Hotovo
 
+- 0.5.4 vydaná 2026-11-12: barvy šipek s mody pásů – tint z kterékoli vrstvy ikony přichycený na paletu,
+  `KNOWN_ICONS` pro 17 sad modů (One More Tier – hlášení japonského hráče, SE, 5Dim, factorioplus, More Belts…),
+  seznam v changelogu a na portálu. Testy: unit 59/0, vanilla 56/0, `--dump-data` všech sad + kontrola ikona/barva.
+  Postup doplnění modu: `docs/development.md` → Barvy šipek.
 - 0.5.3 vydaná 2026-11-11: barva šipek podle pásu (`prototypes/colors.lua`: tint ikony → známé ikony vanilla/SA →
   barva v názvu ikony → nepoužitá barva), v alt režimu malá průhledná šipka u kraje (dřív zakrývala filtr).
   Testy: unit 56/0, vanilla 56/0, space-age 60/0, mods Bob 2/0, snímky ze hry, ruční kontrola savu.
@@ -35,7 +39,8 @@ Není stanovený – 0.5.0 (Factorio 2.1) vydaná, další milník čeká na roz
 
 - 0.5.0 vydaná bez předchozí ruční kontroly ve hře – kontrola (okno, stín drátů, blueprint) proběhne dodatečně.
 
-. Odpovědět hráči, kterému se pletly barvy tierů s mody pásů: opraveno v 0.5.3.
+. Odpovědět japonskému hráči (One More Tier, barvy): text připraven v session 2026-11-12, vyšlo v 0.5.4.
+. Rampy Renai Transportation se staly tiery (typ `transport-belt`) – zvážit vyřazení v `tiers.lua: collect`.
 . Odpovědět hráči na One More Tier + Double Speed Belts (text připraven v session 2026-11-09), vyšlo v 0.5.2.
 1. Kontrola tipů 0.5.1 ve hře (en i cs, ikony vagónu a signálů S/N).
 2. Zpětná vazba z kontroly 0.5.0 ve hře, případná oprava 0.5.1.
