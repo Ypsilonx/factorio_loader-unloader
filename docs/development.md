@@ -47,9 +47,25 @@ tools/                        skripty: testy, výkon, junction, balení
 | Hranice úrovní surovin podle rychlosti pásu (násobky žlutého: do 1×, do 2×, rychlejší) | `Storage_optimizer/prototypes/research.lua` – `LEVEL_SPEEDS` |
 | Cena výzkumu tieru (násobek nejdražší přímé prerekvizity, výchozí 1,5×) | `Storage_optimizer/prototypes/research.lua` – `TECH_COUNT_MULTIPLIER` |
 | Šipka směru v alt režimu (velikost, průhlednost, posun od středu) | `Storage_optimizer/scripts/indicator.lua` – `ARROW_SCALE`, `ARROW_TINT`, `ARROW_SHIFT` |
-| Barvy šipek podle pásu (paleta, známé ikony vanilla/Space Age, slova v názvu ikony, pořadí náhradních barev) | `Storage_optimizer/prototypes/colors.lua` – `PALETTE`, `KNOWN_ICONS`, `WORDS`, `FALLBACK` |
+| Barvy šipek podle pásu (paleta, známé ikony modů, slova v názvu ikony, pořadí náhradních barev) – viz [Barvy šipek](#barvy-šipek) | `Storage_optimizer/prototypes/colors.lua` – `PALETTE`, `KNOWN_ICONS`, `WORDS`, `FALLBACK` |
 | Cesta k Factoriu | proměnná `FACTORIO_EXE` (výchozí hodnota v `tools/run-tests.sh` a `tools/run-perf.sh`) |
 | Cesta ke Git Bash pro VSCode úlohy | `.vscode/tasks.json` – `options.shell.executable` |
+
+### Barvy šipek
+
+Prototyp pásu barvu nenese a obrázek z Lua přečíst nejde, proto `colors.lua` barvu odhaduje: tint kterékoli
+vrstvy ikony (přichycený na nejbližší barvu palety podle odstínu) → `KNOWN_ICONS` → slovo v názvu souboru ikony
+(`WORDS`) → nepoužitá barva. Stejnou barvu může mít víc tierů (More Belts mk5 je modrý jako express) – skutečná
+barva pásu má přednost před odlišností.
+
+**Doplnění modu do `KNOWN_ICONS`** (stav 2026-11: nejstahovanější mody, které přidávají nebo překreslují pásy;
+Bob, Krastorio, Py a AAI zvlášť; mody jen pro 2.0 vynechané, ve 2.1 nejdou načíst):
+1. Mod stáhnout s povinnými závislostmi do vlastní složky a spustit
+   `factorio --config <config.ini> --mod-directory <složka> --dump-data` (složka s `mod-list.json` jako v
+   `tools/run-tests.sh`, vlastní `write-data`). V `script-output/data-raw-dump.json` je u každého
+   `transport-belt` skutečná ikona (`icon`/`icons`) a u předmětu `storage-optimizer-<pás>` přidělený tint.
+2. Pásy bez tintu a bez barvy v názvu doplnit do `KNOWN_ICONS` podle vzhledu ikony a cestu přidat i do
+   `tests/unit/test_colors.lua`, když jde o nový princip (ne jen další řádek).
 
 ## Testy
 
